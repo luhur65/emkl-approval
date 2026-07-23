@@ -1,0 +1,516 @@
+{
+    "tarifdetail": [
+        {
+            "name": "rn",
+            "width": "45px"
+        },
+        {
+            "name": "container_id",
+            "width": "150px"
+        },
+        {
+            "name": "nominal",
+            "width": "150px"
+        },
+        {
+            "name": "nominalbatastarif",
+            "width": "150px"
+        },
+        {
+            "name": "keteranganbatastarif",
+            "width": "800px"
+        }
+    ],
+    "jurnalumumheader": [
+        {
+            "name": "rn",
+            "width": "45px"
+        },
+        {
+            "name": "",
+            "width": "40px"
+        },
+        {
+            "name": "id",
+            "width": "50px"
+        },
+        {
+            "name": "statusapproval_id",
+            "width": "150px"
+        },
+        {
+            "name": "statusapproval",
+            "width": "150px"
+        },
+        {
+            "name": "nobukti",
+            "width": "150px"
+        },
+        {
+            "name": "tglbukti",
+            "width": "100px"
+        },
+        {
+            "name": "nominaldebet",
+            "width": "150px"
+        },
+        {
+            "name": "nominalkredit",
+            "width": "150px"
+        },
+        {
+            "name": "url_asal",
+            "width": "250px"
+        },
+        {
+            "name": "postingdari",
+            "width": "200px"
+        },
+        {
+            "name": "userapproval",
+            "width": "150px"
+        },
+        {
+            "name": "tglapproval",
+            "width": "100px"
+        },
+        {
+            "name": "modifiedby",
+            "width": "150px"
+        },
+        {
+            "name": "created_at",
+            "width": "200px"
+        },
+        {
+            "name": "updated_at",
+            "width": "200px"
+        }
+    ],
+    "gandengan": [
+        {
+            "name": "rn",
+            "width": "45px"
+        },
+        {
+            "name": "",
+            "width": "30px"
+        },
+        {
+            "name": "id",
+            "width": "70px"
+        },
+        {
+            "name": "kodegandengan",
+            "width": "200px"
+        },
+        {
+            "name": "keterangan",
+            "width": "300px"
+        },
+        {
+            "name": "trado",
+            "width": "100px"
+        },
+        {
+            "name": "container",
+            "width": "100px"
+        },
+        {
+            "name": "jumlahroda",
+            "width": "100px"
+        },
+        {
+            "name": "jumlahbanserap",
+            "width": "100px"
+        },
+        {
+            "name": "statusaktif",
+            "width": "100px"
+        },
+        {
+            "name": "photogandengan",
+            "width": "150px"
+        },
+        {
+            "name": "statusapprovaltanpagambar",
+            "width": "163px"
+        },
+        {
+            "name": "tglbatasapprovaltanpagambar",
+            "width": "200px"
+        },
+        {
+            "name": "tglspeksimati",
+            "width": "100px"
+        },
+        {
+            "name": "buktibayar",
+            "width": "150px"
+        },
+        {
+            "name": "modifiedby",
+            "width": "150px"
+        },
+        {
+            "name": "updated_at",
+            "width": "200px"
+        },
+        {
+            "name": "created_at",
+            "width": "200px"
+        }
+    ],
+    "tarif": [
+        {
+            "name": "rn",
+            "width": "45px"
+        },
+        {
+            "name": "check",
+            "width": "30px"
+        },
+        {
+            "name": "id",
+            "width": "50px"
+        },
+        {
+            "name": "parent_id",
+            "width": "150px"
+        },
+        {
+            "name": "pelabuhan_id",
+            "width": "150px"
+        },
+        {
+            "name": "upahsupir",
+            "width": "350px"
+        },
+        {
+            "name": "tujuan",
+            "width": "305px"
+        },
+        {
+            "name": "penyesuaian",
+            "width": "300px"
+        },
+        {
+            "name": "shipperemkl",
+            "width": "300px"
+        },
+        {
+            "name": "statusaktif",
+            "width": "150px"
+        },
+        {
+            "name": "statussistemton",
+            "width": "150px"
+        },
+        {
+            "name": "kota_id",
+            "width": "200px"
+        },
+        {
+            "name": "zona_id",
+            "width": "200px"
+        },
+        {
+            "name": "jenisorder",
+            "width": "200px"
+        },
+        {
+            "name": "tglmulaiberlaku",
+            "width": "100px"
+        },
+        {
+            "name": "statuspostingtnl",
+            "width": "150px"
+        },
+        {
+            "name": "keterangan",
+            "width": "450px"
+        },
+        {
+            "name": "modifiedby",
+            "width": "150px"
+        },
+        {
+            "name": "created_at",
+            "width": "200px"
+        },
+        {
+            "name": "updated_at",
+            "width": "200px"
+        }
+    ],
+    "laporanhutang": [
+        {
+            "name": "rn",
+            "width": "45px"
+        },
+        {
+            "name": "statusoverdue",
+            "width": "150px"
+        },
+        {
+            "name": "nobukti",
+            "width": "200px"
+        },
+        {
+            "name": "tglbukti",
+            "width": "100px"
+        },
+        {
+            "name": "supplier",
+            "width": "343px"
+        },
+        {
+            "name": "nominal",
+            "width": "100px"
+        },
+        {
+            "name": "sisa",
+            "width": "100px"
+        }
+    ],
+    "penerimaanheaderSearch": [
+        {
+            "name": "rn",
+            "width": "45px"
+        },
+        {
+            "name": "nobuktisearch",
+            "width": "150px"
+        },
+        {
+            "name": "tglbuktisearch",
+            "width": "150px"
+        },
+        {
+            "name": "keterangansearch",
+            "width": "569px"
+        },
+        {
+            "name": "nominalsearch",
+            "width": "150px"
+        },
+        {
+            "name": "coakreditsearch",
+            "width": "200px"
+        },
+        {
+            "name": "created_at",
+            "width": "200px"
+        },
+        {
+            "name": "updated_at",
+            "width": "200px"
+        }
+    ],
+    "penerimaantruckingheader": {
+        "DPO": [
+            {
+                "name": "rn",
+                "width": "45px"
+            },
+            {
+                "name": "",
+                "width": "40px"
+            },
+            {
+                "name": "id",
+                "width": "50px"
+            },
+            {
+                "name": "idpenerimaan",
+                "width": "150px"
+            },
+            {
+                "name": "kodepenerimaan",
+                "width": "150px"
+            },
+            {
+                "name": "statuscetak",
+                "width": "150px"
+            },
+            {
+                "name": "nobukti",
+                "width": "150px"
+            },
+            {
+                "name": "penerimaantrucking_id",
+                "width": "250px"
+            },
+            {
+                "name": "tglbukti",
+                "width": "100px"
+            },
+            {
+                "name": "bank_id",
+                "width": "150px"
+            },
+            {
+                "name": "coa",
+                "width": "200px"
+            },
+            {
+                "name": "penerimaan_nobukti",
+                "width": "200px"
+            },
+            {
+                "name": "supir_id",
+                "width": "200px"
+            },
+            {
+                "name": "karyawan_id",
+                "width": "200px"
+            },
+            {
+                "name": "url_pelunasan",
+                "width": "250px"
+            },
+            {
+                "name": "keteranganheader",
+                "width": "450px"
+            },
+            {
+                "name": "userbukacetak",
+                "width": "150px"
+            },
+            {
+                "name": "tglbukacetak",
+                "width": "150px"
+            },
+            {
+                "name": "modifiedby",
+                "width": "150px"
+            },
+            {
+                "name": "created_at",
+                "width": "200px"
+            },
+            {
+                "name": "updated_at",
+                "width": "200px"
+            }
+        ]
+    },
+    "penerimaantruckingheaderSearch": {
+        "all": [
+            {
+                "name": "rn",
+                "width": "45px"
+            },
+            {
+                "name": "nominalsearch",
+                "width": "150px"
+            },
+            {
+                "name": "tglbuktisearch",
+                "width": "150px"
+            },
+            {
+                "name": "nobuktisearch",
+                "width": "253px"
+            },
+            {
+                "name": "penerimaannobuktisearch",
+                "width": "200px"
+            },
+            {
+                "name": "keterangansearch",
+                "width": "450px"
+            },
+            {
+                "name": "supirsearch",
+                "width": "200px"
+            },
+            {
+                "name": "karyawansearch",
+                "width": "200px"
+            },
+            {
+                "name": "created_at",
+                "width": "200px"
+            },
+            {
+                "name": "updated_at",
+                "width": "200px"
+            }
+        ],
+        "DPO": [
+            {
+                "name": "rn",
+                "width": "45px"
+            },
+            {
+                "name": "urlsearch",
+                "width": "150px"
+            },
+            {
+                "name": "tglbuktisearch",
+                "width": "150px"
+            },
+            {
+                "name": "keterangansearch",
+                "width": "534px"
+            },
+            {
+                "name": "nominalsearch",
+                "width": "150px"
+            },
+            {
+                "name": "urlpenerimaannobukti",
+                "width": "200px"
+            },
+            {
+                "name": "supirsearch",
+                "width": "200px"
+            },
+            {
+                "name": "created_at",
+                "width": "200px"
+            },
+            {
+                "name": "updated_at",
+                "width": "200px"
+            }
+        ]
+    },
+    "pengeluarantruckingheaderSearch": {
+        "PJK": [
+            {
+                "name": "rn",
+                "width": "45px"
+            },
+            {
+                "name": "urlsearch",
+                "width": "150px"
+            },
+            {
+                "name": "tglbuktisearch",
+                "width": "150px"
+            },
+            {
+                "name": "keterangansearch",
+                "width": "764px"
+            },
+            {
+                "name": "nominalsearch",
+                "width": "150px"
+            },
+            {
+                "name": "urlpengeluarannobukti",
+                "width": "200px"
+            },
+            {
+                "name": "created_at",
+                "width": "200px"
+            },
+            {
+                "name": "updated_at",
+                "width": "200px"
+            }
+        ]
+    }
+}

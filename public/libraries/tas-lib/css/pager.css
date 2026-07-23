@@ -1,0 +1,53 @@
+.hover-primary {
+  background: #eaf2ff;
+  border: 1px solid #b7d2ff;
+  color: #186dff;
+}
+
+.pager-handler {
+  white-space: nowrap;
+}
+
+.pager-input {
+  max-width: 50px;
+  min-width: 20px;
+  width: 100%;
+}
+
+.gap-10 {
+  gap: 10px;
+}
+
+.item-menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  line-height: 1.1;
+  overflow: hidden;
+}
+
+/* @media (min-width: 767px) {
+
+  .item-menu {
+    font-size: 12px;
+  }
+} */
+
+/* #227b37 color baru*/
+
+@media (min-width: 767px) {
+  .modalLainnya {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  }
+
+  .modalLainnya .modal-dialog {
+    max-width: 50%;
+  }
+
+  .item-menu {
+    height: 40px;
+    padding: 5px;
+  }
+}

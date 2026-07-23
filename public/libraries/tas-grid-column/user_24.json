@@ -1,0 +1,44 @@
+{
+    "cabang": [
+        {
+            "name": "rn",
+            "width": "45px"
+        },
+        {
+            "name": "",
+            "width": "30px"
+        },
+        {
+            "name": "id",
+            "width": "70px"
+        },
+        {
+            "name": "kodecabang",
+            "width": "100px"
+        },
+        {
+            "name": "namacabang",
+            "width": "150px"
+        },
+        {
+            "name": "statusaktif",
+            "width": "192px"
+        },
+        {
+            "name": "statuskoneksi_memo",
+            "width": "100px"
+        },
+        {
+            "name": "modifiedby",
+            "width": "150px"
+        },
+        {
+            "name": "created_at",
+            "width": "200px"
+        },
+        {
+            "name": "updated_at",
+            "width": "200px"
+        }
+    ]
+}

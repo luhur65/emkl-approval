@@ -1,0 +1,198 @@
+{
+    "penerimaantruckingheader": {
+        "ASU": [
+            {
+                "name": "rn",
+                "width": "45px"
+            },
+            {
+                "name": "",
+                "width": "40px"
+            },
+            {
+                "name": "id",
+                "width": "50px"
+            },
+            {
+                "name": "statuscetak",
+                "width": "150px"
+            },
+            {
+                "name": "nobukti",
+                "width": "204px"
+            },
+            {
+                "name": "tglbukti",
+                "width": "100px"
+            },
+            {
+                "name": "penerimaantrucking_id",
+                "width": "250px"
+            },
+            {
+                "name": "bank_id",
+                "width": "150px"
+            },
+            {
+                "name": "coa",
+                "width": "200px"
+            },
+            {
+                "name": "penerimaan_nobukti",
+                "width": "200px"
+            },
+            {
+                "name": "keteranganheader",
+                "width": "450px"
+            },
+            {
+                "name": "userbukacetak",
+                "width": "150px"
+            },
+            {
+                "name": "tglbukacetak",
+                "width": "150px"
+            },
+            {
+                "name": "modifiedby",
+                "width": "150px"
+            },
+            {
+                "name": "created_at",
+                "width": "200px"
+            },
+            {
+                "name": "updated_at",
+                "width": "200px"
+            }
+        ],
+        "all": [
+            {
+                "name": "rn",
+                "width": "45px"
+            },
+            {
+                "name": "",
+                "width": "40px"
+            },
+            {
+                "name": "id",
+                "width": "50px"
+            },
+            {
+                "name": "statuscetak",
+                "width": "150px"
+            },
+            {
+                "name": "nobukti",
+                "width": "150px"
+            },
+            {
+                "name": "tglbukti",
+                "width": "100px"
+            },
+            {
+                "name": "penerimaantrucking_id",
+                "width": "250px"
+            },
+            {
+                "name": "bank_id",
+                "width": "150px"
+            },
+            {
+                "name": "coa",
+                "width": "200px"
+            },
+            {
+                "name": "karyawan_id",
+                "width": "200px"
+            },
+            {
+                "name": "supir_id",
+                "width": "200px"
+            },
+            {
+                "name": "penerimaan_nobukti",
+                "width": "200px"
+            },
+            {
+                "name": "url_pelunasan",
+                "width": "250px"
+            },
+            {
+                "name": "keteranganheader",
+                "width": "450px"
+            },
+            {
+                "name": "userbukacetak",
+                "width": "150px"
+            },
+            {
+                "name": "tglbukacetak",
+                "width": "150px"
+            },
+            {
+                "name": "modifiedby",
+                "width": "150px"
+            },
+            {
+                "name": "created_at",
+                "width": "200px"
+            },
+            {
+                "name": "updated_at",
+                "width": "200px"
+            }
+        ]
+    },
+    "pengeluarantruckingheaderDetail": {
+        "ASU": [
+            {
+                "name": "rn",
+                "width": "45px"
+            },
+            {
+                "name": "nobukti",
+                "width": "150px"
+            },
+            {
+                "name": "keterangan",
+                "width": "450px"
+            },
+            {
+                "name": "penerimaantruckingheader_nobukti",
+                "width": "250px"
+            },
+            {
+                "name": "nominal",
+                "width": "150px"
+            }
+        ],
+        "PJK": [
+            {
+                "name": "rn",
+                "width": "45px"
+            },
+            {
+                "name": "nobukti",
+                "width": "150px"
+            },
+            {
+                "name": "karyawan_id",
+                "width": "200px"
+            },
+            {
+                "name": "keterangan",
+                "width": "450px"
+            },
+            {
+                "name": "penerimaantruckingheader_nobukti",
+                "width": "250px"
+            },
+            {
+                "name": "nominal",
+                "width": "150px"
+            }
+        ]
+    }
+}

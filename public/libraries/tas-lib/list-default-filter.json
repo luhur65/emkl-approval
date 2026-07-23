@@ -1,0 +1,7 @@
+{
+    "cabang": [
+        {"field": "statusaktif", "grp": "STATUS AKTIF", "subgrp": "STATUS AKTIF", "text": "AKTIF"},
+        {"field": "statuskoneksi_memo", "grp": "STATUS KONEKSI", "subgrp": "STATUS KONEKSI", "text": "ONLINE"}
+    ],
+    "upahsupir": [{"field": "statusaktif", "grp": "STATUS AKTIF", "subgrp": "STATUS AKTIF", "text": "AKTIF"}]
+}

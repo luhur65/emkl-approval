@@ -1,0 +1,42 @@
+/* Mengunci lebar utama container agar tidak meluap */
+.year-picker {
+    width: 230px !important; 
+    min-width: 230px !important;
+    max-width: 230px !important;
+    padding: 2px !important;
+    box-sizing: border-box !important;
+}
+
+/* Memastikan tabel tahun mengisi ruang 230px tersebut secara proporsional */
+.year-picker .month-picker-month-table {
+    width: 100% !important;
+    table-layout: fixed !important; /* Membagi kolom sama rata otomatis */
+    border-spacing: 2px !important;
+}
+
+/* Mengatur sel agar tidak terlalu tinggi */
+.year-picker .month-picker-month-table td {
+    padding: 1px !important;
+}
+
+/* Mengatur tombol angka tahun agar pas di dalam kotak */
+.year-picker .month-picker-month-table .ui-button {
+    width: 100% !important;
+    padding: 0.4em 0 !important;
+    margin: 0 !important;
+    font-size: 0.9em !important; /* Mengecilkan sedikit font agar tidak sesak */
+}
+
+.year-picker .month-picker-year-table {
+    width: 100% !important;
+}
+
+.year-picker .month-picker-title {
+    text-align: center !important;
+    padding: 0 5px !important;
+}
+
+.year-picker .month-picker-title a {
+    width: 100% !important;
+    display: block !important;
+}

@@ -1,0 +1,1000 @@
+{
+    "statusabsensisupir": {
+        "A": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "NA": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusaccountpayable": {
+        "A": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "NA": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusadaupdategambar": {
+        "WAUG": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TWAUG": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusakses": {
+        "P": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "V": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        }
+    },
+    "statusaktif": {
+        "A": {
+            "light": { "background": "#009933", "color": "#FFF" },
+            "dark": { "background": "#009933", "color": "#FFF" }
+        },
+        "ATL": {
+            "light": { "background": "#bd2b26", "color": "#FFF" },
+            "dark": { "background": "#bd2b26", "color": "#FFF" }
+        },
+        "NA": {
+            "light": { "background": "", "color": "" },
+            "dark": { "background": "", "color": "" }
+        }
+    },
+    "statusapproval": {
+        "APP": {
+            "light": { "background": "#843DF5", "color": "#FFF" },
+            "dark": { "background": "#843DF5", "color": "#FFF" }
+        },
+        "UN-APP": {
+            "light": { "background": "", "color": "" },
+            "dark": { "background": "", "color": "" }
+        }
+    },
+    "statusapprovaleditban": {
+        "AEB": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "UEB": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusasuransi": {
+        "A": {
+            "light": { "background": "#009933", "color": "#FFF" },
+            "dark": { "background": "#009933", "color": "#FFF" }
+        },
+        "NA": {
+            "light": { "background": "#FD7E14", "color": "#FFF" },
+            "dark": { "background": "#FD7E14", "color": "#FFF" }
+        }
+    },
+    "statusban": {
+        "SB": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BSB": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusbatalmuat": {
+        "BM": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BMB": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusberkas": {
+        "B": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TAB": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuscabang": {
+        "C": {
+            "light": { "background": "#009933", "color": "#FFF" },
+            "dark": { "background": "#009933", "color": "#FFF" }
+        },
+        "BC": {
+            "light": { "background": "#009933", "color": "#FFF" },
+            "dark": { "background": "#009933", "color": "#FFF" }
+        }
+    },
+    "statuscetakan": {
+        "FORMAT2": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        }
+    },
+    "statuscoa": {
+        "SC": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "US": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuscontainer": {
+        "SCF": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "SCE": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "SCFE": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        }
+    },
+    "statusdaftarharga": {
+        "B": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TB": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusdefault": {
+        "D": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BD": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusdefaultparameter": {
+        "YA": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TIDAK": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuseditabsensi": {
+        "BEA": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TBEA": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusedittujuan": {
+        "ET": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TET": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusexpired": {
+        "SE": {
+            "light": { "background": "#CB1818", "color": "#FFF" },
+            "dark": { "background": "#CB1818", "color": "#FFF" }
+        },
+        "HE": {
+            "light": { "background": "#CB1818", "color": "#FFF" },
+            "dark": { "background": "#CB1818", "color": "#FFF" }
+        },
+        "90": {
+            "light": { "background": "#E16000", "color": "#FFF" },
+            "dark": { "background": "#E16000", "color": "#FFF" }
+        }
+    },
+    "statusexportric": {
+        "PB": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "POLI": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        }
+    },
+    "statusgandengan": {
+        "P": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "V": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "DP": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        }
+    },
+    "statusgerobak": {
+        "G": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BG": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusgudang": {
+        "K": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "S": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusgudangsama": {
+        "GS": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BGS": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statushitungstok": {
+        "HS": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "THS": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statushutangprediksi": {
+        "EBS": {
+            "light": { "background": "#009933", "color": "#FFF" },
+            "dark": { "background": "#009933", "color": "#FFF" }
+        },
+        "JM": {
+            "light": { "background": "#009933", "color": "#FFF" },
+            "dark": { "background": "#009933", "color": "#FFF" }
+        },
+        "KS": {
+            "light": { "background": "#009933", "color": "#FFF" },
+            "dark": { "background": "#009933", "color": "#FFF" }
+        }
+    },
+    "statusinvoice": {
+        "IU": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "IT": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusinvoiceemkl": {
+        "UTAMA": {
+            "light": { "background": "#68A4FD", "color": "#FFF" },
+            "dark": { "background": "#68A4FD", "color": "#FFF" }
+        },
+        "TAMBAHAN": {
+            "light": { "background": "#68A4FD", "color": "#FFF" },
+            "dark": { "background": "#68A4FD", "color": "#FFF" }
+        }
+    },
+    "statusjeniskendaraan": {
+        "G": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "T": {
+            "light": { "background": "#FD7E14", "color": "#FFF" },
+            "dark": { "background": "#FD7E14", "color": "#FFF" }
+        }
+    },
+    "statuskandang": {
+        "K": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BK": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        }
+    },
+    "statuskaryawan": {
+        "K": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "NK": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuskas": {
+        "K": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BK": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuskembali": {
+        "SD": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BD": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        },
+        "S": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuskendaraan": {
+        "K": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "NK": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuskondisiban": {
+        "MSK": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "MTH": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "MLK": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "AFKIR": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        }
+    },
+    "statuskoneksi": {
+        "ON": {
+            "light": { "background": "#009933", "color": "#FFF" },
+            "dark": { "background": "#009933", "color": "#FFF" }
+        },
+        "OFF": {
+            "light": { "background": "#009933", "color": "#FFF" },
+            "dark": { "background": "#009933", "color": "#FFF" }
+        }
+    },
+    "statuslabarugi": {
+        "A": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "NA": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuslangsir": {
+        "L": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BL": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuslangsungcair": {
+        "LC": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TLC": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuslewatvalidasi": {
+        "ALV": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "ULV": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuslongtrip": {
+        "L": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BL": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuslontrip": {
+        "LF": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusluarkota": {
+        "BLK": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TBLK": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusmobilstoring": {
+        "MS": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "NMS": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusmutasi": {
+        "M": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "NM": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusneraca": {
+        "A": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "NA": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusnotif": {
+        "N": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TN": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusoli": {
+        "T": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "G": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusoneway": {
+        "OW": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BOW": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusopnamestok": {
+        "SOS": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuspajak": {
+        "PAJAK": {
+            "light": { "background": "#68A4FD", "color": "#FFF" },
+            "dark": { "background": "#68A4FD", "color": "#FFF" }
+        },
+        "NON PAJAK": {
+            "light": { "background": "#68A4FD", "color": "#FFF" },
+            "dark": { "background": "#68A4FD", "color": "#FFF" }
+        }
+    },
+    "statusparent": {
+        "P": {
+            "light": { "background": "#009933", "color": "#FFF" },
+            "dark": { "background": "#009933", "color": "#FFF" }
+        },
+        "BP": {
+            "light": { "background": "#009933", "color": "#FFF" },
+            "dark": { "background": "#009933", "color": "#FFF" }
+        }
+    },
+    "statuspelabuhan": {
+        "P": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        }
+    },
+    "statuspencairangiro": {
+        "PGPL": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "PGPM": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        }
+    },
+    "statuspenyesuaian": {
+        "P": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BP": {
+            "light": { "background": "#FD7E14", "color": "#FFF" },
+            "dark": { "background": "#FD7E14", "color": "#FFF" }
+        }
+    },
+    "statusperalihan": {
+        "P": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BP": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuspergantian": {
+        "SMB": {
+            "light": { "background": "#CB1818", "color": "#FFF" },
+            "dark": { "background": "#CB1818", "color": "#FFF" }
+        },
+        "HMB": {
+            "light": { "background": "#E16000", "color": "#FFF" },
+            "dark": { "background": "#E16000", "color": "#FFF" }
+        }
+    },
+    "statuspilihaninvoice": {
+        "PPB": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "PO": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuspindahgudang": {
+        "GKG": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TKT": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        },
+        "DKD": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        },
+        "GKT": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "GKD": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TKD": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BPG": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        }
+    },
+    "statusposting": {
+        "POSTING": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "NON POSTING": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuspostingtnl": {
+        "PT": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TPT": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuspotongretur": {
+        "PKB": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "PH": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusppn": {
+        "PPN 1.1%": {
+            "light": { "background": "#68A4FD", "color": "#FFF" },
+            "dark": { "background": "#68A4FD", "color": "#FFF" }
+        },
+        "PPN 11%": {
+            "light": { "background": "#68A4FD", "color": "#FFF" },
+            "dark": { "background": "#68A4FD", "color": "#FFF" }
+        }
+    },
+    "statusprosesuangjalan": {
+        "TPUJ": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "ATPUJ": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusreimburse": {
+        "YA": {
+            "light": { "background": "#E16000", "color": "#FFF" },
+            "dark": { "background": "#E16000", "color": "#FFF" }
+        },
+        "TIDAK": {
+            "light": { "background": "#E16000", "color": "#FFF" },
+            "dark": { "background": "#E16000", "color": "#FFF" }
+        }
+    },
+    "statusreuse": {
+        "R": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "NR": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusritasi": {
+        "NK": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TK": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        },
+        "PR": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TR": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        },
+        "PG": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "NTK": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        }
+    },
+    "statusritasiomset": {
+        "RO": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BRO": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusserviceout": {
+        "SO": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "NSO": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusservicerutin": {
+        "MLK": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        }
+    },
+    "statussimpankandang": {
+        "SK": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TSK": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusstaff": {
+        "K": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "M": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusstandarisasi": {
+        "S": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "NS": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusstokmin": {
+        "SDQM": {
+            "light": { "background": "#CB1818", "color": "#FFF" },
+            "dark": { "background": "#CB1818", "color": "#FFF" }
+        },
+        "SHDQM": {
+            "light": { "background": "#E16000", "color": "#FFF" },
+            "dark": { "background": "#E16000", "color": "#FFF" }
+        }
+    },
+    "statussudahbuka": {
+        "SB": {
+            "light": { "background": "#009933", "color": "#FFF" },
+            "dark": { "background": "#009933", "color": "#FFF" }
+        },
+        "BB": {
+            "light": { "background": "#009933", "color": "#FFF" },
+            "dark": { "background": "#009933", "color": "#FFF" }
+        }
+    },
+    "statussuratlegalitas": {
+        "PAJAK STNK": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "KIR": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "STID": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "STNK": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "ASURANSI": {
+            "light": { "background": "#28A745" },
+            "dark": { "background": "#28A745" }
+        },
+        "ID CARD TPS": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "ID CARD PELABUHAN": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        }
+    },
+    "statussuratlegalitasclose": {
+        "KIR GANDENGAN": {
+            "light": { "background": "#28A745" },
+            "dark": { "background": "#28A745" }
+        }
+    },
+    "statustampilankartustok": {
+        "ALL": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "PGK": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        }
+    },
+    "statustas": {
+        "TAS": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "OL": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        },
+        "LN": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statustrip": {
+        "ADA TRIP ASAL": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "TIDAK ADA TRIP ASAL": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusupahzona": {
+        "UZ": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "NUZ": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusvalidasikendaraan": {
+        "VK": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "NVK": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statuscetak": {
+        "C": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BC": {
+            "light": { "background": "#6C757D", "color": "#fff" },
+            "dark": { "background": "#8D959B", "color": "#fff" }
+        }
+    },
+    "statusimport": {
+        "HT": {
+            "light": { "background": "#009933", "color": "#FFF" },
+            "dark": { "background": "#009933", "color": "#FFF" }
+        },
+        "TD": {
+            "light": { "background": "#009933", "color": "#FFF" },
+            "dark": { "background": "#009933", "color": "#FFF" }
+        }
+    },
+    "statuskirimberkas": {
+        "KB": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BKB": {
+            "light": { "background": "#6C757D", "color": "#fff" },
+            "dark": { "background": "#8D959B", "color": "#fff" }
+        }
+    },
+    "jenisplat": {
+        "PK": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "PH": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusmultitempat": {
+        "MT": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BMT": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusoverdue": {
+        "LO": {
+            "light": { "background": "#CB1818", "color": "#FFF" },
+            "dark": { "background": "#CB1818", "color": "#FFF" }
+        },
+        "MO": {
+            "light": { "background": "#E16000", "color": "#FFF" },
+            "dark": { "background": "#E16000", "color": "#FFF" }
+        }
+    },
+    "statusbongkarmuat2x": {
+        "BM2X": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "BBM2X": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "tipetrip": {
+        "NORM": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "KDG": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    },
+    "statusrepo": {
+        "BR": {
+            "light": { "background": "#28A745", "color": "#FFF" },
+            "dark": { "background": "#28A745", "color": "#FFF" }
+        },
+        "RP": {
+            "light": { "background": "#6C757D", "color": "#FFF" },
+            "dark": { "background": "#6C757D", "color": "#FFF" }
+        }
+    }
+}

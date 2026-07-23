@@ -1,0 +1,50 @@
+    .ui-jqgrid tr.myfootrowJKT td {
+    font-weight: bold;
+    overflow: hidden;
+    white-space:nowrap;
+    height: 21px;
+    padding: 0 2px 0 2px;
+    border-top-width: 1px;
+    border-top-color: inherit;
+    border-top-style: solid;
+    }
+    .ui-jqgrid tr.myfootrowMDN td {
+    font-weight: bold;
+    overflow: hidden;
+    white-space:nowrap;
+    height: 21px;
+    padding: 0 2px 0 2px;
+    border-top-width: 1px;
+    border-top-color: inherit;
+    border-top-style: solid;
+    }
+    .ui-jqgrid tr.myfootrowSBY td {
+    font-weight: bold;
+    overflow: hidden;
+    white-space:nowrap;
+    height: 21px;
+    padding: 0 2px 0 2px;
+    border-top-width: 1px;
+    border-top-color: inherit;
+    border-top-style: solid;
+    }
+    .ui-jqgrid tr.myfootrowMKS td {
+    font-weight: bold;
+    overflow: hidden;
+    white-space:nowrap;
+    height: 21px;
+    padding: 0 2px 0 2px;
+    border-top-width: 1px;
+    border-top-color: inherit;
+    border-top-style: solid;
+    }
+    .ui-jqgrid tr.myfootrowSMG td {
+    font-weight: bold;
+    overflow: hidden;
+    white-space:nowrap;
+    height: 21px;
+    padding: 0 2px 0 2px;
+    border-top-width: 1px;
+    border-top-color: inherit;
+    border-top-style: solid;
+    }

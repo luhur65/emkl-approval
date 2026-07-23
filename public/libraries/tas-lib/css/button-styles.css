@@ -1,0 +1,466 @@
+:root {
+  --green: #2cbd5b;
+  --green-hover: #27a14e;
+  --green-darker: #156930;
+  --green-darker-hover: #14642e;
+  --lightblue: #17a2b8;
+  --lightblue-hover: #168c9f;
+  --info-darker: #076679;
+  --info-darker-hover: #087990;
+  --primary-darker: #0b5ed7;
+  --primary-darker-hover: #0751c0;
+  --orange: #f17d1e;
+  --orange-hover: #e96900;
+  --orange-darker: #cc4400;
+  --orange-darker-hover: #993300;
+  --primary: #007bff;
+  --primary-hover: #0751c0;
+  --purple: #62109F;
+  --purple-hover: #580e8f;
+  --purple-darker: #3e0a64;
+  --purple-darker-hover: #2d0748;
+  --warning-darker: #d7a100;
+  --warning-darker-hover: #bb8c00;
+  --burnt-darker: #5f2319;
+  --burnt-darker-hover: #521e15;
+  --blueberry: #5136df;
+  --blueberry-hover: #3920c7;
+  --blueberry-darker: #2b1a88;
+  --blueberry-darker-hover: #211469;
+  --seagreen-darker: #27764a;
+  --seagreen-darker-hover: #1e5c39;
+  --danger-darker: #a60202;
+  --danger-darker-hover: #6e0101;
+  --blue: #2d82c7;
+  --blue-hover: #286ea7;
+  --blue-darker: #1c537f;
+  --blue-darker-hover: #184c75;
+  --black: #7d8892;
+  --black-hover: #41484e;
+  --black-darker: #41484e;
+  --black-darker-hover: #41484e;
+  --pink: #e95fa4;
+  --pink-hover: #cd3681;
+  --pink-darker: #c9136d;
+  --pink-darker-hover: #a70e5a;
+  --lightpurple: #8555e3;
+  --lightpurple-hover: #6d33dd;
+  --lightpurple-darker: #472093;
+  --lightpurple-darker-hover: #381973;
+  --teal: #29c99b;
+  --teal-hover: #1e8f6e;
+  --teal-darker: #129b73;
+  --teal-darker-hover: #108d68;
+  --burgundy: #ef416c;
+  --burgundy-hover: #ef416c;
+  --burgundy-darker: #65081F;
+  --burgundy-darker-hover: #65081F;
+  --danger: #a60202;
+  --danger-hover: #6e0101;
+  --danger-darker: #a60202;
+  --danger-darker-hover: #6e0101;
+  --yellow-light: #e4e41e;
+  --yellow-light-hover: #e4e41e;
+  --yellow-light-darker: #a0a00c;
+  --yellow-light-darker-hover: #a0a00c;
+  --pink: #e95fa4;
+  --pink-hover: #cd3681;
+  --pink-darker: #c9136d;
+  --pink-darker-hover: #a70e5a;
+  --grey: #9BB4C0;
+  --grey-hover: #9BB4C0;
+  --grey-darker: #758389;
+  --grey-darker-hover: #758389;
+  --young-purple: #725CAD;
+  --young-purple-hover: #725CAD;
+  --young-purple-darker: #553D80;
+  --young-purple-darker-hover: #553D80;
+  --old-cyan: #075B5E;
+  --old-cyan-hover: #075B5E;
+  --old-cyan-darker: #064f51;
+  --old-cyan-darker-hover: #064f51;
+  /* --orange: #F25912;
+  --orange-hover: #f36c2e; */
+
+}
+
+.btn-green {
+  color: #fff !important;
+  background-color: var(--green);
+}
+
+.btn-green:hover {
+  color: #fff !important;
+  background-color: var(--green-hover);
+}
+
+.btn-green-darker {
+	color: #fff !important;
+  background-color: var(--green-darker);
+}
+
+.btn-green-darker:hover {
+	color: #fff !important;
+  background-color: var(--green-darker-hover);
+}
+
+.btn-purple-darker {
+  color: #fff !important;
+  background-color: var(--purple-darker)
+}
+
+.btn-purple-darker:hover {
+  color: #fff !important;
+  background-color: var(--purple-darker-hover)
+}
+
+.btn-info-darker {
+    color: #fff !important;
+    background-color: var(--info-darker);
+}
+
+.btn-info-darker:hover {
+    color: #fff !important;
+    background-color: var(--info-darker-hover);
+}
+
+.btn-primary-darker {
+    color: #fff !important;
+    background-color: var(--primary-darker);
+}
+
+.btn-primary-darker:hover {
+    color: #fff !important;
+    background-color: var(--primary-darker-hover);
+}
+.btn-orange-darker {
+    color: #fff !important;
+    background-color: var(--orange-darker);
+}
+
+.btn-orange-darker:hover {
+    color: #fff !important;
+    background-color: var(--orange-darker-hover);
+}
+
+.btn-burnt-darker {
+  color: #fff !important;
+  background-color: var(--burnt-darker)
+}
+.btn-burnt-darker:hover {
+  color: #fff !important;
+  background-color: var(--burnt-darker-hover)
+}
+
+.btn-blueberry {
+  color: #fff !important;
+  background-color: var(--blueberry);
+}
+
+.btn-blueberry-darker {
+  color: #fff !important;
+  background-color: var(--blueberry-darker);
+}
+
+.btn-blueberry-darker:hover {
+  color: #fff !important;
+  background-color: var(--blueberry-darker-hover);
+}
+
+.btn-warning-darker {
+  color: black !important;
+  background-color: var(--warning-darker);
+}
+
+.btn-warning-darker:hover {
+  color: black !important;
+  background-color: var(--warning-darker-hover);
+}
+
+.btn-seagreen-darker {
+  color: #fff !important;
+  background-color: var(--seagreen-darker);
+}
+
+.btn-seagreen-darker:hover {
+  color: #fff !important;
+  background-color: var(--seagreen-darker-hover);
+}
+
+.btn-danger-darker {
+  color: #fff !important;
+  background-color: var(--danger-darker);
+} 
+
+.btn-danger-darker:hover {
+  color: #fff !important;
+  background-color: var(--danger-darker-hover);
+} 
+
+.btn-cancel {
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-cancel:hover {
+  color: #fff !important;
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-blue {
+  color: #fff !important;
+  background-color: var(--blue);
+}
+
+.btn-blue:hover {
+  color: #fff !important;
+  background-color: var(--blue-hover);
+}
+
+.btn-blue-darker {
+	color: #fff !important;
+  background-color: var(--blue-darker);
+}
+
+.btn-blue-darker:hover {
+	color: #fff !important;
+  background-color: var(--blue-darker-hover);
+}
+.btn-black {
+	color: #fff;
+  background-color: var(--black);
+}
+
+.btn-black:hover {
+	color: #fff !important;
+  background-color: var(--black-hover);
+}
+.btn-black-darker {
+	color: #fff;
+  background-color: var(--black-darker);
+}
+
+.btn-black-darker:hover {
+	color: #fff !important;
+  background-color: var(--black-darker-hover);
+}
+.btn-blueberry {
+	color: #fff;
+  background-color: var(--blueberry);
+}
+
+.btn-blueberry:hover {
+	color: #fff !important;
+  background-color: var(--blueberry-hover);
+}
+.btn-lightblue {
+	color: #fff;
+  background-color: var(--lightblue);
+}
+
+.btn-lightblue:hover {
+	color: #fff !important;
+  background-color: var(--lightblue-hover);
+}
+
+.btn-orange {
+  background-color: var(--orange);
+	color: #fff;
+}
+
+.btn-orange:hover {
+  background-color: var(--orange-hover);
+	color: #fff !important;
+}
+
+.btn-pink {
+  background-color: var(--pink);
+	color: #fff;
+}
+
+.btn-pink:hover {
+	color: #fff !important;
+  background-color: var(--pink-hover);
+}
+.btn-pink-darker {
+	color: #fff;
+  background-color: var(--pink-darker);
+}
+
+.btn-pink-darker:hover {
+	color: #fff !important;
+  background-color: var(--pink-darker-hover);
+}
+
+.btn-lightpurple {
+  background-color: var(--lightpurple);
+	color: #fff;
+}
+
+.btn-lightpurple:hover {
+	color: #fff !important;
+  background-color: var(--lightpurple-hover);
+}
+.btn-lightpurple-darker {
+	color: #fff;
+  background-color: var(--lightpurple-darker);
+}
+
+.btn-lightpurple-darker:hover {
+	color: #fff !important;
+  background-color: var(--lightpurple-darker-hover);
+}
+.btn-teal {
+  background-color: var(--teal);
+	color: #fff;
+}
+
+.btn-teal:hover {
+	color: #fff !important;
+  background-color: var(--teal-hover);
+}
+.btn-teal-darker {
+	color: #fff;
+  background-color: var(--teal-darker);
+}
+
+.btn-teal-darker:hover {
+	color: #fff !important;
+  background-color: var(--teal-darker-hover);
+}
+
+.btn-burgundy {
+	color: #fff !important;
+  background-color: var(--burgundy);
+}
+.btn-burgundy:hover {
+	color: #fff !important;
+  background-color: var(--burgundy-hover);
+}
+.btn-burgundy-darker {
+	color: #fff !important;
+  background-color: var(--burgundy-darker);
+}
+
+.btn-burgundy-darker:hover {
+	color: #fff !important;
+  background-color: var(--burgundy-darker-hover);
+}
+
+.btn-danger {
+	color: #fff !important;
+  background-color: var(--danger);
+}
+.btn-danger:hover {
+	color: #fff !important;
+  background-color: var(--danger-hover);
+}
+.btn-danger-darker {
+	color: #fff !important;
+  background-color: var(--danger-darker);
+}
+.btn-danger-darker:hover {
+	color: #fff !important;
+  background-color: var(--danger-darker-hover);
+}
+
+/* Warna Baru Untuk Button Approval */
+
+.btn-yellow-light {
+	color: #000000 !important;
+  background-color: var(--yellow-light);
+}
+.btn-yellow-light:hover {
+	color: #000000 !important;
+  background-color: var(--yellow-light-hover);
+}
+.btn-yellow-light-darker {
+	color: #000000 !important;
+  background-color: var(--yellow-light-darker);
+}
+.btn-yellow-light-darker:hover {
+	color: #000000 !important;
+  background-color: var(--yellow-light-darker-hover);
+}
+
+.btn-pink {
+	color: #fff !important;
+  background-color: var(--pink);
+}
+.btn-pink:hover {
+	color: #fff !important;
+  background-color: var(--pink-hover);
+}
+.btn-pink-darker {
+	color: #fff !important;
+  background-color: var(--pink-darker);
+}
+.btn-pink-darker:hover {
+	color: #fff !important;
+  background-color: var(--pink-darker-hover);
+}
+
+.btn-grey {
+	color: #fff !important;
+  background-color: var(--grey);
+}
+.btn-grey:hover {
+	color: #fff !important;
+  background-color: var(--grey-hover);
+}
+.btn-grey-darker {
+	color: #fff !important;
+  background-color: var(--grey-darker);
+}
+.btn-grey-darker:hover {
+	color: #fff !important;
+  background-color: var(--grey-darker-hover);
+}
+
+.btn-young-purple {
+	color: #fff !important;
+  background-color: var(--young-purple);
+}
+.btn-young-purple:hover {
+	color: #fff !important;
+  background-color: var(--young-purple-hover);
+}
+.btn-young-purple-darker {
+	color: #fff !important;
+  background-color: var(--young-purple-darker);
+}
+.btn-young-purple-darker:hover {
+	color: #fff !important;
+  background-color: var(--young-purple-darker-hover);
+}
+
+.btn-old-cyan {
+	color: #fff !important;
+  background-color: var(--old-cyan);
+}
+.btn-old-cyan:hover {
+	color: #fff !important;
+  background-color: var(--old-cyan-hover);
+}
+.btn-old-cyan-darker {
+	color: #fff !important;
+  background-color: var(--old-cyan-darker);
+}
+.btn-old-cyan-darker:hover {
+	color: #fff !important;
+  background-color: var(--old-cyan-darker-hover);
+}
+
+/* 
+.btn-orange {
+  color: #fff !important;
+  background-color: var(--orange);
+}
+
+.btn-orange:hover {
+  color: #fff !important;
+  background-color: var(--orange-hover);
+} */

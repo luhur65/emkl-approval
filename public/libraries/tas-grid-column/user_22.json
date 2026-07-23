@@ -1,0 +1,292 @@
+{
+    "suratpengantar": [
+        {
+            "name": "rn",
+            "width": "45px"
+        },
+        {
+            "name": "",
+            "width": "30px"
+        },
+        {
+            "name": "id",
+            "width": "50px"
+        },
+        {
+            "name": "supir_id",
+            "width": "200px"
+        },
+        {
+            "name": "jobtrucking",
+            "width": "150px"
+        },
+        {
+            "name": "nobukti",
+            "width": "150px"
+        },
+        {
+            "name": "tglbukti",
+            "width": "100px"
+        },
+        {
+            "name": "nosp",
+            "width": "150px"
+        },
+        {
+            "name": "tglsp",
+            "width": "100px"
+        },
+        {
+            "name": "nojob",
+            "width": "250px"
+        },
+        {
+            "name": "pelanggan_id",
+            "width": "250px"
+        },
+        {
+            "name": "keterangan",
+            "width": "450px"
+        },
+        {
+            "name": "dari_id",
+            "width": "200px"
+        },
+        {
+            "name": "sampai_id",
+            "width": "200px"
+        },
+        {
+            "name": "penyesuaian",
+            "width": "200px"
+        },
+        {
+            "name": "gajisupir",
+            "width": "150px"
+        },
+        {
+            "name": "jarak",
+            "width": "100px"
+        },
+        {
+            "name": "omset",
+            "width": "150px"
+        },
+        {
+            "name": "nominalperalihan",
+            "width": "200px"
+        },
+        {
+            "name": "totalomset",
+            "width": "150px"
+        },
+        {
+            "name": "agen_id",
+            "width": "300px"
+        },
+        {
+            "name": "jenisorder_id",
+            "width": "150px"
+        },
+        {
+            "name": "container_id",
+            "width": "150px"
+        },
+        {
+            "name": "nocont",
+            "width": "200px"
+        },
+        {
+            "name": "noseal",
+            "width": "150px"
+        },
+        {
+            "name": "nocont2",
+            "width": "200px"
+        },
+        {
+            "name": "noseal2",
+            "width": "150px"
+        },
+        {
+            "name": "statuscontainer_id",
+            "width": "200px"
+        },
+        {
+            "name": "gudang",
+            "width": "300px"
+        },
+        {
+            "name": "trado_id",
+            "width": "150px"
+        },
+        {
+            "name": "gandengan_id",
+            "width": "150px"
+        },
+        {
+            "name": "potongankenaikanomset",
+            "width": "150px"
+        },
+        {
+            "name": "nominalpotongupah",
+            "width": "150px"
+        },
+        {
+            "name": "nominalpotongomset",
+            "width": "150px"
+        },
+        {
+            "name": "komisiton",
+            "width": "200px"
+        },
+        {
+            "name": "statuslongtrip",
+            "width": "150px"
+        },
+        {
+            "name": "statusbongkarmuat2x",
+            "width": "150px"
+        },
+        {
+            "name": "tipetrip",
+            "width": "150px"
+        },
+        {
+            "name": "statusperalihan",
+            "width": "150px"
+        },
+        {
+            "name": "statuslangsir",
+            "width": "150px"
+        },
+        {
+            "name": "tarif_id",
+            "width": "200px"
+        },
+        {
+            "name": "gajisupir_nobukti",
+            "width": "200px"
+        },
+        {
+            "name": "prosesgajisupir_nobukti",
+            "width": "200px"
+        },
+        {
+            "name": "statusgajisupir",
+            "width": "150px"
+        },
+        {
+            "name": "invoice_nobukti",
+            "width": "150px"
+        },
+        {
+            "name": "statusinvoice",
+            "width": "150px"
+        },
+        {
+            "name": "mandortrado_id",
+            "width": "200px"
+        },
+        {
+            "name": "mandorsupir_id",
+            "width": "200px"
+        },
+        {
+            "name": "statustolakan",
+            "width": "150px"
+        },
+        {
+            "name": "statusgudangsama",
+            "width": "150px"
+        },
+        {
+            "name": "statusbatalmuat",
+            "width": "150px"
+        },
+        {
+            "name": "statusmultitempat",
+            "width": "150px"
+        },
+        {
+            "name": "statusapprovaleditsuratpengantar",
+            "width": "200px"
+        },
+        {
+            "name": "tglapprovaleditsuratpengantar",
+            "width": "200px"
+        },
+        {
+            "name": "userapprovaleditsuratpengantar",
+            "width": "150px"
+        },
+        {
+            "name": "tglbataseditsuratpengantar",
+            "width": "200px"
+        },
+        {
+            "name": "statusapprovalbiayatitipanemkl",
+            "width": "200px"
+        },
+        {
+            "name": "tglapprovalbiayatitipanemkl",
+            "width": "200px"
+        },
+        {
+            "name": "userapprovalbiayatitipanemkl",
+            "width": "150px"
+        },
+        {
+            "name": "statusapprovalbiayaextra",
+            "width": "200px"
+        },
+        {
+            "name": "tglapprovalbiayaextra",
+            "width": "200px"
+        },
+        {
+            "name": "userapprovalbiayaextra",
+            "width": "150px"
+        },
+        {
+            "name": "tglbatasapprovalbiayaextra",
+            "width": "200px"
+        },
+        {
+            "name": "statusapprovaltanpaborongan",
+            "width": "200px"
+        },
+        {
+            "name": "tglapprovaltanpaborongan",
+            "width": "200px"
+        },
+        {
+            "name": "userapprovaltanpaborongan",
+            "width": "150px"
+        },
+        {
+            "name": "statusapprovalritasi",
+            "width": "200px"
+        },
+        {
+            "name": "tglapprovalritasi",
+            "width": "200px"
+        },
+        {
+            "name": "userapprovalritasi",
+            "width": "150px"
+        },
+        {
+            "name": "modifiedby",
+            "width": "150px"
+        },
+        {
+            "name": "updated_at",
+            "width": "200px"
+        },
+        {
+            "name": "created_at",
+            "width": "200px"
+        }
+    ]
+}

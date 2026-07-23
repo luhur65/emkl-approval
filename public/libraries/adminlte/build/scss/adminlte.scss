@@ -1,0 +1,123 @@
+/*!
+ *   AdminLTE v3.2.0
+ *   Author: Colorlib
+ *   Website: AdminLTE.io <https://adminlte.io>
+ *   License: Open source - MIT <https://opensource.org/licenses/MIT>
+ */
+
+$theme-colors: (
+    'easyui': #E0ECFF,
+    'easyui-dark': #0E2D5F
+);
+
+$easyui-primary-1: #EFF5FF;
+$easyui-primary-2: #E0ECFF;
+$easyui-border: #95B8E7;
+
+$modal-header-padding: .25rem;
+$modal-header-padding-y: 0;
+$modal-header-padding-x: 0;
+$modal-header-color: #0E2D5F;
+$modal-header-font-weight: 700;
+$modal-scale-transform: none;
+$modal-footer-color: #f4f4f4;
+
+$enable-validation-icons: false;
+
+// Bootstrap
+// ---------------------------------------------------
+@import "../../../bootstrap/scss/functions";
+@import "bootstrap-variables";
+@import "../../../bootstrap/scss/bootstrap";
+
+// $theme-colors: map-merge($theme-colors, (
+//     'easyui': #E0ECFF
+// ));
+
+// Variables and Mixins
+// ---------------------------------------------------
+@import "variables";
+@import "variables-alt";
+@import "mixins";
+
+@import "parts/core";
+@import "parts/components";
+@import "parts/extra-components";
+@import "parts/pages";
+@import "parts/plugins";
+@import "parts/miscellaneous";
+
+@each $color,
+$value in $theme-colors {
+    @if $color == easyui {
+        .btn-#{$color} {
+            @include button-variant($value, darken($value, 10%));
+        }
+    }
+
+    @else {
+        .btn-#{$color} {
+            @include button-variant($value, $value);
+        }
+    }
+}
+
+.card {
+    &.bordered {
+        border: 1px solid $easyui-border;
+
+        .card-header {
+            border-color: $easyui-border;
+        }
+    }
+}
+
+.modal-header {
+    color: $modal-header-color;
+    align-items: center;
+    font-weight: $modal-header-font-weight;
+
+    .close {
+        width: 16px;
+        height: 16px;
+        border: none;
+        opacity: 1;
+        background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAgCAYAAABU1PscAAADG0lEQVR42sWXP2tUQRTFt/YTiEaUgGChhY1+AbETUSxMt2gVN5UQG2MZFJuIRhARBS2iEkFEA5GkMxbGThEVNSqCwUJEsZE1I+eas9zczL/35sEOnOzue/e8ub/J7M69rdbq2HtqwQ0ef5TU9uFZh9iWGdeOHHb3dm7IEmKtv2h+XLw0t+wWP3fdwtKKm//w182+CWts6q08iH4k9b691XUnd7s/53clhVh4GpkfNGcffJEbU4vOTT4Na/xxt/f+2JWPshJYTSSExH61t2Xr1YFN4i2dX+hpRgB1ZmZlnex1eLGSTP7roc2SGIT3Wr7r8JbO38K+Il3IGHoYvEhCryrHzL6NvUTxnoMQiIe3dH4BwIex+z+zzRDiCYAtxFXWA4nr5DUA/wOcv6o4vwDgQxUAxhNAbw+bsAViHF4JwOdZcYTurwEYnf4tSiXPOAug97YPQm8pAscA7MgCyFn9EICGyAHgT6kPIDSSACdvf3cnrn9yw1dfe4V7iLEATw4O9CBythAEjw8gNbwASApCkqmBGMT6AGzyvi8xITQA56+iNQAjN76J2hdfJAEQgwfg8IH3wp4BSQbSyerVttcZTwDOX0WcXwBwqlHtiedu6Nwzr3AP2whHuQbgSltpMHv97sgO8XL+2gA4jvePvpStgQchwZiQ/PiddwLDUoIQt44OBmF4H0LyeGUpUTK/1EMgwQrjZkww4hWxQr86AKCTSwlx8NBfOn+vqNsyNJ0UjL5yutPpSFI5QqyvnC6ZXx6A4qhuP1DaTxT3A/hS1O0HbD0f8+b4a/UDMNWpx5vyF/cDuMjDLCbE6Hpc+yeWfohizwn5a/cD+EO63JNY1+O6nidA7Dkxf+1+4PLD/6V0FQAe5dpfBUD7G+sHcgF0MaX9qS2Y8lfVumqUk4RKCSagq1GfPwQe8xdVoz4A1v1UKYAGiQEU9QMWgLV/VQALTx9/hVIAlTsy2w+ktpCux31+JslX7bP1fKwf4MjuB6o0NCxnc/0WwOcv7gdyDzLdD9h+IuajTt9clspS+/vWD/Tb30g93m9/I/V4v/z/AM88sF/B9l3uAAAAAElFTkSuQmCC") no-repeat -16px 0px;
+
+        &:not(:disabled):not(.disabled) {
+            @include hover-focus() {
+                opacity: 1;
+            }
+        }
+    }
+}
+
+.modal-content {
+    padding: 5px;
+    border: 1px solid #95B8E7;
+    background: linear-gradient(to bottom, #EFF5FF 0, #e0ecff 100%);
+}
+
+.modal-body {
+    background-color: #fff;
+    border: 1px solid #95B8E7;
+    border-bottom: none;
+}
+
+.modal-footer {
+    background-color: $modal-footer-color;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #dddddd #95b8e7 #95b8e7 #95b8e7 !important;
+    padding: $modal-inner-padding - $modal-footer-margin-between * 1.5;
+}
+
+@media screen and (max-width: 576px) {
+    .col-form-label {
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-bottom: 0; // Override the `<label>/<legend>` default
+        @include font-size(inherit); // Override the `<legend>` default
+        line-height: $input-line-height;
+    }
+}
