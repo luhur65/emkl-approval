@@ -59,14 +59,14 @@ class ContentSecurityPolicy extends BaseConfig
      *
      * @var list<string>|string
      */
-    public $scriptSrc = 'self';
+    public $scriptSrc = ['self', 'unsafe-inline', 'unsafe-eval', 'https://cdnjs.cloudflare.com', 'https://code.highcharts.com', 'https://static.cloudflareinsights.com'];
 
     /**
      * Specifies valid sources for JavaScript <script> elements.
      *
      * @var list<string>|string
      */
-    public array|string $scriptSrcElem = 'self';
+    public array|string $scriptSrcElem = ['self', 'unsafe-inline', 'https://cdnjs.cloudflare.com', 'https://code.highcharts.com', 'https://static.cloudflareinsights.com'];
 
     /**
      * Specifies valid sources for JavaScript inline event
@@ -74,21 +74,21 @@ class ContentSecurityPolicy extends BaseConfig
      *
      * @var list<string>|string
      */
-    public array|string $scriptSrcAttr = 'self';
+    public array|string $scriptSrcAttr = ['self', 'unsafe-inline'];
 
     /**
      * Lists allowed stylesheets' URLs.
      *
      * @var list<string>|string
      */
-    public $styleSrc = 'self';
+    public $styleSrc = ['self', 'unsafe-inline', 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com'];
 
     /**
      * Specifies valid sources for stylesheets <link> elements.
      *
      * @var list<string>|string
      */
-    public array|string $styleSrcElem = 'self';
+    public array|string $styleSrcElem = ['self', 'unsafe-inline', 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com'];
 
     /**
      * Specifies valid sources for stylesheets inline
@@ -96,14 +96,14 @@ class ContentSecurityPolicy extends BaseConfig
      *
      * @var list<string>|string
      */
-    public array|string $styleSrcAttr = 'self';
+    public array|string $styleSrcAttr = ['self', 'unsafe-inline'];
 
     /**
      * Defines the origins from which images can be loaded.
      *
      * @var list<string>|string
      */
-    public $imageSrc = 'self';
+    public $imageSrc = ['self', 'data:', 'https://taspusat-storage.s3.us-east-1.amazonaws.com'];
 
     /**
      * Restricts the URLs that can appear in a page's `<base>` element.
@@ -134,7 +134,7 @@ class ContentSecurityPolicy extends BaseConfig
      *
      * @var list<string>|string
      */
-    public $fontSrc;
+    public $fontSrc = ['self', 'data:', 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com'];
 
     /**
      * Lists valid endpoints for submission from `<form>` tags.
@@ -212,5 +212,5 @@ class ContentSecurityPolicy extends BaseConfig
     /**
      * Replace nonce tag automatically?
      */
-    public bool $autoNonce = true;
+    public bool $autoNonce = false;
 }

@@ -199,4 +199,27 @@ class App extends BaseConfig
      * @see http://www.w3.org/TR/CSP/
      */
     public bool $CSPEnabled = false;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        if (isset($_SERVER['HTTP_HOST'])) {
+            // Respect X-Forwarded-Proto from Cloudflare Tunnel or other reverse proxies
+            if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+                $scheme = 'https';
+            } else {
+                $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                    ? 'https'
+                    : 'http';
+            }
+
+            $host = $_SERVER['HTTP_HOST'];
+
+            // ambil dari env atau pakai nama folder project fallback
+            $folder = getenv('app.folder') ?: 'emkl-approval-sby-ci4';
+
+            $this->baseURL = $scheme . '://' . $host . '/' . trim($folder, '/') . '/';
+        }
+    }
 }

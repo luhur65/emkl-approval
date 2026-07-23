@@ -330,7 +330,7 @@
         <span>EMKL <em class="verdant-brand-italic">Approval</em></span>
       </div>
       <div class="verdant-nav-right">
-        <span class="verdant-nav-text d-none d-sm-inline">Management Information System</span>
+        <span class="verdant-nav-text d-none d-sm-inline">EMKL Approval</span>
         <button type="button" class="verdant-theme-toggle" id="themeToggleBtn" aria-label="Toggle theme">
           <span id="themeIconContainer">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -389,6 +389,7 @@
           </button>
 
           <div class="verdant-footer">
+            <p style="margin-bottom: 0.25rem;">Halaman dimuat dalam <span class="verdant-footer-bold"><?= number_format(timer()->getElapsedTime('total_execution'), 2) ?></span> detik</p>
             <p>Copyright &copy; <?= date('Y') ?> PT. Transporindo Agung Sejahtera</p>
           </div>
         </form>
