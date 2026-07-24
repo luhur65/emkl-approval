@@ -2,10 +2,17 @@
 
 namespace App\Controllers;
 
+use App\Models\HomeModel;
+
 class Home extends BaseController
 {
-    public function index(): string
+    public function index()
     {
-        return view('welcome_message');
+        $homeModel = new HomeModel();
+        $jumlah = $homeModel->getJumlahBelumAppTop();
+
+        $data['jumlah'] = $jumlah;
+
+        return $this->render('home/index', $data);
     }
 }

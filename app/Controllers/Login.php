@@ -12,7 +12,7 @@ class Login extends BaseController
         
         // Redirect jika sudah login
         if ($session->get('logged_emkl')) {
-            return redirect()->to('/dashboard');
+            return redirect()->to('/home');
         }
 
         $data = ['error' => ''];
@@ -45,7 +45,7 @@ class Login extends BaseController
                 ];
                 $session->set($ses_data);
                 
-                return redirect()->to('/dashboard');
+                return redirect()->to('/home');
             } else {
                 $data['error'] = 'Username atau Password salah.';
             }
