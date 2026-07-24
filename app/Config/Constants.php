@@ -14,6 +14,7 @@
  | existing namespaces of App\* namespaced-classes.
  */
 defined('APP_NAMESPACE') || define('APP_NAMESPACE', 'App');
+defined('SESSION_NAME') || define('SESSION_NAME', '');
 
 /*
  | --------------------------------------------------------------------------
