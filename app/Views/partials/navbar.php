@@ -7,7 +7,7 @@
     </ul>
 
     <img src="<?= asset('libraries/tas-lib/img/taslogo.png') ?>" alt="Logo" class="brand-image" style="width: 25px; margin-right: 5px;">
-    <strong><?= config('Site')->siteTitle ?> <?= session()->get(SESSION_NAME . 'cabangid') ?></strong>
+    <strong><?= config('Site')->siteTitle ?? '' ?> <?= session()->get(SESSION_NAME . 'cabangid') ?></strong>
 
     <ul class="navbar-nav ml-auto">
         <li class="nav-item mr-3 d-none d-md-block">
