@@ -17,8 +17,14 @@ class ApprovalTop extends BaseController
 
     public function index()
     {
-        // Di CI4 jika butuh meload header/footer, bisa disisipkan lewat view layout.
-        return $this->render('approval/top/index');
+        if (!checkMenu(session()->get('FUserID'))) {
+            return redirect()->to('home');
+        }
+
+        $data = [
+            'title' => 'Approval TOP Pre Orderan'
+        ];
+        return $this->render('approval/top/index', $data);
     }
 
     public function get_detail($jurnal)

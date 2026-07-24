@@ -11,6 +11,17 @@
         height: 38px;
     }
     .myAltRowClass { background-color: #f8f9fa; }
+    
+    /* Warna merah untuk tanggal libur & hari minggu */
+    .holiday-date a.ui-state-default {
+        color: #dc3545 !important;
+        font-weight: bold !important;
+    }
+    /* Warna hijau untuk hari sabtu (mengoverride .ui-datepicker-week-end jika ada) */
+    .saturday-date a.ui-state-default {
+        color: #28a745 !important;
+        font-weight: bold !important;
+    }
 </style>
 
 <div class="container-fluid">
@@ -78,12 +89,39 @@
     
     $(document).ready(function() {
         
+        // Ambil data hari libur dari endpoint internal Harilibur
+        var holidays = [];
+        var currentYear = new Date().getFullYear();
+        $.get('<?= base_url('harilibur') ?>?year=' + currentYear, function(data) {
+            if (data && data.length > 0) {
+                holidays = data.map(function(item) {
+                    return item.holiday_date; // ex: '2026-08-17'
+                });
+            }
+        });
+
         // Init plugins
         if($.fn.datepicker) {
             $('.datepicker').datepicker({
-                autoclose: true,
-                format: 'dd-mm-yyyy',
-                todayHighlight: true
+                dateFormat: 'dd-mm-yy',
+                changeMonth: true,
+                changeYear: true,
+                beforeShowDay: function(date) {
+                    var day = date.getDay();
+                    var d = date.getFullYear() + '-' + ('0' + (date.getMonth()+1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                    
+                    // Hari minggu (0) atau hari libur dari API
+                    if (day === 0 || holidays.indexOf(d) !== -1) {
+                        return [true, 'holiday-date']; 
+                    } else if (day === 6) { // Hari Sabtu
+                        return [true, 'saturday-date'];
+                    }
+                    return [true, ''];
+                },
+                onSelect: function(dateText) {
+                    $(this).val(dateText);
+                    $grid.trigger("reloadGrid", [{page: 1}]);
+                }
             });
         }
         
@@ -163,8 +201,8 @@
             }
         });
 
-        // Event listener filter
-        $('#datepicker').on('changeDate', function (ev) {
+        // Event listener filter tidak perlu 'changeDate' karena sudah ditangani onSelect JQuery UI Datepicker
+        $('#datepicker').on('change', function () {
             $grid.trigger("reloadGrid", [{page: 1}]);
         });
 
