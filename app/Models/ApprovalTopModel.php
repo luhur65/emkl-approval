@@ -8,11 +8,27 @@ class ApprovalTopModel extends Model
 {
     public function getData($tgl, $bit)
     {
-        // Menggunakan binding parameters (?) untuk mencegah SQL Injection
         $sql = "EXEC usp_GetListAppPreJob ?, ?";
         $query = $this->db->query($sql, [$tgl, $bit]);
-        return $query->getResultArray();
+        $data = $query->getResultArray();
+
+        // [TESTING MODE] Hasilkan 100 baris data bayangan untuk tes Lazy Loading jqGrid
+        // if (isset($_GET['test'])) {
+        //     for ($i = 1; $i <= 100; $i++) {
+        //         $data[] = [
+        //             'FJurnal' => 990000 + $i, // Harus Integer karena SP menerima tipe data INT
+        //             'FNShipper' => 'PT. SIMULASI KAPAL LAUT ' . $i,
+        //             'FTgl' => $tgl . ' 00:00:00.000',
+        //             'FNMarketing' => 'MARKETING ' . rand(1, 9),
+        //             'FJumlahInvoice' => rand(1000000, 99000000),
+        //             'FJumlahjob' => rand(1, 5)
+        //         ];
+        //     }
+        // }
+
+        return $data;
     }
+
 
     public function getDetail($jurnal)
     {

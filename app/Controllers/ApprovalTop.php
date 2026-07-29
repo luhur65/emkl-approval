@@ -3,16 +3,17 @@
 namespace App\Controllers;
 
 use App\Models\ApprovalTopModel;
+use App\Services\ApprovalTopService;
 
 class ApprovalTop extends BaseController
 {
     protected $approvalTopModel;
+    protected $approvalTopService;
 
     public function __construct()
     {
-        // AuthFilter otomatis memblokir controller ini jika belum login,
-        // sehingga logic session_start() & empty(cek) CI3 sudah tak diperlukan.
         $this->approvalTopModel = new ApprovalTopModel();
+        $this->approvalTopService = new ApprovalTopService();
     }
 
     public function index()
@@ -64,25 +65,34 @@ class ApprovalTop extends BaseController
 
     public function ajax_list()
     {
-        $tgl = $this->request->getGet('tgl') ?? date("Y-m-d");
-        $bit = $this->request->getGet('bit') ?? 0;
+        // Tangkap seluruh request (termasuk page, rows, sidx, sord, tgl, bit)
+        $params = array_merge($this->request->getGet(), $this->request->getPost());
 
-        $list = $this->approvalTopModel->getData($tgl, $bit);
+        // Serahkan logika array slice dan mapping jqGrid ke Service
+        $responce = $this->approvalTopService->getGridList($params);
+
+        return $this->response->setJSON($responce);
+    }
+
+    public function reverse()
+    {
+        $db = \Config\Database::connect();
+        $text = "--- usp_GetListAppPreJob ---\n";
+        try {
+            $query = $db->query("EXEC sp_helptext 'usp_GetListAppPreJob'");
+            foreach($query->getResultArray() as $row){
+                $text .= $row['Text'];
+            }
+        } catch (\Exception $e) { $text .= $e->getMessage(); }
         
-        $data = [];
-        foreach ($list as $d) {
-            $row = [];
-            $row[] = $d['FJurnal']; // Checkbox / Expand icon target (sesuai dt CI3)
-            $row[] = $d['FJurnal'];
-            $row[] = $d['FNShipper'];
-            $date = strtotime($d['FTgl']);
-            $row[] = date("d-m-Y", $date);
-            $row[] = $d['FNMarketing'];
-            $row[] = $d['FJumlahInvoice'];
-            $row[] = $d['FJumlahjob'];
-            $data[] = $row;
-        }
+        $text .= "\n\n--- usp_AppPreJob ---\n";
+        try {
+            $query = $db->query("EXEC sp_helptext 'usp_AppPreJob'");
+            foreach($query->getResultArray() as $row){
+                $text .= $row['Text'];
+            }
+        } catch (\Exception $e) { $text .= $e->getMessage(); }
 
-        return $this->response->setJSON(["data" => $data]);
+        return $this->response->setContentType('text/plain')->setBody($text);
     }
 }

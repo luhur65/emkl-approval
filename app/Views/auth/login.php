@@ -349,7 +349,7 @@
 
         <p class="verdant-seal">— PT. Transporindo Agung Sejahtera —</p>
         <h1 class="verdant-heading">Selamat datang,</h1>
-        <p class="verdant-subheading">Sistem Persetujuan (Approval) EMKL. Pusat kendali terpadu operasional Surabaya.</p>
+        <p class="verdant-subheading">Sistem Approval EMKL.</p>
 
         <form action="<?= base_url('login') ?>" method="POST">
           <?= csrf_field() ?>
@@ -381,7 +381,7 @@
             </div>
           <?php endif; ?>
 
-          <button type="submit" class="verdant-btn" onclick="signInFunction(this)">
+          <button type="submit" class="verdant-btn">
             Masuk ke aplikasi
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 12h14M13 5l7 7-7 7" />

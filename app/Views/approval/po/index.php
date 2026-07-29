@@ -33,7 +33,7 @@
                     <div class="form-group filter-input-group">
                         <label class="filter-label">&nbsp;</label>
                         <button type="button" id="btnApprovedExec" class="btn btn-primary form-control">
-                            <i class="fas fa-check"></i> Approved
+                            <i class="fas fa-check"></i> Approved/Unapproved
                         </button>
                     </div>
                 </div>
@@ -56,15 +56,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="form-group filter-input-group">
-                        <label class="filter-label">Proses Data</label>
-                        <select name="prosesdata" id="prosesdata" class="form-control select2">
-                            <option value="0">Approved</option>
-                            <option value="1">Un Approved</option>
-                        </select>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -72,7 +63,7 @@
     <!-- Grid Card -->
     <div class="card card-default">
         <div class="card-header">
-            <h3 class="card-title">List Approved/Unapproved</h3>
+            <h3 class="card-title">List Approved/Unapproved PO</h3>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -84,7 +75,7 @@
 </div>
 
 <script>
-    var apiUrl = "<?= base_url('approvaltop/ajax_list') ?>" + window.location.search;
+    var apiUrl = "<?= base_url('approvalpo/ajax_list') ?>" + window.location.search;
     var $grid = $("#jqGrid");
     
     $(document).ready(function() {
@@ -95,12 +86,12 @@
         $.get('<?= base_url('harilibur') ?>?year=' + currentYear, function(data) {
             if (data && data.length > 0) {
                 holidays = data.map(function(item) {
-                    return item.holiday_date; // ex: '2026-08-17'
+                    return item.holiday_date;
                 });
             }
         });
 
-        // Init plugins
+        // Init Datepicker JQuery UI
         if($.fn.datepicker) {
             $('.datepicker').datepicker({
                 dateFormat: 'dd-mm-yy',
@@ -124,10 +115,6 @@
                 }
             });
         }
-        
-        if($('.select2').length > 0) {
-            $('.select2').select2({ theme: 'bootstrap4' });
-        }
 
         const isDesktop = (window.innerWidth > 768);
 
@@ -137,13 +124,11 @@
             url: apiUrl,
             mtype: "GET",
             datatype: "json",
-            loadonce: false,
             postData: {
                 tgl: function() { 
                     var d = $('#datepicker').val().split('-');
                     return d.length === 3 ? d[2] + '-' + d[1] + '-' + d[0] : '';
-                },
-                bit: function() { return $('#prosesdata').val(); }
+                }
             },
             jsonReader: {
                 root: "rows",
@@ -151,7 +136,7 @@
                 total: "total",
                 records: "records",
                 repeatitems: false,
-                id: "IdTarget"
+                id: "IdTarget" 
             },
             loadBeforeSend: function(jqXHR) {
                 if (window.mainGridRequest) {
@@ -161,102 +146,57 @@
             },
             colModel: [
                 { label: 'Target', name: 'IdTarget', hidden: true, key: true },
-                { label: 'No Jurnal', name: 'FJurnal', width: 150 },
+                { label: 'Tanggal', name: 'FTgl', width: 90, align: 'center' },
                 { label: 'Shipper', name: 'FNShipper', width: 250 },
-                { label: 'Tanggal', name: 'FTgl', width: 120, align: 'center' },
-                { label: 'Marketing', name: 'FNMarketing', width: 200 },
-                { label: 'Jumlah Invoice', name: 'FJumlahInvoice', width: 120, align: 'right' },
-                { label: 'Jumlah Job', name: 'FJumlahjob', width: 120, align: 'right' }
+                { label: 'Saldo Piutang', name: 'FSaldoPiutang', width: 120, align: 'right' },
+                { label: 'Sisa Piutang', name: 'FSisaPiutang', width: 120, align: 'right' },
+                { label: 'Lebih Piutang', name: 'FKelebihanPiutang', width: 120, align: 'right' },
+                { label: 'Jumlah Order', name: 'FJumlahOrder', width: 120, align: 'right' },
+                { label: 'App', name: 'FIsApp', width: 50, align: 'center', sortable: false },
+                { label: 'Tgl App', name: 'FDateApp', width: 130, align: 'center' },
+                { label: 'User App', name: 'FUserApp', width: 100 },
+                { label: 'Tgl Input', name: 'FTglInput', width: 130, align: 'center' },
+                { label: 'User Input', name: 'FUserId', width: 100 }
             ],
             autowidth: true,
-            shrinkToFit: isDesktop,
+            shrinkToFit: false,
             height: 400,
             rowNum: 50,
             rowList: [10, 20, 50, 100],
             pager: '#jqGridPager',
             viewrecords: true,
             scroll: 1,
-            sortname: "FJurnal",
-            sortorder: "asc", // Pengganti checkboxes Datatables
             rownumbers: true,
-            multiselect: true, // Pengganti checkboxes Datatables
-            subGrid: true, // Expandable details
-            subGridRowExpanded: function(subgrid_id, row_id) {
-                // row_id adalah nomor baris (IdTarget / FJurnal)
-                var rowData = $(this).jqGrid('getRowData', row_id);
-                var noJurnal = rowData['FJurnal'];
-                
-                var subgrid_table_id = subgrid_id + "_t";
-                $("#" + subgrid_id).html("<div class='p-3'><table id='" + subgrid_table_id + "' class='table table-sm table-bordered'></table></div>");
-                
-                if (window.subGridRequests === undefined) window.subGridRequests = {};
-                if (window.subGridRequests[row_id]) {
-                    window.subGridRequests[row_id].abort();
-                }
-
-                window.subGridRequests[row_id] = $.ajax({
-                    type: "GET",
-                    url: "<?= site_url('approvaltop/get_detail') ?>/" + noJurnal,
-                    dataType: "json",
-                    success: function(result) {
-                        var html = '<thead class="thead-light"><tr><th>No Invoice</th><th>No Piutang</th><th>Tgl Invoice</th><th>Nominal Invoice</th><th>Jumlah Hari</th><th>TOP</th></tr></thead><tbody>';
-                        for(var i=0; i<result.length; i++){
-                            html += '<tr><td>' + result[i].FNInvoice+'</td><td>'+result[i].FNPiutg+'</td><td>' + result[i].FTglInvoice +'</td><td>'+result[i].FNominalInvoice +'</td><td>' + result[i].FJumlahHari + '</td><td>' +  result[i].FTop + '</td></tr>';
-                        }
-                        html += '</tbody>';
-                        $("#" + subgrid_table_id).html(html);
-                    },
-                    complete: function() {
-                        delete window.subGridRequests[row_id];
-                    }
-                });
-            },
+            multiselect: true, 
             altRows: false,
             loadComplete: function() {
-                // Styling adjustment
             },
             gridComplete: function() {
                 var $grid = $(this);
                 
-                // Coba detach bindkeys sebelumnya agar tidak duplicate jika reload
-                // lalu attach custom bindkeys
                 $grid.jqGrid('bindKeys', {
-                    onRightKey: function(rowid) {
-                        // Expand detail
-                        $grid.jqGrid('expandSubGridRow', rowid);
-                    },
-                    onLeftKey: function(rowid) {
-                        // Tutup detail
-                        $grid.jqGrid('collapseSubGridRow', rowid);
-                    },
                     onSpace: function(rowid) {
-                        // Cek/uncek row
                         var isSelected = $grid.jqGrid('getGridParam', 'selarrrow').indexOf(rowid) !== -1;
                         if(isSelected) {
-                            $grid.jqGrid('setSelection', rowid, false); // unselect
+                            $grid.jqGrid('setSelection', rowid, false); 
                         } else {
-                            $grid.jqGrid('setSelection', rowid, true); // select
+                            $grid.jqGrid('setSelection', rowid, true); 
                         }
                     },
                     onEnter: function(rowid) {
-                        // Mirip spasi, toggle selection
                         var isSelected = $grid.jqGrid('getGridParam', 'selarrrow').indexOf(rowid) !== -1;
                         if(isSelected) {
-                            $grid.jqGrid('setSelection', rowid, false); // unselect
+                            $grid.jqGrid('setSelection', rowid, false); 
                         } else {
-                            $grid.jqGrid('setSelection', rowid, true); // select
+                            $grid.jqGrid('setSelection', rowid, true); 
                         }
                     }
                 });
             }
         });
 
-        // Trigger reload ketika dropdown gantidak perlu 'changeDate' karena sudah ditangani onSelect JQuery UI Datepicker
+        // Event listener filter tidak perlu 'changeDate' karena sudah ditangani onSelect JQuery UI Datepicker
         $('#datepicker').on('change', function () {
-            $grid.setGridParam({datatype: 'json', page: 1}).trigger("reloadGrid");
-        });
-
-        $("#prosesdata").on('change', function(){
             $grid.setGridParam({datatype: 'json', page: 1}).trigger("reloadGrid");
         });
 
@@ -267,39 +207,42 @@
         $("#btnApprovedExec").on('click', function(){
             var selRowIds = $grid.jqGrid('getGridParam', 'selarrrow');
             if(selRowIds.length === 0) {
-                alert("Silakan pilih minimal satu baris!");
+                alert("Harus pilih minimal satu no bukti!");
                 return;
             }
 
-            // Ambil No Jurnal dari masing-masing baris yang dipilih
-            var idsToSend = [];
-            for(var i=0; i<selRowIds.length; i++) {
-                var rowData = $grid.jqGrid('getRowData', selRowIds[i]);
-                idsToSend.push(rowData['1']);
-            }
-
-            var prosesdata = $('#prosesdata').val();
+            // CI3 memproses ID baris (fntrans) hanya array element ke-0 di kode aslinya: data : {fntrans:ids[0]}
+            // Jadi kita ambil id row yang pertama saja.
+            var firstSelectedId = selRowIds[0];
+            
+            $("#btnApprovedExec").attr('disabled', 'disabled').html('<i class="fas fa-spinner fa-spin"></i> Loading...');
+            
             if(confirm("Yakin akan melanjutkan proses ?")) {
                 $.ajax({
                     type: "POST",
-                    url: "<?= base_url('approvaltop/approved') ?>",
+                    url: "<?= base_url('approvalpo/approved') ?>",
                     data: {
-                        id: idsToSend,
-                        prosesdata: prosesdata,
-                        '<?= csrf_token() ?>': '<?= csrf_hash() ?>' // Jika CSRF aktif
+                        fntrans: firstSelectedId,
+                        '<?= csrf_token() ?>': '<?= csrf_hash() ?>' 
                     },
                     success: function(result) {
-                        $grid.setGridParam({datatype: 'json', page: 1}).trigger("reloadGrid");
-                        if(result.msg) {
+                        $("#btnApprovedExec").removeAttr('disabled').html('<i class="fas fa-check"></i> Approved/Unapproved');
+                        
+                        // Periksa hasil dari server
+                        if(result.error && result.error !== "") {
+                            alert(result.error);
+                        } else if (result.msg) {
                             alert(result.msg);
-                        } else if(result[0] && result[0].message) {
-                            alert(result[0].message);
+                            $grid.setGridParam({datatype: 'json', page: 1}).trigger("reloadGrid");
                         }
                     },
                     error: function(err) {
+                        $("#btnApprovedExec").removeAttr('disabled').html('<i class="fas fa-check"></i> Approved/Unapproved');
                         alert('Terjadi Kesalahan Coba Lagi');
                     }
                 });
+            } else {
+                $("#btnApprovedExec").removeAttr('disabled').html('<i class="fas fa-check"></i> Approved/Unapproved');
             }
         });
     });

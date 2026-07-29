@@ -124,3 +124,6 @@ _modules/*
 
 /results/
 /phpunit.xml
+
+# Custom Script Tests
+public/test_*.php
