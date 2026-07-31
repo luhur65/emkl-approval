@@ -12,12 +12,11 @@
     }
     .myAltRowClass { background-color: #f8f9fa; }
     
-    /* Warna merah untuk tanggal libur & hari minggu */
+    /* Datepicker Colors */
     .holiday-date a.ui-state-default {
         color: #dc3545 !important;
         font-weight: bold !important;
     }
-    /* Warna hijau untuk hari sabtu (mengoverride .ui-datepicker-week-end jika ada) */
     .saturday-date a.ui-state-default {
         color: #28a745 !important;
         font-weight: bold !important;
@@ -29,14 +28,6 @@
     <div class="card card-primary card-outline">
         <div class="card-body">
             <div class="row">
-                <div class="col-md-2">
-                    <div class="form-group filter-input-group">
-                        <label class="filter-label">&nbsp;</label>
-                        <button type="button" id="btnApprovedExec" class="btn btn-primary form-control">
-                            <i class="fas fa-check"></i> Approved
-                        </button>
-                    </div>
-                </div>
                 <div class="col-md-2">
                     <div class="form-group filter-input-group">
                         <label class="filter-label">&nbsp;</label>
@@ -80,6 +71,11 @@
                 <div id="jqGridPager"></div>
             </div>
         </div>
+        <div class="card-footer bg-white">
+            <button type="button" id="btnApprovedExec" class="btn btn-primary">
+                <i class="fas fa-check"></i> Approved/Unapproved
+            </button>
+        </div>
     </div>
 </div>
 
@@ -88,19 +84,17 @@
     var $grid = $("#jqGrid");
     
     $(document).ready(function() {
-        
-        // Ambil data hari libur dari endpoint internal Harilibur
+        // Ambil data hari libur
         var holidays = [];
         var currentYear = new Date().getFullYear();
         $.get('<?= base_url('harilibur') ?>?year=' + currentYear, function(data) {
             if (data && data.length > 0) {
                 holidays = data.map(function(item) {
-                    return item.holiday_date; // ex: '2026-08-17'
+                    return item.holiday_date;
                 });
             }
         });
 
-        // Init plugins
         if($.fn.datepicker) {
             $('.datepicker').datepicker({
                 dateFormat: 'dd-mm-yy',
@@ -109,11 +103,9 @@
                 beforeShowDay: function(date) {
                     var day = date.getDay();
                     var d = date.getFullYear() + '-' + ('0' + (date.getMonth()+1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
-                    
-                    // Hari minggu (0) atau hari libur dari API
                     if (day === 0 || holidays.indexOf(d) !== -1) {
                         return [true, 'holiday-date']; 
-                    } else if (day === 6) { // Hari Sabtu
+                    } else if (day === 6) {
                         return [true, 'saturday-date'];
                     }
                     return [true, ''];
@@ -128,7 +120,7 @@
         if($('.select2').length > 0) {
             $('.select2').select2({ theme: 'bootstrap4' });
         }
-
+        
         const isDesktop = (window.innerWidth > 768);
 
         $grid.jqGrid({
@@ -153,12 +145,6 @@
                 repeatitems: false,
                 id: "IdTarget"
             },
-            loadBeforeSend: function(jqXHR) {
-                if (window.mainGridRequest) {
-                    window.mainGridRequest.abort();
-                }
-                window.mainGridRequest = jqXHR;
-            },
             colModel: [
                 { label: 'Target', name: 'IdTarget', hidden: true, key: true },
                 { label: 'No Jurnal', name: 'FJurnal', width: 150 },
@@ -177,12 +163,11 @@
             viewrecords: true,
             scroll: 1,
             sortname: "FJurnal",
-            sortorder: "asc", // Pengganti checkboxes Datatables
+            sortorder: "asc", 
             rownumbers: true,
-            multiselect: true, // Pengganti checkboxes Datatables
-            subGrid: true, // Expandable details
+            multiselect: true, 
+            subGrid: true, 
             subGridRowExpanded: function(subgrid_id, row_id) {
-                // row_id adalah nomor baris (IdTarget / FJurnal)
                 var rowData = $(this).jqGrid('getRowData', row_id);
                 var noJurnal = rowData['FJurnal'];
                 
@@ -211,47 +196,48 @@
                     }
                 });
             },
-            altRows: false,
+            altRows: true,
+            altclass: 'myAltRowClass',
             loadComplete: function() {
-                // Styling adjustment
             },
             gridComplete: function() {
                 var $grid = $(this);
-                
-                // Coba detach bindkeys sebelumnya agar tidak duplicate jika reload
-                // lalu attach custom bindkeys
                 $grid.jqGrid('bindKeys', {
                     onRightKey: function(rowid) {
-                        // Expand detail
                         $grid.jqGrid('expandSubGridRow', rowid);
                     },
                     onLeftKey: function(rowid) {
-                        // Tutup detail
                         $grid.jqGrid('collapseSubGridRow', rowid);
                     },
                     onSpace: function(rowid) {
-                        // Cek/uncek row
                         var isSelected = $grid.jqGrid('getGridParam', 'selarrrow').indexOf(rowid) !== -1;
                         if(isSelected) {
-                            $grid.jqGrid('setSelection', rowid, false); // unselect
+                            $grid.jqGrid('setSelection', rowid, false); 
                         } else {
-                            $grid.jqGrid('setSelection', rowid, true); // select
+                            $grid.jqGrid('setSelection', rowid, true); 
                         }
                     },
                     onEnter: function(rowid) {
-                        // Mirip spasi, toggle selection
                         var isSelected = $grid.jqGrid('getGridParam', 'selarrrow').indexOf(rowid) !== -1;
                         if(isSelected) {
-                            $grid.jqGrid('setSelection', rowid, false); // unselect
+                            $grid.jqGrid('setSelection', rowid, false); 
                         } else {
-                            $grid.jqGrid('setSelection', rowid, true); // select
+                            $grid.jqGrid('setSelection', rowid, true); 
                         }
                     }
                 });
             }
         });
 
-        // Trigger reload ketika dropdown gantidak perlu 'changeDate' karena sudah ditangani onSelect JQuery UI Datepicker
+        // Hapus filterToolbar ala Trucking dan kembalikan jqgrid murni (seperti project belajarci4)
+        // (Biasanya belajarci4 menggunakan filter toolbar native tanpa CSS diubah, kita aktifkan saja filter default jqGrid)
+        $grid.jqGrid('filterToolbar', {
+            stringResult: true,
+            searchOnEnter: true,
+            defaultSearch: "cn",
+            icon: false
+        });
+
         $('#datepicker').on('change', function () {
             $grid.setGridParam({datatype: 'json', page: 1}).trigger("reloadGrid");
         });
@@ -271,11 +257,10 @@
                 return;
             }
 
-            // Ambil No Jurnal dari masing-masing baris yang dipilih
             var idsToSend = [];
             for(var i=0; i<selRowIds.length; i++) {
                 var rowData = $grid.jqGrid('getRowData', selRowIds[i]);
-                idsToSend.push(rowData['1']);
+                idsToSend.push(rowData['FJurnal']);
             }
 
             var prosesdata = $('#prosesdata').val();
@@ -286,7 +271,7 @@
                     data: {
                         id: idsToSend,
                         prosesdata: prosesdata,
-                        '<?= csrf_token() ?>': '<?= csrf_hash() ?>' // Jika CSRF aktif
+                        '<?= csrf_token() ?>': '<?= csrf_hash() ?>' 
                     },
                     success: function(result) {
                         $grid.setGridParam({datatype: 'json', page: 1}).trigger("reloadGrid");

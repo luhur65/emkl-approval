@@ -12,12 +12,11 @@
     }
     .myAltRowClass { background-color: #f8f9fa; }
     
-    /* Warna merah untuk tanggal libur & hari minggu */
+    /* Datepicker Colors */
     .holiday-date a.ui-state-default {
         color: #dc3545 !important;
         font-weight: bold !important;
     }
-    /* Warna hijau untuk hari sabtu (mengoverride .ui-datepicker-week-end jika ada) */
     .saturday-date a.ui-state-default {
         color: #28a745 !important;
         font-weight: bold !important;
@@ -29,14 +28,6 @@
     <div class="card card-primary card-outline">
         <div class="card-body">
             <div class="row">
-                <div class="col-md-2">
-                    <div class="form-group filter-input-group">
-                        <label class="filter-label">&nbsp;</label>
-                        <button type="button" id="btnApprovedExec" class="btn btn-primary form-control">
-                            <i class="fas fa-check"></i> Approved/Unapproved
-                        </button>
-                    </div>
-                </div>
                 <div class="col-md-2">
                     <div class="form-group filter-input-group">
                         <label class="filter-label">&nbsp;</label>
@@ -71,6 +62,11 @@
                 <div id="jqGridPager"></div>
             </div>
         </div>
+        <div class="card-footer bg-white">
+            <button type="button" id="btnApprovedExec" class="btn btn-primary">
+                <i class="fas fa-check"></i> Approved/Unapproved
+            </button>
+        </div>
     </div>
 </div>
 
@@ -91,7 +87,7 @@
             }
         });
 
-        // Init Datepicker JQuery UI
+        // Init Datepicker
         if($.fn.datepicker) {
             $('.datepicker').datepicker({
                 dateFormat: 'dd-mm-yy',
@@ -101,10 +97,9 @@
                     var day = date.getDay();
                     var d = date.getFullYear() + '-' + ('0' + (date.getMonth()+1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
                     
-                    // Hari minggu (0) atau hari libur dari API
                     if (day === 0 || holidays.indexOf(d) !== -1) {
                         return [true, 'holiday-date']; 
-                    } else if (day === 6) { // Hari Sabtu
+                    } else if (day === 6) { 
                         return [true, 'saturday-date'];
                     }
                     return [true, ''];
@@ -138,12 +133,6 @@
                 repeatitems: false,
                 id: "IdTarget" 
             },
-            loadBeforeSend: function(jqXHR) {
-                if (window.mainGridRequest) {
-                    window.mainGridRequest.abort();
-                }
-                window.mainGridRequest = jqXHR;
-            },
             colModel: [
                 { label: 'Target', name: 'IdTarget', hidden: true, key: true },
                 { label: 'Tanggal', name: 'FTgl', width: 90, align: 'center' },
@@ -168,12 +157,12 @@
             scroll: 1,
             rownumbers: true,
             multiselect: true, 
-            altRows: false,
+            altRows: true,
+            altclass: 'myAltRowClass',
             loadComplete: function() {
             },
             gridComplete: function() {
                 var $grid = $(this);
-                
                 $grid.jqGrid('bindKeys', {
                     onSpace: function(rowid) {
                         var isSelected = $grid.jqGrid('getGridParam', 'selarrrow').indexOf(rowid) !== -1;
@@ -195,7 +184,14 @@
             }
         });
 
-        // Event listener filter tidak perlu 'changeDate' karena sudah ditangani onSelect JQuery UI Datepicker
+        // Aktifkan Filter Toolbar jqGrid native Bootstrap 4 ala belajarci4
+        $grid.jqGrid('filterToolbar', {
+            stringResult: true,
+            searchOnEnter: true,
+            defaultSearch: "cn",
+            icon: false
+        });
+
         $('#datepicker').on('change', function () {
             $grid.setGridParam({datatype: 'json', page: 1}).trigger("reloadGrid");
         });
@@ -207,12 +203,10 @@
         $("#btnApprovedExec").on('click', function(){
             var selRowIds = $grid.jqGrid('getGridParam', 'selarrrow');
             if(selRowIds.length === 0) {
-                alert("Harus pilih minimal satu no bukti!");
+                alert("Harus pilih minimal satu baris!");
                 return;
             }
 
-            // CI3 memproses ID baris (fntrans) hanya array element ke-0 di kode aslinya: data : {fntrans:ids[0]}
-            // Jadi kita ambil id row yang pertama saja.
             var firstSelectedId = selRowIds[0];
             
             $("#btnApprovedExec").attr('disabled', 'disabled').html('<i class="fas fa-spinner fa-spin"></i> Loading...');
@@ -228,7 +222,6 @@
                     success: function(result) {
                         $("#btnApprovedExec").removeAttr('disabled').html('<i class="fas fa-check"></i> Approved/Unapproved');
                         
-                        // Periksa hasil dari server
                         if(result.error && result.error !== "") {
                             alert(result.error);
                         } else if (result.msg) {

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Trucking | Log in</title>
+    <meta http-equiv="refresh" content="7200">
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="http://192.168.3.247/trucking/libraries/adminlte/plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="http://192.168.3.247/trucking/libraries/adminlte/dist/css/adminlte.min.css">
+    <!-- Jquery UI -->
+    <link rel="stylesheet" href="http://192.168.3.247/trucking/libraries/jquery-ui/cupertino/jquery-ui.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="http://192.168.3.247/trucking/libraries/tas-lib/css/styles.css?version=">
+</head>
+
+<body class="hold-transition login-page">
+    <div id="dialog-success-message" title="Pesan" class="text-center text-success" style="display: none;">
+        <span class="fa fa-check" aria-hidden="true" style="font-size:25px;"></span>
+        <p></p>
+    </div>
+
+
+    <div id="dialog-message" title="Error" class="text-center text-danger" style="display: none;">
+        <span class="fa fa-exclamation-triangle" aria-hidden="true" style="font-size:25px;"></span>
+        <p></p>
+    </div>
+
+    <div class="processing-loader d-none" id="processingLoader">
+        <img src="http://192.168.3.247/trucking/libraries/tas-lib/img/loading-color.gif" rel="preload">
+        <span>Processing</span>
+    </div>
+
+
+    <div class="login-box">
+        <div class="login-logo">
+            <img class="mx-auto d-block" src="http://192.168.3.247/trucking/libraries/tas-lib/img/logo-min.png" width="150" height="150">
+            <h5 style="font-family: 'Open Sans Condensed';">PT. TRANSPORINDO AGUNG SEJAHTERA</h5>
+            <p style="font-family: 'Open Sans Condensed'; font-size:1rem" class="text-success">TRUCKING SURABAYA</p>
+        </div>
+        <div class="card">
+            <div class="card-body login-card-body">
+                <p class="login-box-msg">Login</p>
+                                <form action="http://192.168.3.247/trucking/login" method="POST">
+                    <input type="hidden" name="_token" value="4uP4H23KShQxpo86BOsgDkQDejgPWmEyG7K3Ywa6">                    <input type="text" readonly hidden name="info" id="info" value="{&quot;info&quot;:&quot;{\&quot;location\&quot;:\&quot;,\&quot;,\&quot;ipclient\&quot;:\&quot;192.168.3.39\&quot;,\&quot;ipserverlocal\&quot;:\&quot;172.26.48.1\&quot;,\&quot;ipserverpublic\&quot;:\&quot;172.26.48.1\&quot;,\&quot;browser\&quot;:\&quot;Other\&quot;,\&quot;os\&quot;:\&quot;Mozilla\\\/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell\\\/5.1.19041.6456\&quot;}&quot;}">
+                    <div class="input-group mb-3">
+                        <input type="text" name="user" id="user" class="form-control " value="" placeholder="User ID" autofocus>
+                        <div class="input-group-append">
+                            <div class="input-group-text input-group-login">
+                                <span class="fas fa-user"></span>
+                            </div>
+                        </div>
+                                            </div>
+                    <div class="input-group mb-3">
+                        <input type="password" name="password" id="password" class="form-control " placeholder="Password" style="text-transform: none;">
+                        <div class="input-group-append">
+                            <div class="input-group-text input-group-login focusPass">
+                                <span class="fas fa-eye-slash toggle-password" toggle="#password"></span>
+                            </div>
+                        </div>
+                                            </div>
+                    <input type="text" readonly hidden name="latitude" id="latitude">
+                    <input type="text" readonly hidden name="longitude" id="longitude">
+                    <input type="text" readonly hidden name="clientippublic" id="clientippublic">
+                    <div id="error">
+                    </div>
+                    
+                    <a href="javascript: void(0)" id="resetPassword" style="text-decoration: underline ">lupa password?</a>
+                    <div class="row">
+                        <div class="col-md-4 offset-md-8">
+                            <button type="submit" class="btn btn-primary btn-block" onclick="signInFunction(this)">Sign In</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <p>Copyright &copy; 2026</p>
+    <p>Halaman ini dimuat selama <strong>0.61</strong> detik</p>
+    <p id="demo"></p>
+    <!-- jQuery -->
+    <script src="http://192.168.3.247/trucking/libraries/adminlte/plugins/jquery/jquery.min.js"></script>
+    <!-- jQuery UI -->
+    <script src="http://192.168.3.247/trucking/libraries/jquery-ui/1.13.1/jquery-ui.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="http://192.168.3.247/trucking/libraries/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="http://192.168.3.247/trucking/libraries/adminlte/dist/js/adminlte.min.js"></script>
+    <script src="http://192.168.3.247/trucking/libraries/tas-lib/js/connectionToast.js?version=1775723116"></script>
+
+
+    <script>
+        // let apiUrl = `http://192.168.3.247/trucking-api/public/api/`
+        // let oldStatusConnection = 'connected'
+        // let statusChangeConnection = false;
+        $(document).ready(function() {
+
+            // monitorServer(`${apiUrl}check-connection`)
+
+
+            $("input").attr("autocomplete", "off");
+
+            $(document).on('click', ".toggle-password", function(event) {
+                $(this).toggleClass("fa-eye-slash fa-eye");
+                var input = $($(this).attr("toggle"));
+                if (input.attr("type") == "password") {
+                    input.attr("type", "text");
+                } else {
+                    input.attr("type", "password");
+                }
+            });
+            var x = document.getElementById("demo");
+
+            getLocation()
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => $('#clientippublic').val(data.ip));
+
+            function getLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showPosition);
+                } else {
+                    x.innerHTML = "Geolocation is not supported by this browser.";
+                }
+            }
+
+            function showPosition(position) {
+                $('#latitude').val(position.coords.latitude)
+                $('#longitude').val(position.coords.longitude)
+            }
+
+            $(document).on('click', '#resetPassword', function() {
+                let form = $('#user')
+                let user = $('#user').val();
+
+
+
+                checkValidation(user)
+                    .then((response) => {
+                        $('#processingLoader').removeClass('d-none')
+                        $.ajax({
+                            url: `http://192.168.3.247/trucking-api/public/api/forgot-password`,
+                            method: 'POST',
+                            dataType: "JSON",
+                            data: {
+                                user: user
+                            },
+                            success: (response) => {
+                                $('#processingLoader').addClass('d-none')
+
+                                $("#dialog-success-message").find("p").remove();
+                                $("#dialog-success-message").append(
+                                    `<p> ${response.message} </p>`
+                                );
+                                $("#dialog-success-message").dialog({
+                                    modal: true,
+                                    width: 'auto', // Automatically adjust width
+                                    height: 'auto',
+                                    resizable: false,
+                                    buttons: [{
+                                        text: "Ok",
+                                        click: function() {
+                                            $(this).dialog("close");
+                                        },
+                                    }, ],
+                                    open: function() {
+                                        $(this).css({
+                                            'max-width': '600px', // Set your desired maximum width here
+                                        });
+                                        $(this).dialog("option", "position", {
+                                            my: "center",
+                                            at: "center",
+                                            of: window
+                                        });
+                                    },
+                                    create: function() {
+                                        $(this).closest(".ui-dialog")
+                                            .find(".ui-dialog-buttonset button")
+                                            .addClass("ui-button ui-corner-all ui-widget custom-success-btn");
+
+                                        $(this).closest(".ui-dialog")
+                                            .find(".ui-dialog-titlebar button")
+                                            .addClass("ui-button ui-corner-all ui-widget ui-button-icon-only");
+                                        $(this).closest(".ui-dialog")
+                                            .find(".ui-dialog-titlebar button")
+                                            .append(`<span class="ui-button-icon ui-icon ui-icon-closethick"></span>`);
+                                    }
+                                });
+                                // showSuccessDialog(response.message)
+                            },
+                            // error: error => {
+
+                            // },
+                        }).always(() => {
+                            $('#processingLoader').addClass('d-none')
+
+                        });
+                    })
+                    .catch((error) => {
+                        $("#dialog-message").html(`
+                            <span class="fa fa-exclamation-triangle" aria-hidden="true" style="font-size:25px;"></span>
+                          `)
+                        $("#dialog-message").append(
+                            `<br>${error.responseJSON.errors.user}`
+                        );
+                        $("#dialog-message").dialog({
+                            modal: true,
+                            buttons: [{
+                                text: "Ok",
+                                click: function() {
+                                    $(this).dialog("close");
+                                },
+                            }, ],                            
+                            create: function() {
+                                $(this).closest(".ui-dialog")
+                                    .find(".ui-dialog-buttonset button")
+                                    .addClass("ui-button ui-corner-all ui-widget custom-success-btn");
+
+                                $(this).closest(".ui-dialog")
+                                    .find(".ui-dialog-titlebar button")
+                                    .addClass("ui-button ui-corner-all ui-widget ui-button-icon-only");
+                                $(this).closest(".ui-dialog")
+                                    .find(".ui-dialog-titlebar button")
+                                    .append(`<span class="ui-button-icon ui-icon ui-icon-closethick"></span>`);
+                            }
+                        });
+
+                        // $(".ui-dialog-titlebar-close").find("p").remove();
+                    })
+
+            });
+
+            function checkValidation(user) {
+                return new Promise((resolve, reject) => {
+                    $('#processingLoader').removeClass('d-none')
+                    $.ajax({
+                            url: `http://192.168.3.247/trucking-api/public/api/forgot-password`,
+                            method: 'POST',
+                            dataType: "JSON",
+                            data: {
+                                user: user,
+                                check: true
+                            },
+                            success: (response) => {
+                                resolve(response);
+                            },
+                            error: error => {
+                                console.log(error)
+                                reject(error)
+
+                            }
+                        })
+                        .always(() => {
+                            $('#processingLoader').addClass('d-none')
+
+                        });
+                });
+            }
+
+        })
+
+        function signInFunction(button) {
+            $(button).prop('disabled', true)
+            $('#processingLoader').removeClass('d-none')
+            $('form').submit();
+        }
+        
+        function applyDarkMode() {
+            const $body = $('body');
+            localStorage.setItem('theme', 'dark');
+            $body.addClass('dark-mode');
+        }
+
+        function applyLightMode() {     
+            const $body = $('body');
+            localStorage.setItem('theme', 'light');
+            $body.removeClass('dark-mode');
+        }
+        
+        $(function () {
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (systemPrefersDark) {
+                console.log('dark')
+                applyDarkMode();
+            } else {
+                console.log('light')
+                applyLightMode();
+            }
+            
+        });
+    </script>
+</body>
+
+</html>
