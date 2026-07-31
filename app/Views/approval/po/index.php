@@ -62,11 +62,6 @@
                 <div id="jqGridPager"></div>
             </div>
         </div>
-        <div class="card-footer bg-white">
-            <button type="button" id="btnApprovedExec" class="btn btn-primary">
-                <i class="fas fa-check"></i> Approved/Unapproved
-            </button>
-        </div>
     </div>
 </div>
 
@@ -202,6 +197,50 @@
             searchOnEnter: true,
             defaultSearch: "cn",
             icon: false
+        }).customPager({
+            lazyLoading: false,
+            modalBtnList: [{
+                id: 'approve',
+                title: 'Approve',
+                caption: 'Approve',
+                innerHTML: '<i class="fa fa-check"></i> APPROVAL/UN',
+                class: 'btn btn-purple btn-sm mr-1 ',
+                item: [{
+                    id: 'approvalStatus',
+                    text: ' APPROVAL/UN',
+                    onClick: () => {
+                        var selRowIds = $grid.jqGrid('getGridParam', 'selarrrow');
+                        if(selRowIds.length === 0) {
+                            alert("Harus pilih minimal satu baris!");
+                            return;
+                        }
+
+                        var firstSelectedId = selRowIds[0];
+                        
+                        if(confirm("Yakin akan melanjutkan proses ?")) {
+                            $.ajax({
+                                type: "POST",
+                                url: "<?= base_url('approvalpo/approved') ?>",
+                                data: {
+                                    fntrans: firstSelectedId,
+                                    '<?= csrf_token() ?>': '<?= csrf_hash() ?>' 
+                                },
+                                success: function(result) {
+                                    if(result.error && result.error !== "") {
+                                        alert(result.error);
+                                    } else if (result.msg) {
+                                        alert(result.msg);
+                                        $grid.setGridParam({datatype: 'json', page: 1}).trigger("reloadGrid");
+                                    }
+                                },
+                                error: function(err) {
+                                    alert('Terjadi Kesalahan Coba Lagi');
+                                }
+                            });
+                        }
+                    }
+                }]
+            }]
         });
 
         $('#datepicker').on('change', function () {
@@ -212,43 +251,5 @@
             $grid.setGridParam({datatype: 'json', page: 1}).trigger("reloadGrid");
         });
 
-        $("#btnApprovedExec").on('click', function(){
-            var selRowIds = $grid.jqGrid('getGridParam', 'selarrrow');
-            if(selRowIds.length === 0) {
-                alert("Harus pilih minimal satu baris!");
-                return;
-            }
-
-            var firstSelectedId = selRowIds[0];
-            
-            $("#btnApprovedExec").attr('disabled', 'disabled').html('<i class="fas fa-spinner fa-spin"></i> Loading...');
-            
-            if(confirm("Yakin akan melanjutkan proses ?")) {
-                $.ajax({
-                    type: "POST",
-                    url: "<?= base_url('approvalpo/approved') ?>",
-                    data: {
-                        fntrans: firstSelectedId,
-                        '<?= csrf_token() ?>': '<?= csrf_hash() ?>' 
-                    },
-                    success: function(result) {
-                        $("#btnApprovedExec").removeAttr('disabled').html('<i class="fas fa-check"></i> Approved/Unapproved');
-                        
-                        if(result.error && result.error !== "") {
-                            alert(result.error);
-                        } else if (result.msg) {
-                            alert(result.msg);
-                            $grid.setGridParam({datatype: 'json', page: 1}).trigger("reloadGrid");
-                        }
-                    },
-                    error: function(err) {
-                        $("#btnApprovedExec").removeAttr('disabled').html('<i class="fas fa-check"></i> Approved/Unapproved');
-                        alert('Terjadi Kesalahan Coba Lagi');
-                    }
-                });
-            } else {
-                $("#btnApprovedExec").removeAttr('disabled').html('<i class="fas fa-check"></i> Approved/Unapproved');
-            }
-        });
     });
 </script>

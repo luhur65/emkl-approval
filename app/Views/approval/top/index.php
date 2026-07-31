@@ -28,14 +28,6 @@
     <div class="card card-primary card-outline">
         <div class="card-body">
             <div class="row">
-                <div class="col-md-2">
-                    <div class="form-group filter-input-group">
-                        <label class="filter-label">&nbsp;</label>
-                        <button type="button" id="btnReload" class="btn btn-default form-control">
-                            <i class="fas fa-sync-alt"></i> Reload
-                        </button>
-                    </div>
-                </div>
                 <div class="col-md-3">
                     <div class="form-group filter-input-group">
                         <label class="filter-label">Pilih Tanggal</label>
@@ -56,6 +48,14 @@
                         </select>
                     </div>
                 </div>
+                <div class="col-md-2">
+                    <div class="form-group filter-input-group">
+                        <label class="filter-label">&nbsp;</label>
+                        <button type="button" id="btnReload" class="btn btn-default form-control">
+                            <i class="fas fa-sync-alt"></i> Reload
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -70,11 +70,6 @@
                 <table id="jqGrid"></table>
                 <div id="jqGridPager"></div>
             </div>
-        </div>
-        <div class="card-footer bg-white">
-            <button type="button" id="btnApprovedExec" class="btn btn-primary">
-                <i class="fas fa-check"></i> Approved/Unapproved
-            </button>
         </div>
     </div>
 </div>
@@ -248,6 +243,56 @@
             searchOnEnter: true,
             defaultSearch: "cn",
             icon: false
+        }).customPager({
+            lazyLoading: false,
+            modalBtnList: [{
+                id: 'approve',
+                title: 'Approve',
+                caption: 'Approve',
+                innerHTML: '<i class="fa fa-check"></i> APPROVAL/UN',
+                class: 'btn btn-purple btn-sm mr-1 ',
+                item: [{
+                    id: 'approvalStatus',
+                    text: ' APPROVAL/UN',
+                    onClick: () => {
+                        var selRowIds = $grid.jqGrid('getGridParam', 'selarrrow');
+                        if(selRowIds.length === 0) {
+                            alert("Silakan pilih minimal satu baris!");
+                            return;
+                        }
+
+                        var idsToSend = [];
+                        for(var i=0; i<selRowIds.length; i++) {
+                            var rowData = $grid.jqGrid('getRowData', selRowIds[i]);
+                            idsToSend.push(rowData['FJurnal']);
+                        }
+
+                        var prosesdata = $('#prosesdata').val();
+                        if(confirm("Yakin akan melanjutkan proses ?")) {
+                            $.ajax({
+                                type: "POST",
+                                url: "<?= base_url('approvaltop/approved') ?>",
+                                data: {
+                                    id: idsToSend,
+                                    prosesdata: prosesdata,
+                                    '<?= csrf_token() ?>': '<?= csrf_hash() ?>' 
+                                },
+                                success: function(result) {
+                                    $grid.setGridParam({datatype: 'json', page: 1}).trigger("reloadGrid");
+                                    if(result.msg) {
+                                        alert(result.msg);
+                                    } else if(result[0] && result[0].message) {
+                                        alert(result[0].message);
+                                    }
+                                },
+                                error: function(err) {
+                                    alert('Terjadi Kesalahan Coba Lagi');
+                                }
+                            });
+                        }
+                    }
+                }]
+            }]
         });
 
         $('#datepicker').on('change', function () {
@@ -262,42 +307,5 @@
             $grid.setGridParam({datatype: 'json', page: 1}).trigger("reloadGrid");
         });
 
-        $("#btnApprovedExec").on('click', function(){
-            var selRowIds = $grid.jqGrid('getGridParam', 'selarrrow');
-            if(selRowIds.length === 0) {
-                alert("Silakan pilih minimal satu baris!");
-                return;
-            }
-
-            var idsToSend = [];
-            for(var i=0; i<selRowIds.length; i++) {
-                var rowData = $grid.jqGrid('getRowData', selRowIds[i]);
-                idsToSend.push(rowData['FJurnal']);
-            }
-
-            var prosesdata = $('#prosesdata').val();
-            if(confirm("Yakin akan melanjutkan proses ?")) {
-                $.ajax({
-                    type: "POST",
-                    url: "<?= base_url('approvaltop/approved') ?>",
-                    data: {
-                        id: idsToSend,
-                        prosesdata: prosesdata,
-                        '<?= csrf_token() ?>': '<?= csrf_hash() ?>' 
-                    },
-                    success: function(result) {
-                        $grid.setGridParam({datatype: 'json', page: 1}).trigger("reloadGrid");
-                        if(result.msg) {
-                            alert(result.msg);
-                        } else if(result[0] && result[0].message) {
-                            alert(result[0].message);
-                        }
-                    },
-                    error: function(err) {
-                        alert('Terjadi Kesalahan Coba Lagi');
-                    }
-                });
-            }
-        });
     });
 </script>
