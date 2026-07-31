@@ -198,7 +198,19 @@
             },
             altRows: true,
             altclass: 'myAltRowClass',
-            loadComplete: function() {
+            loadComplete: function(data) {
+                if(data && data.records !== undefined) {
+                    var page = parseInt(data.page, 10) || 1;
+                    var totalRecords = parseInt(data.records, 10) || 0;
+                    var rows = parseInt($grid.jqGrid('getGridParam', 'rowNum'), 10) || 50;
+                    
+                    var start = ((page - 1) * rows) + 1;
+                    var end = start + data.rows.length - 1;
+                    if(totalRecords === 0) { start = 0; end = 0; }
+                    
+                    // Override the default pager text manually since scroll: 1 accumulates rows in jqgrid
+                    $('.ui-paging-info').html('View ' + start + ' - ' + end + ' of ' + totalRecords);
+                }
             },
             gridComplete: function() {
                 var $grid = $(this);
