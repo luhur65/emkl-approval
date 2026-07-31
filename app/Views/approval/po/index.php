@@ -69,6 +69,42 @@
     var apiUrl = "<?= base_url('approvalpo/ajax_list') ?>" + window.location.search;
     var $grid = $("#jqGrid");
     
+    var selectedRows = [];
+
+    function checkboxHandler(element) {
+        let value = $(element).val();
+        if (element.checked) {
+            selectedRows.push(value);
+            $(element).parents('tr').addClass('bg-light-blue');
+        } else {
+            $(element).parents('tr').removeClass('bg-light-blue');
+            for (var i = 0; i < selectedRows.length; i++) {
+                if (selectedRows[i] == value) {
+                    selectedRows.splice(i, 1);
+                }
+            }
+        }
+    }
+
+    function clearSelectedRows() {
+        selectedRows = [];
+        $('.checkbox-selectall').prop('checked', false);
+        $grid.trigger('reloadGrid');
+    }
+
+    function selectAllRows() {
+        var ids = $grid.jqGrid('getDataIDs');
+        for(var i=0; i<ids.length; i++) {
+            var rowData = $grid.jqGrid('getRowData', ids[i]);
+            var idTarget = rowData['IdTarget'] || ids[i];
+            if(selectedRows.indexOf(idTarget) === -1) {
+                selectedRows.push(idTarget);
+            }
+        }
+        $('.checkbox-jqgrid').prop('checked', true).parents('tr').addClass('bg-light-blue');
+        $('.checkbox-selectall').attr('disabled', false);
+    }
+
     $(document).ready(function() {
         
         // Ambil data hari libur dari endpoint internal Harilibur
@@ -129,6 +165,43 @@
                 id: "IdTarget" 
             },
             colModel: [
+                {
+                    label: '',
+                    name: 'check',
+                    width: 70,
+                    align: 'left',
+                    sortable: false,
+                    clear: false,
+                    stype: 'input',
+                    searchable: false,
+                    searchoptions: {
+                        type: 'checkbox',
+                        clearSearch: false,
+                        dataInit: function(element) {
+                            $(element).removeClass('form-control');
+                            $(element).addClass('checkbox-selectall');
+                            $(element).css('cssText', 'margin: 0 !important; vertical-align: middle; display: inline-block;');
+                            $(element).after("<span style='font-weight: bold; vertical-align: middle; margin-left: 10px;'>NO.</span>");
+
+                            $(element).on('click', function() {
+                                $(element).attr('disabled', true);
+                                if ($(this).is(':checked')) {
+                                    selectAllRows();
+                                } else {
+                                    clearSelectedRows();
+                                }
+                            });
+                        }
+                    },
+                    formatter: (value, rowOptions, rowData) => {
+                        var idVal = rowData.IdTarget;
+                        var isChecked = (selectedRows.indexOf(idVal) !== -1) ? 'checked' : '';
+                        return `<div class="d-flex align-items-center justify-content-start">
+                            <input type="checkbox" class="checkbox-jqgrid" value="${idVal}" onchange="checkboxHandler(this)" ${isChecked}>
+                            <span class="rn-number ml-2"></span>
+                        </div>`;
+                    },
+                },
                 { label: 'Target', name: 'IdTarget', hidden: true, key: true },
                 { label: 'Tanggal', name: 'FTgl', width: 90, align: 'center' },
                 { label: 'Shipper', name: 'FNShipper', width: 250 },
@@ -150,8 +223,8 @@
             pager: '#jqGridPager',
             viewrecords: true,
             scroll: 1,
-            rownumbers: true,
-            multiselect: true, 
+            rownumbers: false,
+            multiselect: false, 
             altRows: true,
             altclass: 'myAltRowClass',
             loadComplete: function(data) {
@@ -166,6 +239,13 @@
                     
                     // Override the default pager text manually since scroll: 1 accumulates rows in jqgrid
                     $('.ui-paging-info').html('View ' + start + ' - ' + end + ' of ' + totalRecords);
+
+                    // Inject row numbers
+                    var ids = $grid.jqGrid('getDataIDs');
+                    for (var i = 0; i < ids.length; i++) {
+                        var no = start + i;
+                        $grid.find('tr#' + ids[i] + ' .rn-number').text(no);
+                    }
                 }
             },
             gridComplete: function() {
@@ -209,13 +289,12 @@
                     id: 'approvalStatus',
                     text: ' APPROVAL/UN',
                     onClick: () => {
-                        var selRowIds = $grid.jqGrid('getGridParam', 'selarrrow');
-                        if(selRowIds.length === 0) {
+                        if(selectedRows.length === 0) {
                             alert("Harus pilih minimal satu baris!");
                             return;
                         }
 
-                        var firstSelectedId = selRowIds[0];
+                        var firstSelectedId = selectedRows[0];
                         
                         if(confirm("Yakin akan melanjutkan proses ?")) {
                             $.ajax({
