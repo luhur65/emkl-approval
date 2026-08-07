@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Models\ApprovalTopModel;
 use App\Services\ApprovalTopService;
+use CodeIgniter\HTTP\IncomingRequest;
+use CodeIgniter\HTTP\ResponseInterface;
 
 class ApprovalTop extends BaseController
 {
@@ -18,8 +20,8 @@ class ApprovalTop extends BaseController
 
     public function index()
     {
-        if (!checkMenu(session()->get('FUserID'))) {
-            return redirect()->to('home');
+        if ($tolak = $this->denyIfNoAccess()) {
+            return $tolak;
         }
 
         $data = [
@@ -30,41 +32,102 @@ class ApprovalTop extends BaseController
 
     public function get_detail($jurnal)
     {
+        if ($tolak = $this->denyIfNoAccess()) {
+            return $tolak;
+        }
+
         $data = $this->approvalTopModel->getDetail($jurnal);
         return $this->response->setJSON($data);
     }
 
+    /**
+     * Seluruh kunci baris yang lolos filter saat ini, untuk fitur "pilih semua"
+     * di grid. Dipisah dari ajax_list karena yang dibutuhkan hanya kuncinya,
+     * bukan satu halaman data.
+     */
+    public function select_all_ids()
+    {
+        if ($tolak = $this->denyIfNoAccess()) {
+            return $tolak;
+        }
+
+        $params = array_merge($this->request->getGet(), $this->request->getPost());
+
+        return $this->response->setJSON($this->approvalTopService->getFilteredKeys($params));
+    }
+
+    /**
+     * Kode proses yang dipakai ApprovalTopService & ApprovalTopModel: 0 memanggil
+     * usp_AppPreJob, 1 memanggil usp_UnAppPreJob. Nilai yang sama juga jadi
+     * parameter `bit` usp_GetListAppPreJob, sehingga menentukan pula baris mana
+     * yang dianggap layak diproses.
+     */
+    private const PROSES_APPROVE   = '0';
+    private const PROSES_UNAPPROVE = '1';
+
     public function approved()
     {
-        $error = '';
-        $msg = '';
-        $ids = $this->request->getPost('id');
-        $prosesdata = $this->request->getPost('prosesdata');
-        $userId = session()->get('FUserID');
+        return $this->jalankanProses(self::PROSES_APPROVE);
+    }
 
-        if ($ids && is_array($ids)) {
-            foreach ($ids as $id) {
-                $hasil = $this->approvalTopModel->processApproval($id, $userId, $prosesdata);
-                if (isset($hasil->error_sql) && $hasil->error_sql != '') {
-                    $error .= $hasil->error_sql;
-                }
+    public function unapproved()
+    {
+        return $this->jalankanProses(self::PROSES_UNAPPROVE);
+    }
+
+    /**
+     * Jenis proses sengaja datang dari route yang dipanggil, BUKAN dari field POST
+     * `prosesdata` seperti sebelumnya. Dengan satu endpoint gabungan, siapa pun
+     * yang boleh approve otomatis juga bisa un-approve hanya dengan menukar satu
+     * nilai form -- dan un-approve bukan aksi setara: usp_UnAppPreJob memicu
+     * render PDF via xp_cmdshell lalu MENGIRIM notifikasi WhatsApp ke manajemen.
+     */
+    private function jalankanProses(string $prosesdata): ResponseInterface
+    {
+        if ($tolak = $this->denyIfNoAccess()) {
+            return $tolak;
+        }
+
+        $hasil = $this->approvalTopService->processApproval(
+            $this->resolvePostedIds(),
+            $prosesdata,
+            (string) $this->request->getPost('tgl'),
+            session()->get('FUserID')
+        );
+
+        return $this->response->setJSON($hasil);
+    }
+
+    /**
+     * Membaca daftar id yang dikirim view. Diutamakan field `ids` berisi JSON
+     * (satu variabel POST), bukan array `id[]`: PHP membatasi jumlah variabel
+     * input lewat max_input_vars (default 1000) dan MEMBUANG kelebihannya tanpa
+     * error, sehingga "pilih semua" pada data besar akan terproses sebagian saja.
+     * Bentuk lama `id[]` tetap diterima agar pemanggil lama tidak rusak.
+     */
+    private function resolvePostedIds(): array
+    {
+        $raw = $this->request->getPost('ids');
+
+        if (is_string($raw) && $raw !== '') {
+            $decoded = json_decode($raw, true);
+
+            if (is_array($decoded)) {
+                return $decoded;
             }
         }
 
-        if (trim($error) != '') {
-            $msg = 'Terjadi kesalahan tidak semua proses berhasil';
-        } else {
-            $msg = 'Proses berhasil';
-        }
+        $legacy = $this->request->getPost('id');
 
-        return $this->response->setJSON([
-            'error' => $error,
-            'msg'   => $msg
-        ]);
+        return is_array($legacy) ? $legacy : [];
     }
 
     public function ajax_list()
     {
+        if ($tolak = $this->denyIfNoAccess()) {
+            return $tolak;
+        }
+
         // Tangkap seluruh request (termasuk page, rows, sidx, sord, tgl, bit)
         $params = array_merge($this->request->getGet(), $this->request->getPost());
 
@@ -74,25 +137,33 @@ class ApprovalTop extends BaseController
         return $this->response->setJSON($responce);
     }
 
-    public function reverse()
+    /**
+     * Penjaga hak akses menu untuk SELURUH endpoint modul ini. Di CI3 cukup
+     * sekali di __construct() sehingga otomatis menutup semua method (lihat
+     * ApprovalTOP.php CI3); di CI4 __construct() tidak bisa mengembalikan
+     * Response, jadi harus dipanggil eksplisit di tiap method. Sebelumnya hanya
+     * index() yang diperiksa, sehingga endpoint approve/list bisa dipanggil
+     * langsung oleh user mana pun yang sekadar berhasil login.
+     *
+     * Permintaan AJAX dibalas JSON 403 -- BUKAN redirect -- karena jQuery
+     * mengikuti redirect diam-diam lalu menyerahkan HTML halaman tujuan ke
+     * handler success, sehingga penolakan akan terbaca sebagai keberhasilan.
+     */
+    private function denyIfNoAccess(): ?ResponseInterface
     {
-        $db = \Config\Database::connect();
-        $text = "--- usp_GetListAppPreJob ---\n";
-        try {
-            $query = $db->query("EXEC sp_helptext 'usp_GetListAppPreJob'");
-            foreach($query->getResultArray() as $row){
-                $text .= $row['Text'];
-            }
-        } catch (\Exception $e) { $text .= $e->getMessage(); }
-        
-        $text .= "\n\n--- usp_AppPreJob ---\n";
-        try {
-            $query = $db->query("EXEC sp_helptext 'usp_AppPreJob'");
-            foreach($query->getResultArray() as $row){
-                $text .= $row['Text'];
-            }
-        } catch (\Exception $e) { $text .= $e->getMessage(); }
+        if (checkMenu(session()->get('FUserID'))) {
+            return null;
+        }
 
-        return $this->response->setContentType('text/plain')->setBody($text);
+        if ($this->request instanceof IncomingRequest && $this->request->isAJAX()) {
+            return $this->response
+                ->setStatusCode(403)
+                ->setJSON([
+                    'error' => 'Anda tidak memiliki hak akses untuk menu ini.',
+                    'msg'   => '',
+                ]);
+        }
+
+        return redirect()->to('home');
     }
 }
