@@ -1,6 +1,65 @@
     </div>
     <!-- ./wrapper -->
 
+    <!--
+        Wadah jQuery UI dialog utk showDialog()/showConfirm() di mains.js.
+        Fungsi2 itu memilih wadahnya lewat id: objek ber-`statuspesan` masuk ke
+        #dialog-<statuspesan>-message, string biasa ke #dialog-warning-message.
+        Sama spt #listMenuModal, tanpa markup ini pemanggilannya diam saja krn
+        .dialog() jalan di set kosong.
+    -->
+    <div id="dialog-message" title="Error" class="text-center text-danger" style="display: none;">
+        <span class="fa fa-exclamation-triangle" aria-hidden="true" style="font-size:25px;"></span>
+        <p></p>
+    </div>
+    <div id="dialog-success-message" title="Pesan" class="text-center text-success" style="display: none;">
+        <span class="fa fa-check" aria-hidden="true" style="font-size:25px;"></span>
+        <p></p>
+    </div>
+    <div id="dialog-warning-message" title="Pesan" class="text-center text-warning" style="display: none;">
+        <span class="fa fa-exclamation-triangle" aria-hidden="true" style="font-size:25px;"></span>
+        <p></p>
+    </div>
+    <div id="dialog-info-message" title="Pesan" class="text-center text-info" style="display: none;">
+        <span class="fa fa-exclamation-triangle" aria-hidden="true" style="font-size:25px;"></span>
+        <p></p>
+    </div>
+    <div id="dialog-confirm" title="Pesan" class="text-center " style="display: none;">
+        <span class="fa fa-exclamation-triangle text-warning" aria-hidden="true" style="font-size:25px;"></span>
+        <p></p>
+    </div>
+    <div id="dialog-confirm-force" title="Pesan" class="text-center " style="display: none;">
+        <span class="fa fa-exclamation-triangle text-warning" aria-hidden="true" style="font-size:25px;"></span>
+        <p></p>
+    </div>
+    <div id="dialog-force-message" title="Pesan" class="text-center text-warning" style="display: none;">
+        <span class="fa fa-exclamation-triangle" aria-hidden="true" style="font-size:25px;"></span>
+        <p></p>
+    </div>
+
+    <!--
+        Wadah dropdown customPager (pager.js). Tombol modalBtnList merender
+        daftar aksinya ke .modal-body milik #listMenuModal, jadi tanpa markup
+        ini klik tombolnya diam saja: $('#listMenuModal').modal('show')
+        jalan di set kosong dan tidak melempar error.
+        mains.js juga mem-bind show/hidden.bs.modal ke id ini, sehingga elemen
+        wajib sudah ada di DOM sebelum <script> tas-lib di bawah dimuat.
+    -->
+    <div class="modal fade" id="listMenuModal" tabindex="-1" aria-labelledby="listMenuModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="listMenuModalLabel"> </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <?php if (session()->has(SESSION_NAME . 'logged_in')): ?>
     <!-- Lockscreen Overlay -->
     <div id="lockscreen-overlay" style="display:none; position:fixed; inset:0; z-index:10050; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); align-items:center; justify-content:center;">
@@ -78,6 +137,7 @@
     <script src="<?= asset('libraries/tas-lib/js/lazyLoadingGridHelper.js') ?>"></script>
     <!-- <script src="<?= asset('libraries/tas-lib/js/lookup-columns.js') ?>"></script> -->
     <script src="<?= asset('libraries/tas-lib/js/pager.js') ?>"></script>
+    <script src="<?= asset('libraries/tas-lib/js/jqgrid-search.js') ?>"></script>
     <script src="<?= asset('libraries/tas-lib/js/MonthPicker.min.js') ?>"></script>
     <script src="<?= asset('libraries/tas-lib/js/YearPicker.js') ?>"></script>
     <script src="<?= asset('libraries/tas-lib/js/GridPreferenceManager.js') ?>"></script>

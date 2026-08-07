@@ -410,6 +410,31 @@ function loadGridData(gridId, api, postData, pageNumber, rowsCount, direction = 
                 if (!onlyCache) $('.loaderGrid').addClass('d-none');
                 console.error('Grid Load Error:', textStatus, errorThrown);
                 if (state.lsPrefetchingPages) state.lsPrefetchingPages.delete(pageNumber);
+
+                // Prefetch berjalan diam-diam di latar (halaman yg BELUM tentu
+                // dilihat user), jadi kegagalannya tidak boleh memunculkan dialog.
+                if (onlyCache) return;
+
+                // Tanpa bagian ini grid hanya diam & kosong -- satu-satunya jejak
+                // ada di console, sehingga sesi habis (401), hak akses ditolak
+                // (403), dan database mati (503) semuanya terlihat sama saja bagi
+                // user: "datanya tidak muncul". Pesan dari server dipakai apa
+                // adanya bila ada; endpoint di aplikasi ini membalas JSON
+                // ber-field `error` untuk ketiga kasus itu.
+                var pesan = (xhr.responseJSON && xhr.responseJSON.error)
+                    ? xhr.responseJSON.error
+                    : 'Data grid gagal dimuat (status ' + (xhr.status || 'tidak ada respons') + ').';
+
+                if (typeof showDialog === 'function') {
+                    // Sesi habis: dialognya tidak memblokir spt alert(), jadi
+                    // reload harus menunggu dialog ditutup -- kalau langsung
+                    // dipanggil, pesannya hilang sebelum sempat terbaca.
+                    if (xhr.status === 401) {
+                        showDialog(pesan, null, '600px', function () { window.location.reload(); });
+                        return;
+                    }
+                    showDialog(pesan);
+                }
             },
             complete: function () {
                 if (!onlyCache) {
@@ -517,8 +542,12 @@ function renderFromCache(grid, data, direction, rowsPerPage, currentPage, res) {
             var newScrollTop = prevScroll + (addedCount * rowHeight);
             scrollDiv.scrollTop(newScrollTop);
             state.lastScrollTop = newScrollTop;
+        } else {
+            // Tidak ada baris baru yg ditambahkan (mis. semua id sudah ada di DOM):
+            // tetap sinkronkan lastScrollTop, jika tidak scroll handler akan terus
+            // membandingkan terhadap nilai lama & terlihat "macet" saat scroll ke atas.
+            state.lastScrollTop = prevScroll;
         }
-        trimGridRows(grid, 'up', rowsPerPage);
     } else if (direction === 'jump' || direction === 'reload') {
         grid.jqGrid('clearGridData');
         data.forEach(function (row) { grid.jqGrid('addRowData', row.id, row, 'last'); });
@@ -542,6 +571,17 @@ function renderFromCache(grid, data, direction, rowsPerPage, currentPage, res) {
     }
 }
 
+function findPageForId(state, id) {
+    var strId = String(id);
+    for (var pg in state.cachedData) {
+        var arr = state.cachedData[pg];
+        for (var i = 0; i < arr.length; i++) {
+            if (String(arr[i].id) === strId) return parseInt(pg, 10);
+        }
+    }
+    return null;
+}
+
 function trimGridRows(grid, direction, rowsPerPage) {
     var state = getGridState(grid);
     var ids = grid.jqGrid('getDataIDs');
@@ -549,14 +589,27 @@ function trimGridRows(grid, direction, rowsPerPage) {
     if (ids.length <= maxRows) return;
 
     var excess = ids.length - maxRows;
-    var pagesRemoved = Math.max(1, Math.floor(excess / rowsPerPage));
 
+    // Catatan: `excess` tidak selalu kelipatan rowsPerPage (halaman terakhir dataset
+    // bisa berisi baris < rowsPerPage). Menghitung minPageLoaded/maxPageLoaded lewat
+    // pembagian (excess / rowsPerPage) bisa membuat state "page" ini melenceng dari
+    // baris yg sungguhan tersisa di grid -> scroll ke atas jadi menyasar halaman yg
+    // salah (terlihat macet) & penomoran baris ikut salah. Jadi tentukan halaman
+    // batas langsung dari cache berdasarkan ID baris yg benar-benar tersisa.
     if (direction === 'down') {
         for (let i = 0; i < excess; i++) grid.jqGrid('delRowData', ids[i]);
-        state.minPageLoaded += pagesRemoved;
+        var remainingDown = grid.jqGrid('getDataIDs');
+        if (remainingDown.length) {
+            var pgDown = findPageForId(state, remainingDown[0]);
+            if (pgDown !== null) state.minPageLoaded = pgDown;
+        }
     } else if (direction === 'up') {
         for (let i = ids.length - 1; i >= ids.length - excess; i--) grid.jqGrid('delRowData', ids[i]);
-        state.maxPageLoaded -= pagesRemoved;
+        var remainingUp = grid.jqGrid('getDataIDs');
+        if (remainingUp.length) {
+            var pgUp = findPageForId(state, remainingUp[remainingUp.length - 1]);
+            if (pgUp !== null) state.maxPageLoaded = pgUp;
+        }
     }
     refreshRowNumbers(grid, state.minPageLoaded, rowsPerPage);
 }

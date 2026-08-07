@@ -145,7 +145,10 @@ input[type=text]:focus,input[type=password]:focus, .select2-selection:focus {
 	overflow: auto;
 	z-index: 101;
 }
-.ui-jqgrid tr.ui-search-toolbar td input{
+/* checkbox select-all dikecualikan: ukurannya sdh pas & padding di sini
+   memaksa selectornya dipanjangkan, yg lalu mengalahkan aturan :checked-nya
+   (lihat bagian KOLOM CHECKBOX + NOMOR BARIS JQGRID di akhir file) */
+.ui-jqgrid tr.ui-search-toolbar td input:not(.checkbox-selectall){
 	padding: 3px;
 	/* padding-right: 5px;  */
 }
@@ -1540,10 +1543,6 @@ span.textCard {
 		padding-bottom: 10px!important;
 	}
 
-	.checkbox-jqgrid{
-		margin:0 7px!important;
-	}
-
 	.ui-datepicker{
 		width: 20em!important;
 	}
@@ -1552,7 +1551,7 @@ span.textCard {
 		position: relative;
 	}
 
-	.ui-jqgrid tr.ui-search-toolbar td input{
+	.ui-jqgrid tr.ui-search-toolbar td input:not(.checkbox-selectall){
 		padding: 3px;
 		/* padding-right: 5px;  */
 	}
@@ -1631,15 +1630,10 @@ span.textCard {
 }
 /* END MOBILE DISPLAY*/
 
-/* CHECKBOX POSITION */
-.checkbox-selectall{
-	margin:0 3px 11px!important;
-}
+/* Posisi checkbox jqGrid: lihat bagian
+   KOLOM CHECKBOX + NOMOR BARIS JQGRID di akhir file */
 
 @media (min-width: 900px) {
-	.checkbox-jqgrid{
-		margin:0 10px!important;
-	}
 	#sidebarButton {
 		padding-left: 1.5rem !important;
 		padding-right: 1.5rem !important;
@@ -2307,7 +2301,10 @@ body.dark-mode .ui-jqgrid tr.myfootrow td {
 		width: 18px;
 		height: 18px;
 		border-radius: 50%;
-		display: none !important; /* Managed by JS */
+		/* Tersembunyi sampai kolomnya terisi. TANPA !important: JS menampilkannya
+		   dgn menambah kelas .is-visible di bawah, dan deklarasi !important di
+		   sini akan mengalahkan apa pun yg dipasang dr sisi JS. */
+		display: none;
 		align-items: center;
 		justify-content: center;
 		font-size: 11px;
@@ -2327,12 +2324,19 @@ body.dark-mode .ui-jqgrid tr.myfootrow td {
 		padding: 0 !important;
 }
 
+/* Ditambahkan/dilepas JS mengikuti terisi-tidaknya input kolom ybs */
+.clearsearchclass.is-visible {
+		display: flex;
+}
+
 .clearsearchclass:hover {
 		background-color: #cc0000 !important;
 }
 
-/* Add padding so text doesn't go under the X */
-.ui-search-input input {
+/* Add padding so text doesn't go under the X.
+   Checkbox select-all dikecualikan: tdk berisi teks & ukurannya sdh pas
+   (lihat bagian KOLOM CHECKBOX + NOMOR BARIS JQGRID di bawah) */
+.ui-search-input input:not(.checkbox-selectall) {
 		padding-right: 25px !important;
 }
 
@@ -2579,4 +2583,256 @@ body.dark-mode .ui-jqgrid .ui-jqgrid-bdiv tr.table-active .frozen-col-sticky {
 body.dark-mode .ui-jqgrid .ui-jqgrid-hdiv .frozen-col-sticky,
 body.dark-mode .ui-jqgrid .ui-jqgrid-sdiv .frozen-col-sticky {
 	background-color: var(--easyui-dark-mode, #262c32) !important;
+}
+
+
+/* =============================================================================
+   KOLOM CHECKBOX + NOMOR BARIS JQGRID
+   -----------------------------------------------------------------------------
+   Dipakai oleh kolom yg dideklarasikan dgn `labelClasses: 'col-check'` +
+   `classes: 'col-check'` di colModel. labelClasses dipasang jqGrid ke <th>
+   header sekaligus <th> baris filter (grid.js baris 4893 & 10522), sedangkan
+   `classes` dipasang ke <td> sel data (formatCol, grid.js baris 2552).
+
+   Markup yg diharapkan:
+     baris filter : th.col-check > … > div.selectall-wrapper
+                    > input.checkbox-selectall + button.btn-clear-filter
+     sel data     : td.col-check > div.rn-cell
+                    > input.checkbox-jqgrid + span.rn-number
+   ============================================================================= */
+
+/* Padding kiri kolom check TIDAK boleh bergantung pd posisinya sbg kolom
+   pertama. Di bagian atas file ada aturan global
+   `.ui-jqgrid tr > td:first-of-type, .ui-jqgrid tr > th:first-of-type
+    { padding-left: 0 !important }`
+   yg menghapus padding kiri sel PERTAMA tiap baris. Baris filter LOLOS dari
+   aturan itu krn `.table tr.ui-search-toolbar th { padding: .5rem !important }`
+   ditulis belakangan dgn spesifisitas sama, tapi sel data & header TIDAK —
+   sehingga pd grid tanpa subgrid (approval/po, kolom check = kolom pertama)
+   checkbox baris data meleset .5rem ke kiri dr checkbox "pilih semua".
+   Pd grid ber-subgrid (approval/top) kolom pertama adalah kolom subgrid, jadi
+   masalahnya tdk terlihat di sana. Nilai di bawah menyamai aturan padding
+   normalnya (.6rem utk `.ui-jqgrid-labels th`, .5rem utk `.jqgrow td`), jadi
+   kolom check tampil sama persis di kedua jenis grid. */
+.ui-jqgrid tr.ui-jqgrid-labels > th.col-check {
+	padding-left: .6rem !important;
+}
+.ui-jqgrid tr.jqgrow > td.col-check {
+	padding-left: .5rem !important;
+}
+
+/* Teks header ditengahkan di sini, bukan lewat colModel `align` —
+   align hanya diterapkan jqGrid ke sel data, tdk ke header.
+   padding-left dinolkan krn ui.jqgrid-bootstrap4.css memberi padding-left:7px
+   yg asimetris, shg teks tetap meleset dr tengah walau sdh text-align:center */
+.ui-jqgrid tr.ui-jqgrid-labels th.col-check > div.ui-th-div {
+	padding-left: 0;
+	text-align: center;
+}
+
+/* Sel baris filter default-nya vertical-align: top, shg checkbox terdorong ke
+   atas krn tinggi baris ditentukan kolom lain yg berisi input teks */
+.ui-jqgrid tr.ui-search-toolbar th.col-check {
+	vertical-align: middle;
+}
+
+/* Checkbox custom supaya ukuran & bentuknya konsisten di semua browser.
+   PENTING: selector dasar ini harus tetap pendek — bila dipanjangkan, ia akan
+   mengalahkan aturan :checked/:hover di bawahnya, shg centang tdk muncul.
+   Aturan yg dulu bentrok (padding utk input toolbar) sdh dipersempit dgn
+   :not(.checkbox-selectall) di bagian atas file. */
+.ui-jqgrid input.checkbox-jqgrid,
+.ui-jqgrid input.checkbox-selectall,
+.ui-jqgrid input.checkbox-status {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	flex: 0 0 auto;
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	padding: 0;
+	border: 1px solid #adb5bd;
+	border-radius: 3px;
+	background-color: #fff;
+	position: relative;
+	cursor: pointer;
+	vertical-align: middle;
+	transition: background-color .15s ease-in-out, border-color .15s ease-in-out;
+}
+/* .checkbox-status = penanda status baca-saja (mis. kolom "App" di
+   approval/po), BUKAN checkbox seleksi baris. Sengaja pakai kelas sendiri:
+   clearSelectedRows()/syncLoadedRowSelection() di view menyapu SEMUA
+   .checkbox-jqgrid, jadi memakai kelas yg sama akan membuat penanda status
+   ikut ter-uncheck tiap kali seleksi dibersihkan. :hover & :focus sengaja
+   tidak ikut ditambahkan — elemennya selalu disabled. */
+.ui-jqgrid input.checkbox-jqgrid:hover,
+.ui-jqgrid input.checkbox-selectall:hover {
+	border-color: #007bff;
+}
+.ui-jqgrid input.checkbox-jqgrid:focus,
+.ui-jqgrid input.checkbox-selectall:focus {
+	outline: 0;
+	box-shadow: 0 0 0 .15rem rgba(0, 123, 255, .25);
+}
+.ui-jqgrid input.checkbox-jqgrid:checked,
+.ui-jqgrid input.checkbox-selectall:checked,
+.ui-jqgrid input.checkbox-status:checked {
+	background-color: #007bff;
+	border-color: #007bff;
+}
+/* Tanda centang */
+.ui-jqgrid input.checkbox-jqgrid:checked::after,
+.ui-jqgrid input.checkbox-selectall:checked::after,
+.ui-jqgrid input.checkbox-status:checked::after {
+	content: '';
+	position: absolute;
+	left: 5px;
+	top: 1px;
+	width: 4px;
+	height: 9px;
+	border: solid #fff;
+	border-width: 0 2px 2px 0;
+	transform: rotate(45deg);
+}
+.ui-jqgrid input.checkbox-jqgrid:disabled,
+.ui-jqgrid input.checkbox-selectall:disabled {
+	opacity: .55;
+	cursor: not-allowed;
+}
+/* Penanda status: disabled tapi bukan "terlarang" — ia memang tidak pernah
+   bisa diklik, jadi tidak perlu diredupkan spt checkbox yg sedang dimatikan
+   sementara. Kursor default supaya tidak terbaca sbg kontrol yg rusak. */
+.ui-jqgrid input.checkbox-status:disabled {
+	cursor: default;
+}
+
+/* Baris filter: checkbox select all + tombol bersihkan filter pencarian.
+   gap disamakan dgn .rn-cell agar tombol X sejajar dgn nomor baris */
+.selectall-wrapper {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 5px;
+}
+.btn-clear-filter {
+	flex: 0 0 auto;
+	width: 18px;
+	height: 18px;
+	padding: 0;
+	border: 0;
+	border-radius: 4px;
+	background-color: #dc3545;
+	color: #fff;
+	font-size: 11px;
+	line-height: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: background-color .15s ease-in-out;
+}
+.btn-clear-filter:hover { background-color: #c82333; }
+.btn-clear-filter:focus { outline: 0; box-shadow: 0 0 0 .15rem rgba(220, 53, 69, .3); }
+
+/* Sel data: checkbox + nomor baris.
+   SENGAJA bukan flex: item flex membentuk line box sendiri yg tingginya beda
+   dari line box sel teks biasa, shg nomornya naik ~2,5px & tdk sebaris dgn
+   kolom lain. Dgn alur inline biasa, nomor memakai strut yg sama persis
+   spt teks sel lain, dan checkbox-nya yg ditengahkan terhadap teks itu. */
+.rn-cell {
+	display: block;
+	white-space: nowrap;
+}
+/* Spesifisitas hrs melebihi aturan dasar checkbox di atas (yg men-set margin: 0) */
+.ui-jqgrid .rn-cell > input.checkbox-jqgrid {
+	/* pengganti gap: 10px milik versi flex */
+	margin-right: 2px;
+	vertical-align: middle;
+}
+/* .rn-number sengaja TIDAK diberi font-size/warna sendiri — ia cuma penanda
+   tempat JS menaruh nomor baris. Ukuran font yg berbeda dr sel lain menggeser
+   garis dasar teksnya (14px vs 16px = meleset 2,5px), dan warna mati membuatnya
+   sulit dibaca saat dark mode. Biarkan mewarisi dari selnya. */
+
+/* Highlight baris yang tercentang */
+.ui-jqgrid tr.jqgrow.row-selected > td {
+	background-color: #e7f3ff !important;
+}
+.ui-jqgrid tr.jqgrow.row-selected > td:first-child {
+	box-shadow: inset 3px 0 0 #007bff;
+}
+
+/* --- Dark mode --- */
+/* Nilai di atas adalah warna terang; tanpa penimpaan ini baris terpilih jd
+   menyilaukan & checkbox tampak sbg kotak putih di atas latar gelap.
+   Token warna mengikuti yg sdh dipakai grid ini di dark mode (lihat :root). */
+body.dark-mode .ui-jqgrid tr.jqgrow.row-selected > td {
+	background-color: var(--jqgrid-selected-row-background-dark, #365a7c) !important;
+}
+body.dark-mode .ui-jqgrid input.checkbox-jqgrid,
+body.dark-mode .ui-jqgrid input.checkbox-selectall,
+body.dark-mode .ui-jqgrid input.checkbox-status {
+	background-color: var(--content-dark-mode, #343a40);
+	border-color: var(--border-content-dark-mode, #4b545c);
+}
+/* Saat tercentang tetap biru agar kontras dgn latar gelap */
+body.dark-mode .ui-jqgrid input.checkbox-jqgrid:checked,
+body.dark-mode .ui-jqgrid input.checkbox-selectall:checked,
+body.dark-mode .ui-jqgrid input.checkbox-status:checked {
+	background-color: #007bff;
+	border-color: #007bff;
+}
+
+
+/* =============================================================================
+   KOLOM SUBGRID (TREE) JQGRID
+   -----------------------------------------------------------------------------
+   Sel tree: td.sgcollapsed / td.sgexpanded berisi
+   <a class="ui-sghref"><span class="fas fa-arrow-circle-*"></span></a>
+   ============================================================================= */
+
+/* Ikon buka/tutup ditengahkan. Dua hal yg perlu dibereskan:
+   1) padding sel tdk simetris — aturan `tr.jqgrow td { padding-right: 7px }`
+      di atas membuat ikon meleset ~2px ke kiri pd kolom selebar 20px
+      (subGridWidth default). Selector di bawah sengaja panjang agar
+      spesifisitasnya melampaui aturan tsb yg jg memakai !important;
+   2) <a class="ui-sghref"> di-set display:table oleh ui.jqgrid-bootstrap4.css,
+      jadi block-level & tdk mengikuti text-align — margin auto yg akan
+      menengahkannya bila kolom subgrid dilebarkan. */
+.ui-jqgrid .ui-jqgrid-btable tbody tr.jqgrow td.sgcollapsed,
+.ui-jqgrid .ui-jqgrid-btable tbody tr.jqgrow td.sgexpanded {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+	text-align: center;
+}
+.ui-jqgrid td.sgcollapsed > a.ui-sghref,
+.ui-jqgrid td.sgexpanded > a.ui-sghref {
+	margin-left: auto;
+	margin-right: auto;
+}
+.ui-jqgrid tr.ui-subgrid td.subgrid-cell {
+	text-align: center;
+}
+
+/* ui.jqgrid-bootstrap4.css mengunci warna ikon ke #010101 utk semua mode,
+   shg panah tetap hitam saat dark mode. Ikutkan sj ke warna teks selnya,
+   supaya otomatis benar di mode terang maupun gelap. */
+.ui-jqgrid td.sgcollapsed a.ui-sghref,
+.ui-jqgrid td.sgexpanded a.ui-sghref {
+	color: inherit;
+}
+
+/* =============================================================================
+   PENCARIAN GLOBAL JQGRID (jqgrid-search.js -> $.fn.jqGrid('globalSearch'))
+   -----------------------------------------------------------------------------
+   Kotak input dirender ke dalam div toolbar bawaan jqGrid (#t_<gridId>),
+   yg butuh opsi grid `toolbar: [true, "top"]`.
+   ============================================================================= */
+.global-search-wrapper {
+	padding: 4px 2px;
+	max-width: 320px;
+}
+.global-search-wrapper .global-search {
+	width: 100%;
 }

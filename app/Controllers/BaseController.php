@@ -61,6 +61,36 @@ abstract class BaseController extends Controller
 
         return $output;
     }
+    /**
+     * Balasan JSON seragam saat database tidak bisa dihubungi.
+     *
+     * Tanpa ini, kegagalan koneksi keluar sebagai halaman error 500 CI4 di
+     * dalam respons AJAX. Grid tidak menampilkannya (loader grid hanya menulis
+     * ke console), jadi user cuma melihat grid kosong tanpa penjelasan --
+     * sementara pesan mentahnya membocorkan nama driver, host, dan SQLSTATE.
+     *
+     * Dipakai modul yang datanya ada di database terpisah (grup `dbtruck2`:
+     * Approval Trip & Approval Absensi), yang servernya bisa saja tidak
+     * terjangkau padahal database utama sehat.
+     *
+     * 503 dipilih, bukan 500: ini kegagalan sementara pada layanan di baliknya,
+     * dan berbeda dari 401 (sesi habis) maupun 403 (hak akses) yang sudah punya
+     * arti sendiri di sisi klien.
+     */
+    protected function jsonErrorDatabase(\Throwable $e, string $namaDb): ResponseInterface
+    {
+        log_message('error', 'Koneksi database "' . $namaDb . '" gagal: ' . $e->getMessage());
+
+        return $this->response
+            ->setStatusCode(503)
+            ->setJSON([
+                'error' => 'Tidak bisa terhubung ke database ' . $namaDb . '. '
+                         . 'Server database-nya sedang tidak dapat dihubungi -- '
+                         . 'silakan coba lagi, atau hubungi admin bila berlanjut.',
+                'msg'   => '',
+            ]);
+    }
+
     protected function setLayout(string $layout)
     {
         $this->layout = $layout;

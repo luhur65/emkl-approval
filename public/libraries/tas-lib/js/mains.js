@@ -584,19 +584,110 @@ function removeTags(str) {
  */
 let topSelected = 0;
 let bottomSelected = 12;
-function setCustomBindKeys(grid) {
+
+/**
+ * Baca posisi absolut (0-based) sebuah baris di SELURUH dataset, bukan cuma
+ * window yg sedang dirender. Default-nya baca kolom 'rn' bawaan jqGrid
+ * (rownumbers:true), tapi bisa dioverride lewat options.getAbsoluteIndex utk
+ * grid yg pakai skema nomor baris lain (mis. kolom checkbox custom yg
+ * menggabungkan checkbox + nomor dalam 1 kolom, spt di modul ApprovalTop).
+ */
+function getGridAbsIndex(grid, rowid, options) {
+    if (options && typeof options.getAbsoluteIndex === 'function') {
+        var idx = options.getAbsoluteIndex(grid, rowid);
+        return (typeof idx === 'number' && !isNaN(idx)) ? idx : 0;
+    }
+    var num = parseInt(grid.jqGrid('getCell', rowid, 'rn'), 10);
+    return isNaN(num) ? 0 : num - 1;
+}
+
+/**
+ * setSelection() bawaan jqGrid cuma menandai baris "current" lewat atribut
+ * tabindex=0, TIDAK PERNAH memindah fokus keyboard sungguhan (baris .focus()
+ * bawaan jqGrid sengaja dikomentari di grid.base.js setSelection()). Di grid
+ * lazy-loading ini jadi masalah nyata: baris yg sedang fokus bisa ke-delRowData
+ * (ter-trim dari DOM) saat scroll cepat, & begitu elemen fokus dihapus dari DOM,
+ * browser otomatis blur -- fokus jatuh keluar grid sepenuhnya & keydown
+ * berikutnya (panah/PageUp/PageDown/dst) berhenti nyampai listener ini sama
+ * sekali. Makanya setiap kali baris "current" berpindah HARUS disusul fokus
+ * manual, bukan cuma sekali di awal saat grid pertama dimuat.
+ */
+function selectGridRow(grid, rowid) {
+    grid.resetSelection().setSelection(rowid);
+
+    // Kalau lg fokus di input/textarea/select (mis. user sambil ngetik di toolbar
+    // filter, pakai Up/Down utk lihat2 baris), JANGAN rebut fokus keyboard-nya ke
+    // baris grid -- cukup tandai selection-nya. Lihat setCustomBindKeys().
+    var active = document.activeElement;
+    var isTypingTarget = active && /^(INPUT|TEXTAREA|SELECT)$/i.test(active.tagName || '');
+    if (!isTypingTarget) {
+        grid.find('tr#' + $.jgrid.jqID(rowid)).trigger('focus');
+    }
+}
+
+/**
+ * Cari baris PERTAMA/TERAKHIR yg kelihatan (minimal sebagian) di area scroll
+ * saat ini, dgn mengukur posisi DOM asli tiap baris (offsetTop/offsetHeight)
+ * -- bukan menaksir pakai "tinggi 1 baris x jumlah baris" spt sebelumnya.
+ * Pendekatan taksiran itu gampang meleset krn baris jqGrid TIDAK selalu
+ * seragam tingginya (mis. kolom teks panjang yg wrap ke 2 baris), jadi tiap
+ * PageUp/PageDown yg berulang error-nya menumpuk. Dipakai bareng oleh PageUp
+ * & PageDown di setCustomBindKeys().
+ *
+ * Sengaja pakai "kelihatan SEBAGIAN" (bukan "kelihatan PENUH") -- baris yg
+ * cuma kepotong 1-2px di tepi tetap dihitung user sbg "kelihatan", & syarat
+ * "penuh" gampang meleset krn selisih pembulatan sub-pixel jadi baris paling
+ * ujung malah tidak lolos & yg terpilih jadi mundur 1 dari yg seharusnya.
+ */
+function findLastFullyVisibleRow(rows, viewBottom) {
+    var pick = null;
+    for (var i = 0; i < rows.length; i++) {
+        if (rows[i].offsetTop < viewBottom) {
+            pick = rows[i];
+        } else {
+            break;
+        }
+    }
+    return pick || (rows.length ? rows[0] : null);
+}
+function findFirstFullyVisibleRow(rows, viewTop) {
+    for (var i = 0; i < rows.length; i++) {
+        if (rows[i].offsetTop + rows[i].offsetHeight > viewTop) {
+            return rows[i];
+        }
+    }
+    return rows.length ? rows[rows.length - 1] : null;
+}
+
+function setCustomBindKeys(grid, options) {
     if (grid.length > 0) {
         activeGrid = grid;
+        activeGridOptions = options || {};
     }
 
     setSidebarBindKeys();
 
     $(document).off("keydown.grid").on("keydown.grid", function (e) {
         if (!sidebarIsOpen && activeGrid && activeGrid.length > 0) {
-            // Abaikan jika fokus di input/textarea
-            // if ($(e.target).is("input, textarea, select")) return;
+            var opts = activeGridOptions || {};
+            // Kalau fokus di input/textarea/select (mis. toolbar filter, pencarian
+            // global, dropdown): Up/Down/PageUp/PageDown/Home/End TETAP boleh
+            // navigasi baris grid (selectGridRow sendiri sudah dijaga supaya tidak
+            // merebut fokus dari input yg aktif). Sengaja "mengorbankan" perilaku
+            // native Home/End (pindah kursor ke awal/akhir teks) demi navigasi grid,
+            // atas permintaan langsung. Left/Right/Space/Enter tetap dibiarkan utk
+            // perilaku normal input teks -- Enter khususnya sudah dipakai toolbar
+            // filter utk memicu pencarian (lihat approval/top/index.php), jangan
+            // dobel-tangani.
+            var isTypingTarget = $(e.target).is("input, textarea, select");
+            var isGridNavKeyWhileTyping = (
+                e.keyCode === 33 || e.keyCode === 34 ||
+                e.keyCode === 38 || e.keyCode === 40 ||
+                e.keyCode === 35 || e.keyCode === 36
+            );
+            if (isTypingTarget && !isGridNavKeyWhileTyping) return;
 
-            if (
+            var isCoreKey = (
                 e.keyCode == 33 ||
                 e.keyCode == 34 ||
                 e.keyCode == 35 ||
@@ -604,7 +695,17 @@ function setCustomBindKeys(grid) {
                 e.keyCode == 38 ||
                 e.keyCode == 40 ||
                 e.keyCode == 13
-            ) {
+            );
+            // Space/Left/Right OPSIONAL: cuma ditangkap kalau grid yg sedang aktif
+            // memang menyediakan handler-nya lewat `options` (backward compatible --
+            // caller lama yg panggil setCustomBindKeys(grid) dgn 1 argumen saja
+            // sama sekali tidak terpengaruh, tombol2 ini tetap berlaku normal).
+            var optionalHandler = e.keyCode === 32 ? opts.onSpace
+                : e.keyCode === 37 ? opts.onLeftKey
+                : e.keyCode === 39 ? opts.onRightKey
+                : null;
+
+            if (isCoreKey || typeof optionalHandler === 'function') {
                 e.preventDefault();
 
                 var grid = $(activeGrid);
@@ -616,6 +717,11 @@ function setCustomBindKeys(grid) {
                 var gridIds = grid.getDataIDs();
                 var selectedRow = grid.getGridParam("selrow");
                 var currentIndex = gridIds.indexOf(selectedRow ? selectedRow.toString() : "");
+
+                if (!isCoreKey) {
+                    optionalHandler.call(grid[0], selectedRow, e);
+                    return;
+                }
 
                 // Row Height & Visible Rows for Lazy Load calculations
                 var bDiv = grid.closest('.ui-jqgrid-bdiv');
@@ -640,23 +746,23 @@ function setCustomBindKeys(grid) {
                         }
                     } else if (35 === e.keyCode) { // End
                         if (e.ctrlKey) {
-                            grid.jqGrid("setSelection", gridIds[gridIds.length - 1]);
+                            selectGridRow(grid, gridIds[gridIds.length - 1]);
                         } else if (currentPage !== lastPage) {
                             grid.jqGrid("setGridParam", { page: lastPage }).trigger("reloadGrid");
                         }
                     } else if (36 === e.keyCode) { // Home
                         if (e.ctrlKey) {
-                            grid.jqGrid("setSelection", gridIds[0]);
+                            selectGridRow(grid, gridIds[0]);
                         } else if (currentPage > 1) {
                             grid.jqGrid("setGridParam", { page: 1 }).trigger("reloadGrid");
                         }
                     } else if (38 === e.keyCode) { // Up
                         if (currentIndex > 0) {
-                            grid.resetSelection().setSelection(gridIds[currentIndex - 1]);
+                            selectGridRow(grid, gridIds[currentIndex - 1]);
                         }
                     } else if (40 === e.keyCode) { // Down
                         if (currentIndex < gridIds.length - 1) {
-                            grid.resetSelection().setSelection(gridIds[currentIndex + 1]);
+                            selectGridRow(grid, gridIds[currentIndex + 1]);
                         }
                     }
                 }
@@ -680,9 +786,9 @@ function setCustomBindKeys(grid) {
                     var lastDomAbsIndex = 0;
 
                     if (gridIds.length > 0) {
-                        currentAbsIndex = parseInt(grid.jqGrid('getCell', gridIds[safeIndex], 'rn'), 10) - 1;
-                        firstDomAbsIndex = parseInt(grid.jqGrid('getCell', gridIds[0], 'rn'), 10) - 1;
-                        lastDomAbsIndex = parseInt(grid.jqGrid('getCell', gridIds[gridIds.length - 1], 'rn'), 10) - 1;
+                        currentAbsIndex = getGridAbsIndex(grid, gridIds[safeIndex], opts);
+                        firstDomAbsIndex = getGridAbsIndex(grid, gridIds[0], opts);
+                        lastDomAbsIndex = getGridAbsIndex(grid, gridIds[gridIds.length - 1], opts);
                     }
 
                     if (isNaN(currentAbsIndex)) currentAbsIndex = 0;
@@ -693,7 +799,7 @@ function setCustomBindKeys(grid) {
 
                     if (e.keyCode === 38) { // Up
                         if (currentIndex > 0) {
-                            grid.resetSelection().setSelection(gridIds[currentIndex - 1]);
+                            selectGridRow(grid, gridIds[currentIndex - 1]);
                             scrollRowIntoView(grid, gridIds[currentIndex - 1]);
                         } else if (firstDomAbsIndex > 0) {
                             var targetAbsIndex = currentAbsIndex - 1;
@@ -702,19 +808,19 @@ function setCustomBindKeys(grid) {
                             // Arrow Up TETAP menggunakan 'up', 'page' karena menyisip data
                             loadGridData(gridSelector, apiUrl, postData, targetPageLoad, serverPageSize, 'up', 'page', function () {
                                 var newIds = grid.getDataIDs();
-                                var newFirstAbs = parseInt(grid.jqGrid('getCell', newIds[0], 'rn'), 10) - 1 || 0;
+                                var newFirstAbs = newIds.length ? getGridAbsIndex(grid, newIds[0], opts) : 0;
                                 var targetDomIdx = targetAbsIndex - newFirstAbs;
 
                                 if (targetDomIdx >= 0 && targetDomIdx < newIds.length) {
                                     var targetId = newIds[targetDomIdx];
-                                    grid.resetSelection().setSelection(targetId);
+                                    selectGridRow(grid, targetId);
                                     scrollRowIntoView(grid, targetId);
                                 }
                             });
                         }
                     } else if (e.keyCode === 40) { // Down
                         if (currentIndex < gridIds.length - 1) {
-                            grid.resetSelection().setSelection(gridIds[currentIndex + 1]);
+                            selectGridRow(grid, gridIds[currentIndex + 1]);
                             scrollRowIntoView(grid, gridIds[currentIndex + 1]);
                         } else if (lastDomAbsIndex < totRec - 1) {
                             var targetAbsIndex = currentAbsIndex + 1;
@@ -723,74 +829,90 @@ function setCustomBindKeys(grid) {
                             // Arrow Down TETAP menggunakan 'down', 'page' karena menyisip data
                             loadGridData(gridSelector, apiUrl, postData, targetPageLoad, serverPageSize, 'down', 'page', function () {
                                 var newIds = grid.getDataIDs();
-                                var newFirstAbs = parseInt(grid.jqGrid('getCell', newIds[0], 'rn'), 10) - 1 || 0;
+                                var newFirstAbs = newIds.length ? getGridAbsIndex(grid, newIds[0], opts) : 0;
                                 var targetDomIdx = targetAbsIndex - newFirstAbs;
 
                                 if (targetDomIdx >= 0 && targetDomIdx < newIds.length) {
                                     var targetId = newIds[targetDomIdx];
-                                    grid.resetSelection().setSelection(targetId);
+                                    selectGridRow(grid, targetId);
                                     scrollRowIntoView(grid, targetId);
                                 }
                             });
                         }
                     } else if (e.keyCode === 33) { // PageUp
-                        var targetAbsIndex = currentAbsIndex - visibleRows + 1;
-                        if (targetAbsIndex < 0) targetAbsIndex = 0;
+                        // Tahap 1: kalau baris PERTAMA yg lg kelihatan bukan baris yg
+                        // sedang dipilih, loncat dulu ke situ (tanpa geser scroll).
+                        // Tahap 2: kalau sudah di baris pertama yg kelihatan, baru geser
+                        // scroll 1 layar penuh ke atas & pilih baris pertama yg BARU
+                        // kelihatan. Diukur langsung dari posisi DOM (offsetTop), bukan
+                        // ditaksir dari "tinggi baris x visibleRows" -- taksiran itu
+                        // meleset kalau tinggi baris tidak seragam & errornya menumpuk
+                        // tiap PageUp/PageDown berulang.
+                        var bDivElU = bDiv[0];
+                        var rowsU = grid.find('tr[id]').toArray();
+                        var firstVisibleRow = findFirstFullyVisibleRow(rowsU, bDivElU.scrollTop);
 
-                        if (targetAbsIndex >= firstDomAbsIndex && targetAbsIndex <= lastDomAbsIndex) {
-                            var targetDomIdx = targetAbsIndex - firstDomAbsIndex;
-                            var targetId = gridIds[targetDomIdx];
-                            grid.resetSelection().setSelection(targetId);
-                            scrollRowIntoView(grid, targetId);
-                        } else if (firstDomAbsIndex > 0) {
-                            var targetPageLoad = Math.floor(targetAbsIndex / serverPageSize) + 1;
+                        if (firstVisibleRow && firstVisibleRow.id !== selectedRow) {
+                            selectGridRow(grid, firstVisibleRow.id);
+                        } else {
+                            var pageHeightU = bDivElU.clientHeight;
+                            var afterScrollU = function () {
+                                var pickU = findFirstFullyVisibleRow(grid.find('tr[id]').toArray(), bDivElU.scrollTop);
+                                if (pickU) selectGridRow(grid, pickU.id);
+                            };
 
-                            // UBAH 'up' MENJADI 'jump' DI SINI
-                            loadGridData(gridSelector, apiUrl, postData, targetPageLoad, serverPageSize, 'jump', 'jump', function () {
-                                var newIds = grid.getDataIDs();
-                                if (newIds.length > 0) {
-                                    var newFirstAbs = parseInt(grid.jqGrid('getCell', newIds[0], 'rn'), 10) - 1 || 0;
-                                    var targetDomIdx = targetAbsIndex - newFirstAbs;
-                                    if (targetDomIdx < 0) targetDomIdx = 0;
-                                    if (targetDomIdx >= newIds.length) targetDomIdx = newIds.length - 1;
-
-                                    var targetId = newIds[targetDomIdx];
-                                    grid.resetSelection().setSelection(targetId);
-                                    scrollRowIntoView(grid, targetId);
-                                }
-                            });
+                            if (bDivElU.scrollTop < pageHeightU && firstDomAbsIndex > 0) {
+                                var targetPageLoadU = Math.max(1, s_minPageLoaded - 1);
+                                // renderFromCache() arah 'up' otomatis menggeser scrollTop
+                                // turun sejumlah tinggi baris yg baru disisipkan di atas,
+                                // supaya baris yg sedang dilihat user tidak ikut lompat.
+                                // Jadi tinggal dikurangi 1 layar lagi dari situ.
+                                loadGridData(gridSelector, apiUrl, postData, targetPageLoadU, serverPageSize, 'up', 'page', function () {
+                                    bDivElU.scrollTop = Math.max(0, bDivElU.scrollTop - pageHeightU);
+                                    afterScrollU();
+                                });
+                            } else {
+                                bDivElU.scrollTop = Math.max(0, bDivElU.scrollTop - pageHeightU);
+                                afterScrollU();
+                            }
                         }
                     } else if (e.keyCode === 34) { // PageDown
-                        var targetAbsIndex = currentAbsIndex + visibleRows - 1;
-                        if (targetAbsIndex >= totRec) targetAbsIndex = totRec - 1;
+                        // Cerminan PageUp di atas: tahap 1 loncat ke baris TERAKHIR yg
+                        // kelihatan (kalau blm dipilih), tahap 2 (kalau sudah di situ)
+                        // geser 1 layar penuh ke bawah baru pilih baris terakhir yg baru.
+                        var bDivElD = bDiv[0];
+                        var rowsD = grid.find('tr[id]').toArray();
+                        var lastVisibleRow = findLastFullyVisibleRow(rowsD, bDivElD.scrollTop + bDivElD.clientHeight);
 
-                        if (targetAbsIndex >= firstDomAbsIndex && targetAbsIndex <= lastDomAbsIndex) {
-                            var targetDomIdx = targetAbsIndex - firstDomAbsIndex;
-                            var targetId = gridIds[targetDomIdx];
-                            grid.resetSelection().setSelection(targetId);
-                            scrollRowIntoView(grid, targetId);
-                        } else if (lastDomAbsIndex < totRec - 1) {
-                            var targetPageLoad = Math.floor(targetAbsIndex / serverPageSize) + 1;
+                        if (lastVisibleRow && lastVisibleRow.id !== selectedRow) {
+                            selectGridRow(grid, lastVisibleRow.id);
+                        } else {
+                            var pageHeightD = bDivElD.clientHeight;
+                            var remainingBelow = bDivElD.scrollHeight - (bDivElD.scrollTop + pageHeightD);
+                            var afterScrollD = function () {
+                                var newRowsD = grid.find('tr[id]').toArray();
+                                var pickD = findLastFullyVisibleRow(newRowsD, bDivElD.scrollTop + bDivElD.clientHeight);
+                                if (pickD) selectGridRow(grid, pickD.id);
+                            };
 
-                            // UBAH 'down' MENJADI 'jump' DI SINI
-                            loadGridData(gridSelector, apiUrl, postData, targetPageLoad, serverPageSize, 'jump', 'jump', function () {
-                                var newIds = grid.getDataIDs();
-                                if (newIds.length > 0) {
-                                    var newFirstAbs = parseInt(grid.jqGrid('getCell', newIds[0], 'rn'), 10) - 1 || 0;
-                                    var targetDomIdx = targetAbsIndex - newFirstAbs;
-                                    if (targetDomIdx < 0) targetDomIdx = 0;
-                                    if (targetDomIdx >= newIds.length) targetDomIdx = newIds.length - 1;
-
-                                    var targetId = newIds[targetDomIdx];
-                                    grid.resetSelection().setSelection(targetId);
-                                    scrollRowIntoView(grid, targetId);
-                                }
-                            });
+                            if (remainingBelow < pageHeightD && lastDomAbsIndex < totRec - 1) {
+                                var targetPageLoadD = s_maxPageLoaded + 1;
+                                // renderFromCache() arah 'down' cuma menambah baris di
+                                // bawah tanpa mengubah scrollTop, jadi tinggal ditambah
+                                // 1 layar dari posisi scroll yg sekarang.
+                                loadGridData(gridSelector, apiUrl, postData, targetPageLoadD, serverPageSize, 'down', 'page', function () {
+                                    bDivElD.scrollTop += pageHeightD;
+                                    afterScrollD();
+                                });
+                            } else {
+                                bDivElD.scrollTop = Math.min(bDivElD.scrollTop + pageHeightD, Math.max(0, bDivElD.scrollHeight - bDivElD.clientHeight));
+                                afterScrollD();
+                            }
                         }
                     } else if (e.keyCode === 36) { // Home
                         if (firstDomAbsIndex === 0) {
                             if (gridIds.length > 0) {
-                                grid.resetSelection().setSelection(gridIds[0]);
+                                selectGridRow(grid, gridIds[0]);
                                 scrollRowIntoView(grid, gridIds[0]);
                             }
                         } else {
@@ -798,7 +920,7 @@ function setCustomBindKeys(grid) {
                             loadGridData(gridSelector, apiUrl, postData, 1, serverPageSize, 'jump', 'jump', function () {
                                 var newIds = grid.getDataIDs();
                                 if (newIds.length > 0) {
-                                    grid.resetSelection().setSelection(newIds[0]);
+                                    selectGridRow(grid, newIds[0]);
                                     scrollRowIntoView(grid, newIds[0]);
                                 }
                             });
@@ -806,7 +928,7 @@ function setCustomBindKeys(grid) {
                     } else if (e.keyCode === 35) { // End
                         if (lastDomAbsIndex >= totRec - 1) {
                             if (gridIds.length > 0) {
-                                grid.resetSelection().setSelection(gridIds[gridIds.length - 1]);
+                                selectGridRow(grid, gridIds[gridIds.length - 1]);
                                 scrollRowIntoView(grid, gridIds[gridIds.length - 1]);
                             }
                         } else {
@@ -816,7 +938,7 @@ function setCustomBindKeys(grid) {
                             loadGridData(gridSelector, apiUrl, postData, lastPageLoad, serverPageSize, 'jump', 'jump', function () {
                                 var newIds = grid.getDataIDs();
                                 if (newIds.length > 0) {
-                                    grid.resetSelection().setSelection(newIds[newIds.length - 1]);
+                                    selectGridRow(grid, newIds[newIds.length - 1]);
                                     scrollRowIntoView(grid, newIds[newIds.length - 1]);
                                 }
                             });
@@ -824,12 +946,18 @@ function setCustomBindKeys(grid) {
                     }
                 }
 
-                // ENTER Handling
+                // ENTER Handling: default-nya panggil ondblClickRow (buka/aktifkan
+                // baris), tapi bisa dioverride lewat options.onEnter (mis. utk grid
+                // yg Enter-nya dipakai toggle checkbox spt di ApprovalTop).
                 if (13 === e.keyCode) {
                     if (selectedRow) {
-                        var ondblClickRowHandler = grid.jqGrid("getGridParam", "ondblClickRow");
-                        if (typeof ondblClickRowHandler === 'function') {
-                            ondblClickRowHandler.call(grid[0], selectedRow);
+                        if (typeof opts.onEnter === 'function') {
+                            opts.onEnter.call(grid[0], selectedRow, e);
+                        } else {
+                            var ondblClickRowHandler = grid.jqGrid("getGridParam", "ondblClickRow");
+                            if (typeof ondblClickRowHandler === 'function') {
+                                ondblClickRowHandler.call(grid[0], selectedRow);
+                            }
                         }
                     }
                 }
@@ -2685,7 +2813,12 @@ function showConfirm(statusText = "", message = "", urlDestination = "") {
                 },
                 click: function () {
                     $(this).dialog("close");
-                    if (urlDestination != "") {
+                    // processResult() adalah kait lama yang TIDAK terdefinisi di
+                    // mana pun (baik di sini maupun di Trucking). Tanpa penjagaan
+                    // typeof, tombol Cancel melempar ReferenceError sehingga
+                    // def.reject() di bawahnya tidak pernah jalan -- pemanggil yang
+                    // menunggu promise-nya jadi menggantung diam-diam.
+                    if (urlDestination != "" && typeof processResult === "function") {
                         processResult(true, urlDestination);
                     }
                     def.resolve();
@@ -2698,7 +2831,9 @@ function showConfirm(statusText = "", message = "", urlDestination = "") {
                 },
                 click: function () {
                     $(this).dialog("close");
-                    processResult(false);
+                    if (typeof processResult === "function") {
+                        processResult(false);
+                    }
                     def.reject();
                 },
             },
