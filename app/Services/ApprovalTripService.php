@@ -58,17 +58,6 @@ class ApprovalTripService
      */
     public function processApproval(array $ids, string $prosesdata, string $tgl, ?string $userId): array
     {
-        // FID baris uji tidak ada di TrApprovalTripH, jadi UPDATE-nya pasti
-        // mengenai 0 baris & terlaporkan sebagai "dilewati" -- pesan yang
-        // membingungkan, plus 500 query sia-sia ke server SQL. Ditolak di depan
-        // sekalian supaya mode uji yang lupa dimatikan langsung ketahuan.
-        if ($this->jumlahBarisUji() > 0) {
-            return $this->hasilProses(
-                'Mode data uji sedang aktif (approval.trip.dummyRows di .env). '
-                . 'Approve dimatikan supaya tidak ada UPDATE ke database memakai FID palsu.'
-            );
-        }
-
         if ($userId === null || trim($userId) === '') {
             return $this->hasilProses('Sesi Anda telah berakhir. Silakan login ulang.');
         }
@@ -141,69 +130,7 @@ class ApprovalTripService
         // membingungkan.
         $bit = in_array($bit, [0, 1], true) ? $bit : 0;
 
-        // Mode data uji: barisnya dibangkitkan, sisanya (mapRows, filterRows,
-        // sortRows, paging, "pilih semua") berjalan persis seperti biasa --
-        // jadi yang diuji memang jalur produksinya, bukan jalur khusus.
-        $jumlahUji = $this->jumlahBarisUji();
-
-        if ($jumlahUji > 0) {
-            return $this->mapRows($this->barisUji($jumlahUji, $tgl));
-        }
-
         return $this->mapRows($this->approvalTripModel->getData($tgl, $bit));
-    }
-
-    /**
-     * Banyaknya baris contoh yang dibangkitkan sebagai PENGGANTI data database,
-     * dibaca dari `approval.trip.dummyRows` di .env. 0 / tidak diisi = mati,
-     * jadi perilaku normalnya tidak berubah sama sekali.
-     *
-     * Gunanya menguji grid pada data banyak (lazy loading saat scroll, nomor
-     * baris, sort & filter lintas halaman, "pilih semua") tanpa perlu menulis
-     * satu baris pun ke TrApprovalTripH di server SQL yang dipakai bersama.
-     */
-    private function jumlahBarisUji(): int
-    {
-        return max(0, (int) env('approval.trip.dummyRows', 0));
-    }
-
-    /**
-     * Baris contoh dengan bentuk yang SAMA seperti keluaran
-     * ApprovalTripModel::getData() (FTgl, FJlhTrip, FMandor, FUserID, FID,
-     * FNMandor), supaya mapRows() tidak perlu tahu datanya dari mana.
-     *
-     * Nilainya sengaja bervariasi & deterministik (tidak acak): hasil sort dan
-     * pencarian jadi bisa diperiksa ulang, dan urutan yang sama selalu muncul
-     * lagi setelah reload.
-     */
-    private function barisUji(int $jumlah, string $tgl): array
-    {
-        $tanggal = date('Y-m-d', strtotime($tgl) ?: time());
-
-        $namaMandor = [
-            'SUPRIYADI', 'JOKO SANTOSO', 'AGUS SALIM', 'BAMBANG WIJAYA',
-            'RUDI HARTONO', 'ENDANG PURNOMO', 'TEGUH PRASETYO',
-        ];
-        $namaUser = ['ADMIN', 'DHARMA', 'SBY01', 'SBY02', 'OPERATOR'];
-
-        $rows = [];
-
-        for ($i = 1; $i <= $jumlah; $i++) {
-            $rows[] = [
-                'FID'      => 900000 + $i,
-                'FTgl'     => $tanggal,
-                // 1..25, jadi sort angka & filter rentang (gt/lt) ada bahannya
-                'FJlhTrip' => ($i % 25) + 1,
-                'FMandor'  => 'MDR' . str_pad((string)(($i % 20) + 1), 3, '0', STR_PAD_LEFT),
-                // Tiap kelipatan 10 dibiarkan tanpa nama, meniru FMandor yang
-                // tidak ada di MMandor (JOIN-nya LEFT) -- supaya cabang
-                // "kode tanpa nama" di mapRows() ikut terlihat saat diuji.
-                'FNMandor' => $i % 10 === 0 ? null : $namaMandor[$i % count($namaMandor)],
-                'FUserID'  => $namaUser[$i % count($namaUser)],
-            ];
-        }
-
-        return $rows;
     }
 
     /**

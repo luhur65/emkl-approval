@@ -6,9 +6,11 @@ use CodeIgniter\Model;
 
 /**
  * Modul Approval Trip memakai DATABASE TERPISAH, bukan database utama
- * aplikasi: TrApprovalTripH & MMandor ada di
- * TVPTTransporindoAgungSejahteraSby0001 (grup koneksi `dbtruck2`), persis
+ * aplikasi: TrApprovalTripH & MMandor ada di grup koneksi `dbtruck2`, persis
  * seperti CI3 yang memuat $this->dbtruck2 di ApprovalTrip::__construct().
+ * Nama database-nya berbeda tiap cabang (Surabaya, Medan, Jakarta, dst.),
+ * jadi jangan ditulis di sini -- isinya ditentukan `database.dbtruck2.database`
+ * di .env milik server masing-masing.
  *
  * Grup `dbtruck2` harus tetap terdaftar sebagai properti di
  * app/Config/Database.php. CodeIgniter\Config\BaseConfig hanya memetakan
