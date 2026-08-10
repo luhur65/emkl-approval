@@ -84,7 +84,7 @@ abstract class BaseController extends Controller
         return $this->response
             ->setStatusCode(503)
             ->setJSON([
-                'error' => 'Tidak bisa terhubung ke database ' . $namaDb . '. '
+                'error' => 'Tidak bisa terhubung ke database. '
                          . 'Server database-nya sedang tidak dapat dihubungi -- '
                          . 'silakan coba lagi, atau hubungi admin bila berlanjut.',
                 'msg'   => '',

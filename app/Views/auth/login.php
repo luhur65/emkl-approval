@@ -1,13 +1,19 @@
+<?php
+// Kode cabang ikut ditampilkan di halaman login supaya operator tahu server
+// cabang mana yang sedang dibuka -- tiap cabang memasang aplikasi yang sama
+// dengan tampilan identik, jadi tanpa label ini keduanya tidak bisa dibedakan.
+$judulAplikasi = config('Site')->fullTitle();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EMKL Approval System | Log in</title>
+  <title><?= esc($judulAplikasi) ?> | Log in</title>
 
   <!-- Meta Tags -->
-  <meta name="description" content="EMKL Approval System">
+  <meta name="description" content="<?= esc($judulAplikasi) ?>">
   
   <link rel="icon" href="<?= base_url('image/IcTas-Small.png') ?>" type="image/x-icon">
 
@@ -330,7 +336,7 @@
         <span>EMKL <em class="verdant-brand-italic">Approval</em></span>
       </div>
       <div class="verdant-nav-right">
-        <span class="verdant-nav-text d-none d-sm-inline">EMKL Approval</span>
+        <span class="verdant-nav-text d-none d-sm-inline"><?= esc($judulAplikasi) ?></span>
         <button type="button" class="verdant-theme-toggle" id="themeToggleBtn" aria-label="Toggle theme">
           <span id="themeIconContainer">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

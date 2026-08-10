@@ -1,66 +1,15 @@
 <?php
 // Migrated from CI3: application/helpers/my_helper.php
- 
-function Generate_ProcedureAll($SQL_Procedure,$cabang,$db="")  {
-
-    $resultSet = new stdClass();
-    $hostname  = [
-        "mdn"=>"tasmedan.dynu.com,1477",
-        "jkt"=>"tasjkt.dynu.com,1461",
-        "sby"=>"tassby.kozow.com,1451",
-        "mks"=>"tasmks.dynu.com,1450",
-        "pst"=>"192.168.3.39,1433" // Updated to use IP from .env
-    ];
-
-
-    $serverName =$hostname[$cabang];
-    $db = $db==""?"dbTas":$db;
-    $connectionInfo = array( "Database"=>$db, "UID"=>'sa', "PWD"=>'Aa123456'); // Updated to use Password from .env
-    
-    $conn = sqlsrv_connect( $serverName, $connectionInfo);
-    if( $conn === false ){
-        $resultSet->error_sql = strtoupper($cabang).' Tidak bisa terhubung ke server';
-        return $resultSet;
-    }
-    $tsql_callSP = $SQL_Procedure;
-    sqlsrv_configure("WarningsReturnAsErrors", 0);
-    $stmt = sqlsrv_query($conn, $tsql_callSP, null);
-    $error=0;
-    if( $stmt === false)
-    {
-        $error=1;
-        $resultSet->error_sql = strtoupper($cabang).' Query failed';
-        return $resultSet;
-    }
-
-    $isNotLastResult = true;
-    $i = 0;
-    $resultSet->error_sql="";
-    while (!is_null($isNotLastResult))
-    {
-        $result =array();
-        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC))
-        {
-            $result[] = $row;
-        }
-        $resultSet->error = $error;
-        $resultSet->data = $result;
-
-        $isNotLastResult = sqlsrv_next_result($stmt);
-        $retVal = sqlsrv_errors();
-        if(!empty($retVal)){
-            if($retVal[0]["code"]!=0){
-                $retVal = $retVal[0]["message"];
-                $retVal = preg_replace('/\\[Microsoft]\\[SQL Server Native Client [0-9]+.[0-9]+](\\[SQL Server\\])?/', '', $retVal);
-                $resultSet->error_sql .=$retVal."<br>";
-            }
-        }
-        $i++;
-    }
-    sqlsrv_free_stmt( $stmt);
-    sqlsrv_close( $conn );
-    return $resultSet;
-}
+//
+// CATATAN: Generate_ProcedureAll() / Generate_Procedure() warisan CI3 sudah
+// DIHAPUS dari sini. Isinya peta hostname SQL Server per cabang (mdn/jkt/sby/
+// mks/pst) plus user & password `sa` yang ditulis langsung di kode -- artinya
+// setiap kali ada cabang baru file ini harus diubah, dan kredensial produksi
+// ikut masuk ke repository. Tidak ada satu pun pemanggilnya di aplikasi CI4
+// ini: seluruh model sudah memakai koneksi CodeIgniter (`default` / `dbtruck2`)
+// yang dikonfigurasi lewat .env per server. Kalau nanti perlu memanggil Stored
+// Procedure lintas cabang, tambahkan grup koneksi baru di Config\Database +
+// .env, jangan hidupkan kembali fungsi ini.
 
 function string_sanitize($str) {
     $str = str_replace(array('\'', '"'), '', $str);
@@ -174,10 +123,6 @@ function print_sidebar_menu($data)
 //     }
 //     return $str;
 // }
-
-function Generate_Procedure($SQL_Procedure,$cabang,$db="")  {
-    return Generate_ProcedureAll($SQL_Procedure, $cabang, $db);
-}
 
 //custom function
 if(!function_exists('hasPermission')){

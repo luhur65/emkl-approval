@@ -52,6 +52,16 @@ $routes->match(['get', 'post'], 'approvaltrip/select_all_ids', 'ApprovalTrip::se
 $routes->post('approvaltrip/approved', 'ApprovalTrip::approved');
 $routes->post('approvaltrip/unapproved', 'ApprovalTrip::unapproved');
 
+// Approval Pengajuan Supir Serap Module. Sumbernya tabel TrApprovalAbsensi --
+// isian modul "Pengajuan Supir Serap" -- BUKAN TrApprovalAbsensiJam9 milik
+// approvalabsensi di bawah, meski namanya mirip. `unapproved` di sini hanya
+// mengembalikan FIsApp ke 0; barisnya tetap ada.
+$routes->get('approvalpengajuan', 'ApprovalPengajuan::index');
+$routes->match(['get', 'post'], 'approvalpengajuan/ajax_list', 'ApprovalPengajuan::ajax_list');
+$routes->match(['get', 'post'], 'approvalpengajuan/select_all_ids', 'ApprovalPengajuan::select_all_ids');
+$routes->post('approvalpengajuan/approved', 'ApprovalPengajuan::approved');
+$routes->post('approvalpengajuan/unapproved', 'ApprovalPengajuan::unapproved');
+
 // Approval Absensi Jam 9 Module. `unapproved` di sini MENGHAPUS penanda
 // approval (DELETE), bukan sekadar mengubah kolom status -- lihat
 // ApprovalAbsensiModel::batalkanApprove().
@@ -60,6 +70,16 @@ $routes->match(['get', 'post'], 'approvalabsensi/ajax_list', 'ApprovalAbsensi::a
 $routes->match(['get', 'post'], 'approvalabsensi/select_all_ids', 'ApprovalAbsensi::select_all_ids');
 $routes->post('approvalabsensi/approved', 'ApprovalAbsensi::approved');
 $routes->post('approvalabsensi/unapproved', 'ApprovalAbsensi::unapproved');
+
+// Approval Extra Supir Module. Filternya rentang tanggal (tgldari..tglsampai),
+// bukan satu hari seperti modul approval lain, mengikuti CI3. Seluruh
+// perubahan status lewat Stored Procedure Net_usp_appExtraSupir /
+// Net_usp_UnappExtraSupir -- lihat ApprovalExtraSupirModel.
+$routes->get('approvalextrasupir', 'ApprovalExtraSupir::index');
+$routes->match(['get', 'post'], 'approvalextrasupir/ajax_list', 'ApprovalExtraSupir::ajax_list');
+$routes->match(['get', 'post'], 'approvalextrasupir/select_all_ids', 'ApprovalExtraSupir::select_all_ids');
+$routes->post('approvalextrasupir/approved', 'ApprovalExtraSupir::approved');
+$routes->post('approvalextrasupir/unapproved', 'ApprovalExtraSupir::unapproved');
 // CATATAN: ini TIDAK memberi kompatibilitas URL gaya CI3. Config\Feature::
 // $autoRoutesImproved = true, dan AutoRouterImproved menyusun nama method sebagai
 // <verb> + <segmen URI> -- jadi `approvaltop/ajax_list` mencarinya sebagai

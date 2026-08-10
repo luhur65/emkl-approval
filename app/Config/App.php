@@ -216,10 +216,25 @@ class App extends BaseConfig
 
             $host = $_SERVER['HTTP_HOST'];
 
-            // ambil dari env atau pakai nama folder project fallback
-            $folder = getenv('app.folder') ?: 'emkl-approval-sby-ci4';
+            // Ambil dari env; kalau tidak diisi, turunkan dari lokasi front
+            // controller yang sedang dijalankan. Sebelumnya nama folder ditulis
+            // langsung di sini, jadi instance cabang lain yang dipasang di
+            // folder bernama beda menghasilkan baseURL yang salah (semua aset
+            // dan URL AJAX menunjuk ke folder yang tidak ada).
+            $folder = getenv('app.folder');
 
-            $this->baseURL = $scheme . '://' . $host . '/' . trim($folder, '/') . '/';
+            if ($folder === false || $folder === '') {
+                // Dipotong manual, bukan dengan dirname(): di Windows dirname()
+                // memulangkan '\' untuk '/index.php', sehingga aplikasi yang
+                // dipasang di root document root menghasilkan baseURL 'host/\/'.
+                $script  = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+                $slashAt = strrpos($script, '/');
+                $folder  = $slashAt === false ? '' : substr($script, 0, $slashAt);
+            }
+
+            $folder = trim($folder, '/');
+
+            $this->baseURL = $scheme . '://' . $host . '/' . ($folder === '' ? '' : $folder . '/');
         }
     }
 }
