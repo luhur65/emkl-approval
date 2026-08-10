@@ -14,9 +14,10 @@ use CodeIgniter\Model;
  * Karena itu tidak ada satu kolom id pun -- kuncinya gabungan
  * (FKGdg, FKSupir, FTgl).
  *
- * Seperti Approval Trip, tabelnya ada di database terpisah
- * TVPTTransporindoAgungSejahteraSby0001 (grup koneksi `dbtruck2`), sesuai CI3
- * yang memuat $this->dbtruck2 di ApprovalAbsensi::__construct().
+ * Seperti Approval Trip, tabelnya ada di database terpisah lewat grup koneksi
+ * `dbtruck2` (nama database-nya beda tiap cabang, lihat
+ * `database.dbtruck2.database` di .env), sesuai CI3 yang memuat
+ * $this->dbtruck2 di ApprovalAbsensi::__construct().
  */
 class ApprovalAbsensiModel extends Model
 {
