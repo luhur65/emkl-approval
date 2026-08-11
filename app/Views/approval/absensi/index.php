@@ -47,12 +47,17 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <div class="form-group filter-input-group">
                         <label class="filter-label">&nbsp;</label>
-                        <button type="button" id="btnReload" class="btn btn-default form-control">
-                            <i class="fas fa-sync-alt"></i> Reload
-                        </button>
+                        <div class="d-flex">
+                            <button type="button" id="btnReload" class="btn btn-primary flex-fill mr-2">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                            <button type="button" id="btnReset" class="btn btn-secondary flex-fill">
+                                <i class="fas fa-undo"></i> Reset
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -152,7 +157,7 @@
 
     var AKSI_UNAPPROVE = {
         prosesdata: '1',
-        label: 'BATAL APPROVE',
+        label: ' UNAPPROVE',
         url: "<?= base_url('approvalabsensi/unapproved') ?>",
         // Sengaja lebih tegas drpd approve: membatalkan di modul ini berarti
         // MENGHAPUS baris penanda dari TrApprovalAbsensiJam9, bukan sekadar
@@ -243,7 +248,7 @@
         id: 'btnUnApprove',
         group: 'approval',
         color: 'btn-danger',
-        text: 'Batal Approve',
+        text: 'Un Approve',
         onClick: function() { prosesApproval(AKSI_UNAPPROVE); }
     };
 
@@ -355,6 +360,24 @@
             $(this).closest('tr').find('.clearsearchclass')
                    .toggleClass('is-visible', $(this).val().length > 0);
         });
+    }
+
+    // Kembalikan kartu filter ke kondisi awal halaman (tanggal hari ini, proses
+    // data ke pilihan pertama) lalu buang pencarian global + filter per-kolom,
+    // sehingga grid tampil persis spt saat halaman baru dibuka.
+    function resetFilterGrid() {
+        $('#datepicker').val('<?= date('d-m-Y') ?>');
+        // 'change.select2' cuma menyegarkan tampilan select2; 'change' biasa ikut
+        // menjalankan handler filter di bawah -- grid jadi dimuat dua kali.
+        $('#prosesdata').val('0').trigger('change.select2');
+        syncApprovalMenuState();
+
+        $grid[0].clearToolbar(false);
+        $grid.jqGrid('clearGlobalSearch');
+        syncColumnClearButtons();
+        $grid.jqGrid('setGridParam', { search: false, postData: { filters: '' } });
+
+        resetSelectionAndReload();
     }
 
     $(document).ready(function() {
@@ -630,6 +653,10 @@
 
         $('#btnReload').click(function() {
             resetSelectionAndReload();
+        });
+
+        $('#btnReset').click(function() {
+            resetFilterGrid();
         });
 
         // Isi modal dibangun ulang pager.js tiap kali tombol pager ditekan, jadi
