@@ -41,14 +41,18 @@ class ApprovalTopService
     }
 
     /**
-     * Baris subgrid (detail invoice per FJurnal) yang sudah siap tampil.
+     * Detail invoice per FJurnal untuk subgrid, dalam bentuk respons standar
+     * subgrid jqGrid ({ rows: [...] }, sesuai jsonReader.subgrid.root bawaan).
+     * Isinya dirender grid.subgrid.js sendiri lewat subGridModel di view, jadi
+     * urutan & judul kolom TIDAK ditentukan di sini -- hanya nama kuncinya yang
+     * harus cocok dengan `mapping` di sana.
      *
      * Sama seperti kolom grid utama, tanggal & uang diformat di SINI, bukan di
      * klien: satu-satunya tempat yang tahu bentuk mentah kiriman SP adalah
      * server, dan menyebar aturan formatnya ke view membuat dua modul yang
      * menampilkan angka sama jadi mudah berbeda.
      */
-    public function getDetailRows(string $jurnal): array
+    public function getSubGridList(string $jurnal): \stdClass
     {
         $rows = [];
         foreach ($this->approvalTopModel->getDetail($jurnal) as $d) {
@@ -57,12 +61,18 @@ class ApprovalTopService
                 'FNPiutg'         => $d['FNPiutg'] ?? '',
                 'FTglInvoice'     => $this->formatTanggal($d['FTglInvoice'] ?? ''),
                 'FNominalInvoice' => $this->formatUang($d['FNominalInvoice'] ?? 0),
-                'FJumlahHari'     => $d['FJumlahHari'] ?? '',
-                'FTop'            => $d['FTop'] ?? '',
+                // Sengaja string, bukan angka: renderer subgrid bawaan menulis
+                // sel dengan `nilai || '&#160;'`, sehingga angka 0 tampil sebagai
+                // sel kosong sedangkan string "0" tetap tercetak.
+                'FJumlahHari'     => (string) ($d['FJumlahHari'] ?? ''),
+                'FTop'            => (string) ($d['FTop'] ?? ''),
             ];
         }
 
-        return $rows;
+        $responce       = new \stdClass();
+        $responce->rows = $rows;
+
+        return $responce;
     }
 
     // ------------------------------------------------------------------

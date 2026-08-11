@@ -37,8 +37,9 @@ class ApprovalTop extends BaseController
         }
 
         // Lewat service, bukan model langsung: tanggal & nominal invoice perlu
-        // diformat dulu untuk tampilan (lihat ApprovalTopService::getDetailRows).
-        return $this->response->setJSON($this->approvalTopService->getDetailRows($jurnal));
+        // diformat dulu untuk tampilan, dan balasannya harus berbentuk respons
+        // subgrid jqGrid (lihat ApprovalTopService::getSubGridList).
+        return $this->response->setJSON($this->approvalTopService->getSubGridList($jurnal));
     }
 
     /**

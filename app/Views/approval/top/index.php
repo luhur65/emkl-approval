@@ -14,6 +14,26 @@
        tas-lib/css/styles.css (bagian "KOLOM CHECKBOX + NOMOR BARIS JQGRID"
        dan "KOLOM SUBGRID (TREE) JQGRID") */
 
+    /* --- Tabel detail di dalam subgrid ---------------------------------
+       Renderer subgrid bawaan jqGrid menempelkan tabelnya langsung ke
+       div.tablediv tanpa pembungkus berpadding, jadi tabel menempel ke tepi
+       sel. Diberi jarak di sini. */
+    #gview_jqGrid .ui-subgrid .tablediv {
+        padding: 0.75rem;
+    }
+
+    /* Sel pertama tiap baris kena aturan global
+       ".ui-jqgrid tr > td:first-of-type { padding-left: 0 !important }" di
+       tas-lib/css/styles.css -- aturan itu ditujukan untuk kolom checkbox
+       grid INDUK, tapi ikut mengenai tabel detail karena sama-sama berada di
+       dalam .ui-jqgrid, sehingga teks kolom pertama mepet ke garis tepi.
+       Dikembalikan di sini saja, bukan di styles.css, supaya grid modul lain
+       tidak ikut bergeser. !important wajib: yang ditimpa juga !important. */
+    #gview_jqGrid .ui-subgrid .tablediv > table > tbody > tr > td:first-of-type,
+    #gview_jqGrid .ui-subgrid .tablediv > table > tbody > tr > th:first-of-type {
+        padding-left: 0.75rem !important;
+    }
+
     /* Datepicker Colors */
     .holiday-date a.ui-state-default {
         color: #dc3545 !important;
@@ -479,6 +499,37 @@
         resetSelectionAndReload();
     }
 
+    // --- Pembatalan permintaan detail subgrid --------------------------------
+    // jqGrid tidak menyediakan pembatalan sendiri: `reloadOnExpand` bawaan
+    // bernilai true, jadi TIAP kali baris dibuka permintaan detail dikirim ulang,
+    // dan balasan yang datang terlambat tetap ditempelkan ke wadah baris yang
+    // sudah dibuat ulang. Buka-tutup-buka baris yang sama karena itu bisa
+    // meninggalkan dua tabel bertumpuk. Pegangan requestnya disimpan per baris di
+    // sini lalu dibatalkan dari ajaxSubgridOptions.beforeSend.
+    var permintaanSubgrid = {};
+
+    // Wadah yang dibuat jqGrid untuk menampung tabel detail satu baris:
+    // <div id="<id grid>_<id baris>" class="tablediv">.
+    function wadahSubgrid(idBaris) {
+        return 'jqGrid_' + idBaris;
+    }
+
+    // populatesubgrid() selalu menyertakan id baris sebagai parameter `id`
+    // (jqGrid prmNames.subgridid), jadi id-nya dibaca balik dari URL request --
+    // itu satu-satunya penanda baris yang tersedia di dalam handler $.ajax,
+    // karena handler-nya dipasang sekali di konfigurasi grid, bukan per baris.
+    function idBarisSubgrid(url) {
+        var cocok = /[?&]id=([^&]*)/.exec(url || '');
+        return cocok ? decodeURIComponent(cocok[1]) : '';
+    }
+
+    function batalkanPermintaanSubgrid(idBaris) {
+        if (permintaanSubgrid[idBaris]) {
+            permintaanSubgrid[idBaris].abort();
+            delete permintaanSubgrid[idBaris];
+        }
+    }
+
     $(document).ready(function() {
         // Ambil data hari libur
         var holidays = [];
@@ -628,6 +679,88 @@
             rownumbers: false,
             multiselect: false,
             subGrid: true,
+            // Isi subgrid dirender jqGrid sendiri (populatesubgrid() di
+            // grid.subgrid.js) dari subGridModel + subGridUrl di bawah.
+            // SYARAT MUTLAK: subGridRowExpanded TIDAK boleh didefinisikan --
+            // begitu callback itu ada, jqGrid memanggilnya sbg GANTI
+            // populatesubgrid(), dan seluruh jalur bawaan ini tidak pernah jalan.
+            subGridModel: [{
+                // `name` = judul kolom yang tampil, `mapping` = nama kunci di
+                // JSON balasan. Tanpa `mapping`, jqGrid memakai `name` sbg
+                // keduanya sekaligus -- judul kolom jadi terikat nama field.
+                name:    ['No Invoice', 'No Piutang', 'Tgl Invoice', 'Nominal Invoice', 'Jumlah Hari', 'TOP'],
+                mapping: ['FNInvoice', 'FNPiutg', 'FTglInvoice', 'FNominalInvoice', 'FJumlahHari', 'FTop'],
+                width:   [150, 170, 110, 150, 110, 80],
+                align:   ['left', 'left', 'center', 'right', 'right', 'right']
+            }],
+            // WAJIB diisi. Kalau dikosongkan, jqGrid memakai `datatype` grid ini
+            // -- 'local' (dipakai lazy loading) -- sedangkan switch di
+            // populatesubgrid() hanya mengenal 'xml'/'json', sehingga request
+            // detail tidak pernah dikirim & subgrid diam-diam tampil kosong.
+            subgridtype: 'json',
+            // dp.id = id baris yang dibuka (FJurnal). Bentuk fungsi dipakai
+            // supaya id masuk sbg segmen URL, sesuai route yang sudah ada:
+            // approvaltop/get_detail/(:any).
+            subGridUrl: function(dp) {
+                return "<?= site_url('approvaltop/get_detail') ?>/" + encodeURIComponent(dp.id);
+            },
+            // type: tanpa ini subgrid ikut `mtype` grid induk (POST), sedangkan
+            // get_detail terdaftar sbg route GET -- dan membaca detail memang GET.
+            //
+            // beforeSend/complete: dipasang utk mengembalikan pembatalan
+            // permintaan per baris (lihat catatan panjang di atas
+            // permintaanSubgrid). $.extend di populatesubgrid() menaruh
+            // ajaxSubgridOptions PALING AKHIR, jadi `complete` di sini MENIMPA
+            // milik library -- karena itu pemanggilan renderernya ditulis ulang
+            // di bawah lewat subGridJson(), API publik yang memang disediakan
+            // grid.subgrid.js untuk keperluan ini.
+            ajaxSubgridOptions: {
+                type: 'GET',
+                beforeSend: function(jqXHR) {
+                    var id = idBarisSubgrid(this.url);
+
+                    batalkanPermintaanSubgrid(id);
+                    permintaanSubgrid[id] = jqXHR;
+
+                    // Penjaga bawaan: populatesubgrid() menyetel hDiv.loading =
+                    // true sblm mengirim, lalu menolak permintaan subgrid lain
+                    // selama masih true -- sehingga membuka baris kedua saat
+                    // baris pertama masih memuat akan diabaikan diam-diam dan
+                    // subgridnya tinggal kosong. Dilepas di sini supaya tiap
+                    // baris berjalan sendiri-sendiri, persis spt sebelumnya.
+                    // Aman: pengisi grid induk adalah loadGridData()
+                    // (lazyLoadingGridMonolith.js) yg tidak memakai flag ini.
+                    $grid[0].grid.hDiv.loading = false;
+                },
+                complete: function(jqXHR, status) {
+                    var id = idBarisSubgrid(this.url);
+
+                    if (permintaanSubgrid[id] === jqXHR) {
+                        delete permintaanSubgrid[id];
+                    }
+
+                    // Inti dari pembatalan. Balasan yg dibatalkan TIDAK boleh
+                    // ikut dirender: $.jgrid.parse('') mengembalikan {} (bukan
+                    // error), dan subGridJson({}) tetap menempelkan tabel berisi
+                    // header saja ke wadah baris -- persis di atas tabel milik
+                    // permintaan yg baru.
+                    if (status === 'abort') {
+                        return;
+                    }
+
+                    // subGridJson meng-APPEND, bukan mengganti isi. Wadah
+                    // dikosongkan dulu supaya balasan yg datang terlambat tidak
+                    // menumpuk tabel kedua di baris yg sama.
+                    $('#' + $.jgrid.jqID(wadahSubgrid(id))).empty();
+                    $grid[0].subGridJson($.jgrid.parse(jqXHR.responseText), id);
+                }
+            },
+            // Balasan dibaca sbg objek ber-nama kunci ({FNInvoice: ...}), bukan
+            // array posisional bawaan ({cell: [...]}), supaya urutan kolom di
+            // view dan urutan field di server tidak diam-diam saling bergantung.
+            // `root: 'rows'` & sisanya tetap bawaan: jqGrid meng-extend jsonReader
+            // secara dalam (grid.base.js), jadi ini menambah, bukan menimpa.
+            jsonReader: { subgrid: { repeatitems: false } },
             onSortCol: function(index, iCol, sortorder) {
                 // Lazy loading pakai datatype:'local', jadi sort HARUS lewat server
                 // (bukan sort lokal jqgrid yg cuma mengurutkan window baris yg sedang tampil).
@@ -654,38 +787,6 @@
                     loadGridData("#jqGrid", apiUrl, $grid.jqGrid('getGridParam', 'postData'), 1, $grid.jqGrid('getGridParam', 'rowNum'), 'jump', 'reload');
                 }
                 return 'stop';
-            },
-            subGridRowExpanded: function(subgrid_id, row_id) {
-                var rowData = $(this).jqGrid('getRowData', row_id);
-                var noJurnal = rowData['FJurnal'];
-                
-                var subgrid_table_id = subgrid_id + "_t";
-                $("#" + subgrid_id).html("<div class='p-3'><table id='" + subgrid_table_id + "' class='table table-sm table-bordered'></table></div>");
-                
-                if (window.subGridRequests === undefined) window.subGridRequests = {};
-                if (window.subGridRequests[row_id]) {
-                    window.subGridRequests[row_id].abort();
-                }
-
-                window.subGridRequests[row_id] = $.ajax({
-                    type: "GET",
-                    url: "<?= site_url('approvaltop/get_detail') ?>/" + noJurnal,
-                    dataType: "json",
-                    success: function(result) {
-                        // Kolom angka (nominal, jumlah hari, TOP) rata kanan. Nilai
-                        // nominalnya sendiri sudah diformat server -- lihat
-                        // ApprovalTopService::getDetailRows().
-                        var html = '<thead class="thead-light"><tr><th>No Invoice</th><th>No Piutang</th><th>Tgl Invoice</th><th class="text-right">Nominal Invoice</th><th class="text-right">Jumlah Hari</th><th class="text-right">TOP</th></tr></thead><tbody>';
-                        for(var i=0; i<result.length; i++){
-                            html += '<tr><td>' + result[i].FNInvoice+'</td><td>'+result[i].FNPiutg+'</td><td>' + result[i].FTglInvoice +'</td><td class="text-right">'+result[i].FNominalInvoice +'</td><td class="text-right">' + result[i].FJumlahHari + '</td><td class="text-right">' +  result[i].FTop + '</td></tr>';
-                        }
-                        html += '</tbody>';
-                        $("#" + subgrid_table_id).html(html);
-                    },
-                    complete: function() {
-                        delete window.subGridRequests[row_id];
-                    }
-                });
             },
             // altRows sengaja dimatikan (default jqGrid): selain altclass,
             // altRows:true jg menambah kelas table-striped ke <table> (grid.js 5180)
