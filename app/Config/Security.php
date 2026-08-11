@@ -70,8 +70,18 @@ class Security extends BaseConfig
      * --------------------------------------------------------------------------
      *
      * Regenerate CSRF Token on every submission.
+     *
+     * DIMATIKAN dengan sengaja. Halaman di aplikasi ini menanam hash sekali
+     * saat dirender (Views/partials/header.php) lalu memakainya untuk semua
+     * request AJAX berikutnya. Bila token diputar tiap kiriman, hash yang
+     * tertanam itu langsung basi sesudah POST pertama -- praktisnya: approve
+     * pertama berhasil, approve kedua di halaman yang sama ditolak 403 sampai
+     * user memuat ulang halaman.
+     *
+     * Menyalakannya kembali baru aman kalau sisi klien ikut menyegarkan token
+     * dari respons tiap kali selesai POST.
      */
-    public bool $regenerate = true;
+    public bool $regenerate = false;
 
     /**
      * --------------------------------------------------------------------------
@@ -80,7 +90,14 @@ class Security extends BaseConfig
      *
      * Redirect to previous page with error on failure.
      *
+     * DIPAKSA false, tidak lagi mengikuti ENVIRONMENT. Hampir semua penulisan
+     * di aplikasi ini lewat AJAX, dan redirect atas kegagalan CSRF akan diikuti
+     * jQuery diam-diam lalu HTML halaman tujuan diserahkan ke handler success
+     * -- penolakan jadi terbaca sebagai keberhasilan, persis kelas bug yang
+     * sudah diperbaiki di App\Filters\AuthFilter. Dengan false, kegagalan CSRF
+     * keluar sebagai 403 yang bisa dibedakan sisi klien.
+     *
      * @see https://codeigniter4.github.io/userguide/libraries/security.html#redirection-on-failure
      */
-    public bool $redirect = (ENVIRONMENT === 'production');
+    public bool $redirect = false;
 }

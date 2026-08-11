@@ -45,6 +45,18 @@ $routes->post('approvalpharga/approved_cetak', 'ApprovalPharga::approved_cetak')
 
 $routes->get('harilibur', 'Harilibur::index');
 
+// Pengajuan Trip (sisi ENTRI, dipakai mandor). Didaftarkan LEBIH DULU daripada
+// route approval di bawahnya supaya `approvaltrip/approval` tidak pernah
+// tertangkap sebagai parameter halaman entri.
+//
+// `hapus` sengaja POST-only: CI3 memakai `approvaltrip/delete/$id` yang juga
+// menerima GET, sehingga cukup sebuah <img src="..."> di halaman mana pun untuk
+// menghapus data atas nama user yang sedang login.
+$routes->get('approvaltrip', 'ApprovalTrip::index');
+$routes->match(['get', 'post'], 'approvaltrip/ajax_list_pengajuan', 'ApprovalTrip::ajax_list_pengajuan');
+$routes->post('approvaltrip/simpan', 'ApprovalTrip::simpan');
+$routes->post('approvaltrip/hapus/(:num)', 'ApprovalTrip::hapus/$1');
+
 // Approval Trip Module
 $routes->get('approvaltrip/approval', 'ApprovalTrip::approval');
 $routes->match(['get', 'post'], 'approvaltrip/ajax_list', 'ApprovalTrip::ajax_list');
@@ -61,6 +73,18 @@ $routes->match(['get', 'post'], 'approvalpengajuan/ajax_list', 'ApprovalPengajua
 $routes->match(['get', 'post'], 'approvalpengajuan/select_all_ids', 'ApprovalPengajuan::select_all_ids');
 $routes->post('approvalpengajuan/approved', 'ApprovalPengajuan::approved');
 $routes->post('approvalpengajuan/unapproved', 'ApprovalPengajuan::unapproved');
+
+// Pengajuan Supir Serap (sisi ENTRI, dipakai mandor). Menulis ke tabel yang
+// sama dengan approvalpengajuan di atas (TrApprovalAbsensi) tapi hak aksesnya
+// berbeda -- lihat Controllers/Pengajuan.php.
+//
+// `simpan` menggantikan nama CI3 `approved`, yang menyesatkan: isinya INSERT
+// pengajuan baru, bukan approval. `hapus` POST-only, alasan sama seperti
+// approvaltrip/hapus di atas.
+$routes->get('pengajuan', 'Pengajuan::index');
+$routes->match(['get', 'post'], 'pengajuan/ajax_list', 'Pengajuan::ajax_list');
+$routes->post('pengajuan/simpan', 'Pengajuan::simpan');
+$routes->post('pengajuan/hapus/(:num)', 'Pengajuan::hapus/$1');
 
 // Approval Absensi Jam 9 Module. `unapproved` di sini MENGHAPUS penanda
 // approval (DELETE), bukan sekadar mengubah kolom status -- lihat

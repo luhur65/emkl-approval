@@ -53,8 +53,18 @@ class Cookie extends BaseConfig
      * --------------------------------------------------------------------------
      *
      * Cookie will only be set if a secure HTTPS connection exists.
+     *
+     * Bawaannya SEKARANG true: produksi diakses lewat HTTPS (Config\App
+     * membaca X-Forwarded-Proto dari Cloudflare Tunnel), dan cookie sesi yang
+     * boleh lewat HTTP polos bisa disadap di jaringan.
+     *
+     * Aman-secara-bawaan disengaja: server baru yang .env-nya belum lengkap
+     * ikut mendapat setelan yang benar. Mesin pengembangan yang melayani lewat
+     * http:// polos harus mematikannya lewat `cookie.secure = false` di .env
+     * masing-masing -- kalau tidak, cookie sesi tidak akan pernah terkirim dan
+     * login seperti gagal terus tanpa pesan.
      */
-    public bool $secure = false;
+    public bool $secure = true;
 
     /**
      * --------------------------------------------------------------------------

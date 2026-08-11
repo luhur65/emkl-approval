@@ -74,7 +74,16 @@ class Filters extends BaseFilters
     public array $globals = [
         'before' => [
             // 'honeypot',
-            // 'csrf',
+            // CSRF diperiksa untuk SELURUH request pengubah data (POST/PUT/
+            // DELETE); GET dilewati sendiri oleh filternya. Tokennya disisipkan
+            // sebagai header X-CSRF-TOKEN oleh $.ajaxPrefilter di
+            // Views/partials/header.php, jadi tidak ada view atau pemanggil
+            // grid yang perlu mengurusnya satu per satu.
+            //
+            // Berpasangan dengan Config\Security::$regenerate = false. Kalau
+            // regenerate dinyalakan, hash yang tertanam di halaman jadi basi
+            // sesudah POST pertama dan POST kedua di halaman yang sama ditolak.
+            'csrf',
             // 'invalidchars',
             'auth' => ['except' => ['login', 'login/*', '/']],
         ],

@@ -368,8 +368,30 @@ function loadGridData(gridId, api, postData, pageNumber, rowsCount, direction = 
                 state.totalPages = res.total;
 
                 if (!res.rows || !res.rows.length) {
-                    if (!onlyCache) state.loading = false;
                     if (state.lsPrefetchingPages) state.lsPrefetchingPages.delete(pageNumber);
+                    if (onlyCache) return;
+
+                    state.loading = false;
+
+                    // Hasil kosong TIDAK boleh berhenti di sini begitu saja: jalur
+                    // normal (renderFromCache) yg biasanya menyegarkan teks pager
+                    // tidak pernah tercapai, jadi tanpa bagian ini info lama tetap
+                    // tertinggal -- ganti filter dr "Approved" (29 baris) ke "Un
+                    // Approved" (0 baris) menampilkan grid kosong tapi keterangan
+                    // "View 1 - 29 of 29" masih terbaca di pojok pager.
+                    if (proses === 'reload' || proses === 'jump') {
+                        state.currentViewPage = pageNumber;
+                        state.minPageLoaded = pageNumber;
+                        state.maxPageLoaded = pageNumber;
+                        grid.jqGrid('setGridParam', { page: pageNumber, records: state.totalRecord });
+                    }
+
+                    updateGridInfoFast(grid);
+
+                    // Callback-nya jg wajib dipanggil: pemanggil memakainya utk
+                    // mengembalikan fokus/caret ke kotak filter kolom, dan tanpa itu
+                    // fokus hilang tepat saat ketikan user belum menemukan hasil.
+                    if (callback) callback(res);
                     return;
                 }
 
@@ -636,12 +658,22 @@ function refreshRowNumbers(grid, pageNumber, rowLimit) {
 
 function updateGridInfoFast(grid) {
     var state = getGridState(grid);
+    var gridIdStr = grid.attr('id') || grid.getGridParam('id');
+    var total = parseInt(state.totalRecord, 10) || 0;
+
+    // Grid tanpa baris (filter/pencarian tanpa hasil): rumus di bawah tetap
+    // menghasilkan angka mulai 1 & memakai rowsPerPage sbg jumlah baris, jadi
+    // hasilnya "View 1 - 50 of 0". Kasus kosong ditangani terpisah.
+    if (total === 0 || grid.jqGrid('getDataIDs').length === 0) {
+        $('#' + gridIdStr + 'InfoHandler').text('View 0 - 0 of ' + total);
+        return;
+    }
+
     var start = (state.currentViewPage - 1) * rowsPerPage + 1;
     var actual = state.cachedData[state.currentViewPage] ? state.cachedData[state.currentViewPage].length : rowsPerPage;
     var end = start + actual - 1;
-    if (state.totalRecord > 0 && end > state.totalRecord) end = state.totalRecord;
-    var gridIdStr = grid.attr('id') || grid.getGridParam('id');
-    $('#' + gridIdStr + 'InfoHandler').text('View ' + start + ' - ' + end + ' of ' + state.totalRecord);
+    if (end > total) end = total;
+    $('#' + gridIdStr + 'InfoHandler').text('View ' + start + ' - ' + end + ' of ' + total);
 }
 
 function detectCurrentViewPage(grid) {

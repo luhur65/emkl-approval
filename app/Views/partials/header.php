@@ -59,6 +59,48 @@
         const baseUrl = '<?= base_url() ?>';
         window.apiUrl = appUrl;
 
+        // ------------------------------------------------------------------
+        // CSRF: satu penyuntik untuk SELURUH request AJAX
+        // ------------------------------------------------------------------
+        // Dipasang di sini, tepat setelah jQuery dimuat dan sebelum satu pun
+        // view sempat mengirim request, supaya tidak ada jalur yang terlewat.
+        //
+        // Alasannya: token tidak bisa dititipkan lewat data POST tiap view.
+        // Grid mengirim POST-nya sendiri -- jqGrid lewat `postData`, dan
+        // lazyLoadingGridMonolith.js lewat $.ajax miliknya sendiri -- yang
+        // keduanya tidak tahu-menahu soal token. Menaruhnya di header berarti
+        // isi request tidak perlu disentuh sama sekali.
+        //
+        // Hanya untuk request yang MENGUBAH data; GET dilewati karena filter
+        // CSRF CodeIgniter pun tidak memeriksanya. Request ke host lain juga
+        // dilewati supaya token tidak ikut terkirim ke luar.
+        //
+        // Nilainya tetap sepanjang sesi karena Config\Security::$regenerate
+        // di-set false. Kalau suatu saat dinyalakan, hash yang tertanam di
+        // halaman ini menjadi basi setelah POST pertama dan request berikutnya
+        // akan ditolak 403 -- keduanya harus diubah bersamaan.
+        window.csrfHeaderName = '<?= csrf_header() ?>';
+        window.csrfHash = '<?= csrf_hash() ?>';
+
+        $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+            var metode = (options.type || 'GET').toUpperCase();
+
+            if (metode === 'GET' || metode === 'HEAD' || metode === 'OPTIONS') {
+                return;
+            }
+
+            // Absolut ke host lain -> jangan disisipi. URL relatif (yang dipakai
+            // seluruh view di aplikasi ini) selalu same-origin.
+            if (/^https?:\/\//i.test(options.url || '')) {
+                var asal = window.location.protocol + '//' + window.location.host;
+                if ((options.url || '').indexOf(asal) !== 0) {
+                    return;
+                }
+            }
+
+            jqXHR.setRequestHeader(window.csrfHeaderName, window.csrfHash);
+        });
+
         (function() {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') {
