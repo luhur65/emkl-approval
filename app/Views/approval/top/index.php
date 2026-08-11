@@ -50,12 +50,17 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <div class="form-group filter-input-group">
                         <label class="filter-label">&nbsp;</label>
-                        <button type="button" id="btnReload" class="btn btn-default form-control">
-                            <i class="fas fa-sync-alt"></i> Reload
-                        </button>
+                        <div class="d-flex">
+                            <button type="button" id="btnReload" class="btn btn-primary flex-fill mr-2">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                            <button type="button" id="btnReset" class="btn btn-secondary flex-fill">
+                                <i class="fas fa-undo"></i> Reset
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -456,6 +461,24 @@
         });
     }
 
+    // Kembalikan kartu filter ke kondisi awal halaman (tanggal hari ini, proses
+    // data ke pilihan pertama) lalu buang pencarian global + filter per-kolom,
+    // sehingga grid tampil persis spt saat halaman baru dibuka.
+    function resetFilterGrid() {
+        $('#datepicker').val('<?= date('d-m-Y') ?>');
+        // 'change.select2' cuma menyegarkan tampilan select2; 'change' biasa ikut
+        // menjalankan handler filter di bawah -- grid jadi dimuat dua kali.
+        $('#prosesdata').val('0').trigger('change.select2');
+        syncApprovalMenuState();
+
+        $grid[0].clearToolbar(false);
+        $grid.jqGrid('clearGlobalSearch');
+        syncColumnClearButtons();
+        $grid.jqGrid('setGridParam', { search: false, postData: { filters: '' } });
+
+        resetSelectionAndReload();
+    }
+
     $(document).ready(function() {
         // Ambil data hari libur
         var holidays = [];
@@ -649,9 +672,12 @@
                     url: "<?= site_url('approvaltop/get_detail') ?>/" + noJurnal,
                     dataType: "json",
                     success: function(result) {
-                        var html = '<thead class="thead-light"><tr><th>No Invoice</th><th>No Piutang</th><th>Tgl Invoice</th><th>Nominal Invoice</th><th>Jumlah Hari</th><th>TOP</th></tr></thead><tbody>';
+                        // Kolom angka (nominal, jumlah hari, TOP) rata kanan. Nilai
+                        // nominalnya sendiri sudah diformat server -- lihat
+                        // ApprovalTopService::getDetailRows().
+                        var html = '<thead class="thead-light"><tr><th>No Invoice</th><th>No Piutang</th><th>Tgl Invoice</th><th class="text-right">Nominal Invoice</th><th class="text-right">Jumlah Hari</th><th class="text-right">TOP</th></tr></thead><tbody>';
                         for(var i=0; i<result.length; i++){
-                            html += '<tr><td>' + result[i].FNInvoice+'</td><td>'+result[i].FNPiutg+'</td><td>' + result[i].FTglInvoice +'</td><td>'+result[i].FNominalInvoice +'</td><td>' + result[i].FJumlahHari + '</td><td>' +  result[i].FTop + '</td></tr>';
+                            html += '<tr><td>' + result[i].FNInvoice+'</td><td>'+result[i].FNPiutg+'</td><td>' + result[i].FTglInvoice +'</td><td class="text-right">'+result[i].FNominalInvoice +'</td><td class="text-right">' + result[i].FJumlahHari + '</td><td class="text-right">' +  result[i].FTop + '</td></tr>';
                         }
                         html += '</tbody>';
                         $("#" + subgrid_table_id).html(html);
@@ -837,6 +863,10 @@
 
         $("#btnReload").on('click', function(){
             reloadApprovalTopGrid();
+        });
+
+        $("#btnReset").on('click', function(){
+            resetFilterGrid();
         });
 
         // Samakan status tombol modal dgn filter yg aktif saat halaman dibuka --

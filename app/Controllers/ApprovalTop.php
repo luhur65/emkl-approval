@@ -36,8 +36,9 @@ class ApprovalTop extends BaseController
             return $tolak;
         }
 
-        $data = $this->approvalTopModel->getDetail($jurnal);
-        return $this->response->setJSON($data);
+        // Lewat service, bukan model langsung: tanggal & nominal invoice perlu
+        // diformat dulu untuk tampilan (lihat ApprovalTopService::getDetailRows).
+        return $this->response->setJSON($this->approvalTopService->getDetailRows($jurnal));
     }
 
     /**

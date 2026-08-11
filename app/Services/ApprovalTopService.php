@@ -40,6 +40,31 @@ class ApprovalTopService
         return $this->keysOf($this->rowsApproval($params), $params, 'FJurnal');
     }
 
+    /**
+     * Baris subgrid (detail invoice per FJurnal) yang sudah siap tampil.
+     *
+     * Sama seperti kolom grid utama, tanggal & uang diformat di SINI, bukan di
+     * klien: satu-satunya tempat yang tahu bentuk mentah kiriman SP adalah
+     * server, dan menyebar aturan formatnya ke view membuat dua modul yang
+     * menampilkan angka sama jadi mudah berbeda.
+     */
+    public function getDetailRows(string $jurnal): array
+    {
+        $rows = [];
+        foreach ($this->approvalTopModel->getDetail($jurnal) as $d) {
+            $rows[] = [
+                'FNInvoice'       => $d['FNInvoice'] ?? '',
+                'FNPiutg'         => $d['FNPiutg'] ?? '',
+                'FTglInvoice'     => $this->formatTanggal($d['FTglInvoice'] ?? ''),
+                'FNominalInvoice' => $this->formatUang($d['FNominalInvoice'] ?? 0),
+                'FJumlahHari'     => $d['FJumlahHari'] ?? '',
+                'FTop'            => $d['FTop'] ?? '',
+            ];
+        }
+
+        return $rows;
+    }
+
     // ------------------------------------------------------------------
     // Aksi
     // ------------------------------------------------------------------
