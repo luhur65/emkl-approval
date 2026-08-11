@@ -1,3 +1,6 @@
+    <footer class="main-footer">
+        <strong>Design &copy; by <a href="#">IT PUSAT</a>.</strong>
+    </footer>
     </div>
     <!-- ./wrapper -->
 
