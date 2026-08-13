@@ -1,3 +1,43 @@
+// ---------------------------------------------------------------------------
+// Kembalikan style tombol pada dialog jQuery UI
+// ---------------------------------------------------------------------------
+// jQuery UI membangun tombol dialognya lewat $.fn.button (widget miliknya
+// sendiri). Widget itulah yang memasang class ui-button/ui-corner-all/
+// ui-widget -- yaitu class yang distyle theme cupertino dan aturan
+// `.ui-dialog .ui-dialog-buttonpane .ui-button` di tas-lib/css/styles.css.
+//
+// Masalahnya bootstrap.bundle.min.js dimuat SETELAH jquery-ui (jquery-ui di
+// partials/header.php, bootstrap di partials/footer.php) dan Bootstrap
+// mendefinisikan $.fn.button versinya sendiri, sehingga widget jQuery UI
+// tertimpa. Akibatnya tombol Ok keluar sebagai <button> polos tanpa satu pun
+// class -- tampil sbg tombol bawaan browser (kotak, abu-abu, border outset).
+//
+// Ditambal di prototype _createButtons, bukan di tiap pemanggil showDialog/
+// showConfirm, supaya SEMUA dialog ikut terbenahi -- termasuk saat tombolnya
+// dibangun ulang oleh .dialog("option", "buttons", ...) yang tidak memicu
+// event create maupun open.
+if (typeof $ !== "undefined" && $.ui && $.ui.dialog) {
+    (function () {
+        const _createButtons = $.ui.dialog.prototype._createButtons;
+
+        $.ui.dialog.prototype._createButtons = function () {
+            _createButtons.apply(this, arguments);
+
+            // Tombol ber-class .btn dilewati: showConfirm() sengaja memberi
+            // tombolnya btn-success/btn-danger. Menambahkan ui-button di situ
+            // justru merusaknya -- aturan `.ui-dialog .ui-dialog-buttonpane
+            // .ui-button` (spesifisitas 0,3,0) mengalahkan `.btn-danger`
+            // (0,1,0) pd properti background, sedangkan color:#fff dari
+            // Bootstrap bertahan, sehingga tulisannya jadi putih di atas
+            // latar putih.
+            this.uiDialogButtonPane
+                .find("button")
+                .not(".btn")
+                .addClass("ui-button ui-corner-all ui-widget");
+        };
+    })();
+}
+
 let sidebarIsOpen = false;
 let formats = { "THOUSANDSEPARATOR": ",", "DECIMALSEPARATOR": "." };
 let offDays;

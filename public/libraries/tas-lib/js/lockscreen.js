@@ -94,8 +94,17 @@ $(document).ready(function () {
                     handleFailedUnlock(res.message);
                 }
             },
-            error: function () {
+            error: function (jqXHR) {
                 $btn.prop('disabled', false).text('Buka Kunci');
+                // Sesi server sudah benar-benar habis (bukan sekadar salah ketik
+                // password) -- password apapun yang dimasukkan tidak akan pernah
+                // bisa diverifikasi, jadi jangan hitung sebagai percobaan gagal.
+                // Langsung arahkan ke alur logout/login biasa, sama seperti kalau
+                // sesi habis saat sedang memakai aplikasi (bukan sedang terkunci).
+                if (jqXHR.status === 401 && jqXHR.responseJSON && jqXHR.responseJSON.session_expired) {
+                    forceSessionExpired();
+                    return;
+                }
                 handleFailedUnlock('Terjadi kesalahan koneksi.');
             }
         });
@@ -197,6 +206,18 @@ function unlockScreenGlobal() {
     if (broadcastChannel) {
         broadcastChannel.postMessage({ type: 'unlock' });
     }
+}
+
+function forceSessionExpired() {
+    try {
+        localStorage.removeItem(LOCKED_KEY);
+        localStorage.removeItem(LAST_ACTIVITY_KEY);
+        localStorage.removeItem(FAILED_ATTEMPTS_KEY);
+    } catch (e) { }
+    if (broadcastChannel) {
+        broadcastChannel.postMessage({ type: 'logout' });
+    }
+    window.location.href = appUrl + 'login/logout';
 }
 
 function handleFailedUnlock(customMsg) {
