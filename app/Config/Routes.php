@@ -6,6 +6,7 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'Login::index');
 $routes->match(['get', 'post'], 'login', 'Login::index');
 $routes->get('login/logout', 'Login::logout');
+$routes->post('login/unlock', 'Login::unlock');
 $routes->get('home', 'Home::index');
 $routes->get('approvaltop', 'ApprovalTop::index');
 $routes->match(['get', 'post'], 'approvaltop/ajax_list', 'ApprovalTop::ajax_list');

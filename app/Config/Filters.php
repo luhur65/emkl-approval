@@ -83,7 +83,16 @@ class Filters extends BaseFilters
             // Berpasangan dengan Config\Security::$regenerate = false. Kalau
             // regenerate dinyalakan, hash yang tertanam di halaman jadi basi
             // sesudah POST pertama dan POST kedua di halaman yang sama ditolak.
-            'csrf',
+            //
+            // login/unlock dikecualikan: endpoint Lockscreen ini sengaja
+            // dipanggil setelah user idle lama (bisa lebih dari umur cookie
+            // CSRF yang kedaluwarsa 2 jam -- Config\Security::$expires), jadi
+            // token yang tertanam di halaman saat itu sudah pasti basi duluan
+            // sebelum user sempat mengetik password. Aman dikecualikan karena
+            // endpoint ini tidak mengubah state apa pun di server (murni
+            // verifikasi password), dan tetap dilindungi cookie sesi
+            // (SameSite=Lax) serta kecocokan password asli.
+            'csrf' => ['except' => ['login/unlock']],
             // 'invalidchars',
             'auth' => ['except' => ['login', 'login/*', '/']],
         ],
