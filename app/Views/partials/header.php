@@ -34,7 +34,7 @@
     <link rel="stylesheet" href="<?= asset('libraries/tas-lib/css/pager.css') ?>">
     <link rel="stylesheet" href="<?= asset('libraries/tas-lib/css/MonthPicker.min.css') ?>">
     <link rel="stylesheet" href="<?= asset('libraries/tas-lib/css/YearPicker.css') ?>">
-    <link rel="stylesheet" href="<?= asset('libraries/tas-lib/css/styles.css') ?>?v=<?= time() ?>">
+    <link rel="stylesheet" href="<?= asset('libraries/tas-lib/css/styles.css') ?>">
     <link rel="stylesheet" href="<?= asset('libraries/tas-lib/css/button-styles.css') ?>">
     
     <!-- Legacy Icons -->

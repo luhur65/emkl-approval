@@ -63,7 +63,7 @@
         </div>
     </div>
 
-    <?php if (session()->has(SESSION_NAME . 'logged_in')): ?>
+    <?php if (session()->get('logged_emkl')): ?>
     <!-- Lockscreen Overlay -->
     <div id="lockscreen-overlay" style="display:none; position:fixed; inset:0; z-index:10050; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); align-items:center; justify-content:center;">
         <div class="card shadow-lg" style="width: 95%; max-width: 400px;">
@@ -76,7 +76,7 @@
                     <div class="form-group">
                         <label>Username</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" value="<?= session()->get(SESSION_NAME . 'userid') ?>" readonly>
+                            <input type="text" class="form-control" value="<?= session()->get('FUserID') ?>" readonly>
                             <div class="input-group-append">
                                 <div class="input-group-text"><span class="fas fa-user"></span></div>
                             </div>
@@ -93,9 +93,6 @@
                         <p id="lockscreen-error" class="text-danger text-sm font-weight-bold mt-2" style="display:none;"></p>
                     </div>
                     <button type="submit" id="lockscreen-btn" class="btn btn-primary btn-block mt-2">Buka Kunci</button>
-                    <button type="button" id="lockscreen-biometric-btn" class="btn btn-outline-dark btn-block mt-2" style="display:none;" onclick="triggerLockscreenBiometric()">
-                        <i class="fas fa-fingerprint"></i> Quick Login
-                    </button>
                 </form>
             </div>
         </div>
@@ -147,12 +144,11 @@
     <script src="<?= asset('libraries/tas-lib/js/ColumnSettingsManager.js') ?>"></script>
     <script src="<?= asset('libraries/tas-lib/js/GridAutoInjector.js') ?>"></script>
     
-    <?php if (session()->has(SESSION_NAME . 'logged_in')): ?>
+    <?php if (session()->get('logged_emkl')): ?>
     <script>
         // Simpan userid secara lokal untuk keperluan auto-relogin lockscreen jika sesi server expire
-        localStorage.setItem('lockscreen_userid', '<?= session()->get(SESSION_NAME . 'userid') ?>');
+        localStorage.setItem('lockscreen_userid', '<?= session()->get('FUserID') ?>');
     </script>
-    <script src="<?= asset('libraries/tas-lib/js/webauthn.js') ?>"></script>
     <script src="<?= asset('libraries/tas-lib/js/lockscreen.js') ?>"></script>
     <?php endif; ?>
 
