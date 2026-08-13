@@ -15,19 +15,19 @@ $judulAplikasi = config('Site')->fullTitle();
   <!-- Meta Tags -->
   <meta name="description" content="<?= esc($judulAplikasi) ?>">
   
-  <link rel="icon" href="<?= base_url('image/IcTas-Small.png') ?>" type="image/x-icon">
+  <link rel="icon" href="<?= asset('image/IcTas-Small.png') ?>" type="image/x-icon">
 
   <!-- Aesthetic Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="<?= base_url('libraries/adminlte/plugins/fontawesome-free/css/all.min.css') ?>">
+  <link rel="stylesheet" href="<?= asset('libraries/adminlte/plugins/fontawesome-free/css/all.min.css') ?>">
   <!-- Theme style -->
-  <link rel="stylesheet" href="<?= base_url('libraries/adminlte/dist/css/adminlte.min.css') ?>">
+  <link rel="stylesheet" href="<?= asset('libraries/adminlte/dist/css/adminlte.min.css') ?>">
   <!-- Jquery UI -->
-  <link rel="stylesheet" href="<?= base_url('libraries/jquery-ui/cupertino/jquery-ui.min.css') ?>">
+  <link rel="stylesheet" href="<?= asset('libraries/jquery-ui/cupertino/jquery-ui.min.css') ?>">
   <!-- Custom Style -->
-  <link rel="stylesheet" href="<?= base_url('libraries/tas-lib/css/styles.css') ?>">
+  <link rel="stylesheet" href="<?= asset('libraries/tas-lib/css/styles.css') ?>">
 
   <style>
     /* VERDANT CUSTOM STYLES */
@@ -299,7 +299,7 @@ $judulAplikasi = config('Site')->fullTitle();
 
 <body>
   <div class="processing-loader d-none" id="processingLoader">
-    <img src="<?= base_url('libraries/tas-lib/img/loading-color.gif') ?>" rel="preload">
+    <img src="<?= asset('libraries/tas-lib/img/loading-color.gif') ?>" rel="preload">
     <span>Processing</span>
   </div>
 
@@ -331,7 +331,7 @@ $judulAplikasi = config('Site')->fullTitle();
     <nav class="verdant-nav">
       <div class="verdant-brand">
         <div class="verdant-logo-circle">
-          <img src="<?= base_url('image/IcTas-Small.png') ?>" alt="TAS" width="18" height="18" style="object-fit: contain;">
+          <img src="<?= asset('image/IcTas-Small.png') ?>" alt="TAS" width="18" height="18" style="object-fit: contain;">
         </div>
         <span>EMKL <em class="verdant-brand-italic">Approval</em></span>
       </div>
@@ -350,7 +350,7 @@ $judulAplikasi = config('Site')->fullTitle();
     <div class="verdant-main-wrapper">
       <main class="verdant-login-card">
         <div class="verdant-card-mark">
-          <img src="<?= base_url('image/IcTas-Small.png') ?>" alt="TAS" width="36" height="36" style="object-fit: contain;">
+          <img src="<?= asset('image/IcTas-Small.png') ?>" alt="TAS" width="36" height="36" style="object-fit: contain;">
         </div>
 
         <p class="verdant-seal">— PT. Transporindo Agung Sejahtera —</p>
@@ -408,11 +408,11 @@ $judulAplikasi = config('Site')->fullTitle();
   </div>
 
   <!-- jQuery -->
-  <script src="<?= base_url('libraries/adminlte/plugins/jquery/jquery.min.js') ?>"></script>
+  <script src="<?= asset('libraries/adminlte/plugins/jquery/jquery.min.js') ?>"></script>
   <!-- jQuery UI -->
-  <script src="<?= base_url('libraries/jquery-ui/1.13.1/jquery-ui.min.js') ?>"></script>
+  <script src="<?= asset('libraries/jquery-ui/1.13.1/jquery-ui.min.js') ?>"></script>
   <!-- Bootstrap 4 -->
-  <script src="<?= base_url('libraries/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
+  <script src="<?= asset('libraries/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
   
   <script>
     $(document).ready(function() {
