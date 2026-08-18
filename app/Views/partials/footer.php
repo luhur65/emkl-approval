@@ -128,8 +128,8 @@
     <script src="<?= asset('libraries/highlight/highlight.js') ?>"></script>
 
     <!-- JQGrid 570 (From Trucking) -->
-    <script src="<?= asset('libraries/jqgrid/570/js/i18n/grid.locale-en.js') ?>" type="text/javascript"></script>
-    <script src="<?= asset('libraries/jqgrid/570/js/jquery.jqGrid.min.js') ?>" type="text/javascript"></script>
+    <script src="<?= asset('libraries/jqgrid/590/js/i18n/grid.locale-en.js') ?>" type="text/javascript"></script>
+    <script src="<?= asset('libraries/jqgrid/590/js/jquery.jqGrid.min.js') ?>" type="text/javascript"></script>
 
     <!-- TAS Libraries -->
     <script src="<?= asset('libraries/tas-lib/js/mains.js') ?>"></script>
