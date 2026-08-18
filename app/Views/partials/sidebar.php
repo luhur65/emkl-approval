@@ -39,9 +39,23 @@
                     </a>
                 </li>
 
-                <?php 
+                <?php
                 $userId = session()->get('FUserID');
-                if (checkMenu($userId)) { 
+
+                // Daftar submenu Approval. Ubah isi $menuAktif untuk menampilkan/menyembunyikan.
+                $menuApproval = [
+                    'approvaltop'          => 'TOP Pre Orderan Job',
+                    'approvalpo'           => 'Permintaan Order',
+                    'approvalpharga'       => 'Penawaran Harga',
+                    'approvalpharga/cetak' => 'Cetak Ulang PH',
+                    'approvaltrip/approval'=> 'Approval Trip',
+                    'approvalpengajuan'    => 'Approval Pengajuan',
+                    'approvalabsensi'      => 'Approval Absensi',
+                    'approvalextrasupir'   => 'Approval Extra Supir',
+                ];
+                $menuAktif = ['approvaltop', 'approvalpo'];
+
+                if (checkMenu($userId)) {
                 ?>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
@@ -52,54 +66,15 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        <?php foreach ($menuApproval as $route => $label): ?>
+                            <?php if (! in_array($route, $menuAktif, true)) continue; ?>
                         <li class="nav-item">
-                            <a href="<?= base_url('approvaltop') ?>" class="nav-link">
+                            <a href="<?= base_url($route) ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>TOP Pre Orderan Job</p>
+                                <p><?= esc($label) ?></p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('approvalpo') ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Permintaan Order</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('approvalpharga') ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Penawaran Harga</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('approvalpharga/cetak') ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Cetak Ulang PH</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('approvaltrip/approval') ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Approval Trip</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('approvalpengajuan') ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Approval Pengajuan</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('approvalabsensi') ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Approval Absensi</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('approvalextrasupir') ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Approval Extra Supir</p>
-                            </a>
-                        </li>
+                        <?php endforeach; ?>
                     </ul>
                 </li>
                 <?php } ?>
