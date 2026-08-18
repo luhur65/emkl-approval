@@ -2707,6 +2707,23 @@ body.dark-mode .ui-jqgrid .ui-jqgrid-sdiv .frozen-col-sticky {
 	cursor: default;
 }
 
+/* Baris filter: tinggi checkbox "pilih semua".
+   ui.jqgrid-bootstrap4.css 5.9 mengubah aturan input toolbar-nya dari
+     `.ui-jqgrid tr.ui-search-toolbar td > input { padding: 3px 0 }`   (5.3)
+   menjadi
+     `.ui-jqgrid tr.ui-search-toolbar td input { padding: 3px 0; height: 30px }`
+   Kombinator anak diganti keturunan DAN tinggi tetap ditambahkan. Checkbox
+   "pilih semua" dibungkus div.selectall-wrapper (lihat dataInit di view), jadi
+   di 5.3 ia lolos dr selector anak-langsung tsb; sejak 5.9 ia ikut kena shg
+   tampil 16x30 -- tingginya tdk lagi sama dgn lebarnya. Spesifisitas aturan
+   jqGrid (0,2,3) mengalahkan aturan dasar checkbox di atas (0,2,1), jadi
+   penimpaan hrs memakai selector sepanjang itu + kelasnya. Hanya height &
+   padding yg dikembalikan; sisanya tetap diwarisi dr aturan dasar. */
+.ui-jqgrid tr.ui-search-toolbar td input.checkbox-selectall {
+	height: 16px;
+	padding: 0;
+}
+
 /* Baris filter: checkbox select all + tombol bersihkan filter pencarian.
    gap disamakan dgn .rn-cell agar tombol X sejajar dgn nomor baris */
 .selectall-wrapper {
