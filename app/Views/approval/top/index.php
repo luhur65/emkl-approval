@@ -678,6 +678,7 @@
             sortorder: "asc",
             rownumbers: false,
             multiselect: false,
+            sortable: true,
             subGrid: true,
             // Isi subgrid dirender jqGrid sendiri (populatesubgrid() di
             // grid.subgrid.js) dari subGridModel + subGridUrl di bawah.
