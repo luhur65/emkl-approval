@@ -1,9 +1,18 @@
 const IDLE_TIMEOUT = 15 * 60 * 1000; // 15 menit
 // const IDLE_TIMEOUT = 5 * 1000; // 5 detik
-const CHANNEL_NAME = 'idle-lock-channel';
-const LAST_ACTIVITY_KEY = 'idle-last-activity';
-const LOCKED_KEY = 'idle-locked';
-const FAILED_ATTEMPTS_KEY = 'idle-failed-attempts';
+
+// Prefix namespace -- WAJIB unik per-project. emkl-approval-sby-ci4 dan
+// sys-modern bisa diakses dari origin browser yang sama (mis. keduanya lewat
+// http://localhost/...), dan localStorage/BroadcastChannel di-scope per-origin
+// oleh browser, BUKAN per-folder/path. Tanpa prefix ini, dua project saling
+// menimpa localStorage & broadcast satu sama lain (lihat: user di-unlock pakai
+// userid project lain yang kebetulan terakhir login di origin yang sama).
+const APP_NS = 'emklapproval_';
+const CHANNEL_NAME = APP_NS + 'idle-lock-channel';
+const LAST_ACTIVITY_KEY = APP_NS + 'idle-last-activity';
+const LOCKED_KEY = APP_NS + 'idle-locked';
+const FAILED_ATTEMPTS_KEY = APP_NS + 'idle-failed-attempts';
+const USERID_KEY = APP_NS + 'lockscreen_userid';
 const MAX_ATTEMPTS = 3;
 
 let lockscreenInterval = null;
@@ -84,7 +93,7 @@ $(document).ready(function () {
             type: 'POST',
             data: { 
                 password: password,
-                userid: localStorage.getItem('lockscreen_userid')
+                userid: localStorage.getItem(USERID_KEY)
             },
             success: function (res) {
                 $btn.prop('disabled', false).text('Buka Kunci');

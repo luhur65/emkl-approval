@@ -32,8 +32,12 @@ const GridPreferenceManager = (function () {
 
   // ─── localStorage ─────────────────────────────────────────────
   function localKey(gridName) {
-    // Ambil userid dari localStorage lockscreen yang sudah kita buat sebelumnya
-    const userId = localStorage.getItem('lockscreen_userid') || 'guest';
+    // Ambil userid dari localStorage lockscreen yang sudah kita buat sebelumnya.
+    // Key diberi prefix 'emklapproval_' -- HARUS SAMA dengan APP_NS di
+    // lockscreen.js -- karena localStorage di-scope per-origin browser, bukan
+    // per-folder/path, dan proyek CI4 lain (mis. sys-modern) bisa saja diakses
+    // dari origin yang sama.
+    const userId = localStorage.getItem('emklapproval_lockscreen_userid') || 'guest';
     return CONFIG.localPrefix + userId + '_' + gridName;
   }
 
