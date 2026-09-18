@@ -63,6 +63,10 @@ Vagrantfile
 /writable/debugbar/*
 !/writable/debugbar/index.html
 
+# Nonce jti tiket SSO (App\Libraries\SsoNonceStore) -- berkas runtime, dibersihkan gc()
+/writable/sso_nonce/*
+!/writable/sso_nonce/index.html
+
 php_errors.log
 
 #-------------------------
@@ -127,3 +131,5 @@ _modules/*
 
 # Custom Script Tests
 public/test_*.php
+
+/.claude

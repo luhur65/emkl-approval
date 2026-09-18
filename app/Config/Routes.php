@@ -7,6 +7,16 @@ $routes->get('/', 'Login::index');
 $routes->match(['get', 'post'], 'login', 'Login::index');
 $routes->get('login/logout', 'Login::logout');
 $routes->post('login/unlock', 'Login::unlock');
+
+// SSO (auth-sso / auth-sso-api) -- lihat app/Config/Sso.php & docs/MODUL_SSO.md.
+// 'auth/sso-callback' harus sama persis dengan href kartu cabang ini di
+// constants/apps.ts milik auth-sso, karena di situlah ?ticket= ditempelkan.
+// Keduanya WAJIB GET: cookie sesi memakai SameSite=Lax, yang ikut terkirim pada
+// navigasi top-level GET lintas situs (bentuk redirect dari SSO) tapi TIDAK
+// pada POST lintas situs -- sesi yang baru dibuat callback tidak akan terbawa.
+$routes->get('sso/login', 'SsoAuth::start');
+$routes->get('auth/sso-callback', 'SsoAuth::callback');
+
 $routes->get('home', 'Home::index');
 $routes->get('approvaltop', 'ApprovalTop::index');
 $routes->match(['get', 'post'], 'approvaltop/ajax_list', 'ApprovalTop::ajax_list');

@@ -13,6 +13,7 @@ Dokumen penting lainnya telah dilampirkan dalam folder `docs/`:
 - [`PRD.md`](docs/PRD.md) - *Product Requirements Document*, mencakup detail fitur dan arsitektur refactoring.
 - [`FLOW_APLIKASI.md`](docs/FLOW_APLIKASI.md) - Skema alur aplikasi dari login hingga proses simpan database.
 - [`RULES.md`](docs/RULES.md) - Standar penulisan kode dan aturan pengembangan dalam tim (`sys-modern` strict).
+- [`MODUL_SSO.md`](docs/MODUL_SSO.md) - Single Sign-On (auth-sso / auth-sso-api): alur, konfigurasi `sso.*`, pendaftaran cabang di sisi SSO, pemetaan `FIDKaryawan`, dan perintah diagnosa `spark sso:*`.
 
 ## Panduan Instalasi (Development)
 

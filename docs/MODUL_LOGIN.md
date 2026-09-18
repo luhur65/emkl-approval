@@ -46,11 +46,12 @@ Modul ini menangani autentikasi pengguna ke dalam sistem, beralih dari struktur 
 
 Modul ini berinteraksi dengan satu tabel yang dipetakan oleh model.
 - **Tabel**: `FUserList`
-- **Primary Key**: `FUserID` (sebagai input _username_)
+- **Primary Key**: `FID` (int) — `FUserID` hanya identitas login (varchar, tanpa unique index). Diverifikasi lewat `INFORMATION_SCHEMA` saat integrasi SSO; `AuthModel::$primaryKey` mengikuti ini.
 - **Kolom Target**:
   - `FUserID` (Username & Identifier)
   - `FNamaUser` (Nama Panjang Pegawai/Pengguna)
   - `FKode` (Password String yang disamakan dengan input MD5 pengguna)
+  - `FIDKaryawan` (id master karyawan HR — dipakai login SSO, lihat [`MODUL_SSO.md`](MODUL_SSO.md))
 
 ---
 

@@ -63,7 +63,26 @@
         </div>
     </div>
 
-    <?php if (session()->get('logged_emkl')): ?>
+    <?php
+    // ── Lock screen ────────────────────────────────────────────────────────
+    // DIMATIKAN untuk sesi yang lahir dari SSO (penanda `sso_login`). Lock
+    // screen membuka kuncinya dengan password FUserList, sementara user SSO
+    // tidak pernah memakai -- dan umumnya tidak tahu -- password itu: yang ia
+    // pakai masuk adalah kredensial di dashboard SSO. Layar terkunci karena
+    // itu bukan pengaman baginya melainkan jalan buntu, sampai jatah
+    // percobaannya habis dan ia dipaksa logout.
+    //
+    // Cukup dengan tidak merender overlay + script-nya: lockscreen.js berhenti
+    // di awal saat #lockscreen-overlay tidak ada, jadi timer idle,
+    // BroadcastChannel, dan seluruh mekanismenya ikut mati. Sesi login lokal
+    // tidak terpengaruh dan tetap terkunci setelah 15 menit seperti biasa.
+    // Konsekuensinya: browser user SSO yang ditinggal terbuka bertahan sampai
+    // sesinya kedaluwarsa (Config\Session::$expiration) atau dicabut lewat
+    // Single Logout.
+    $lockEnabled = session()->get('logged_emkl') && ! session()->get('sso_login');
+    ?>
+
+    <?php if ($lockEnabled): ?>
     <!-- Lockscreen Overlay -->
     <div id="lockscreen-overlay" style="display:none; position:fixed; inset:0; z-index:10050; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); align-items:center; justify-content:center;">
         <div class="card shadow-lg" style="width: 95%; max-width: 400px;">
@@ -144,8 +163,8 @@
     <script src="<?= asset('libraries/tas-lib/js/ColumnSettingsManager.js') ?>"></script>
     <script src="<?= asset('libraries/tas-lib/js/GridAutoInjector.js') ?>"></script>
     
-    <?php if (session()->get('logged_emkl')): ?>
-    <script> 
+    <?php if ($lockEnabled): ?>
+    <script>
         // Simpan userid secara lokal untuk keperluan auto-relogin lockscreen jika sesi server expire.
         // Key diberi prefix 'emklapproval_' -- HARUS SAMA dengan APP_NS di lockscreen.js --
         // karena localStorage di-scope per-origin browser, bukan per-folder/path. Tanpa prefix,

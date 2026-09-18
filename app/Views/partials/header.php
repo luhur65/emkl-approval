@@ -101,6 +101,51 @@
             jqXHR.setRequestHeader(window.csrfHeaderName, window.csrfHash);
         });
 
+        // ------------------------------------------------------------------
+        // Sesi berakhir di tengah jalan: satu penangan untuk SELURUH AJAX
+        // ------------------------------------------------------------------
+        // Sesi bisa berakhir sementara halaman masih terbuka (habis sendiri,
+        // atau dicabut lewat Single Logout SSO). Tiap view approval punya
+        // handler error 401 sendiri yang menampilkan dialog lalu reload --
+        // reload itu mendarat di /login TANPA sebabnya. AuthFilter kini
+        // menyertakan `sessionExpired` + `redirect` pada jawaban 401-nya, dan
+        // penangan ini mengikutinya: untuk sesi SSO yang dicabut, alamatnya
+        // membawa ?sso=expired sehingga halaman login menjelaskan sebabnya.
+        //
+        // Dikenali lewat penanda, BUKAN status 401 saja: login/unlock juga
+        // menjawab 401 untuk keadaan lain dan sudah punya penanganannya sendiri
+        // di lockscreen.js. Handler error per-request jQuery berjalan LEBIH DULU
+        // daripada ajaxError global, jadi dialog per-view sudah sempat terender;
+        // lapisan di bawah menutupinya selama browser berpindah halaman.
+        (function() {
+            var sessionEnded = false;
+
+            function showSessionEndedNotice() {
+                var el = document.createElement('div');
+                el.setAttribute('style',
+                    'position:fixed;top:0;left:0;right:0;bottom:0;z-index:2147483647;'
+                    + 'display:flex;align-items:center;justify-content:center;padding:1.5rem;'
+                    + 'background:rgba(0,0,0,.72);color:#fff;text-align:center;'
+                    + 'font:600 16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;');
+                el.textContent = 'Sesi Anda telah berakhir. Mengalihkan ke halaman login…';
+                document.body.appendChild(el);
+            }
+
+            $(document).ajaxError(function(event, xhr) {
+                if (xhr.status !== 401 || !xhr.responseJSON || !xhr.responseJSON.sessionExpired) {
+                    return;
+                }
+
+                // Satu halaman bisa punya beberapa AJAX berjalan bersamaan, dan
+                // semuanya gagal berbarengan -- pengalihan cukup sekali.
+                if (sessionEnded) return;
+                sessionEnded = true;
+
+                showSessionEndedNotice();
+                window.location.href = xhr.responseJSON.redirect || (appUrl + 'login');
+            });
+        })();
+
         (function() {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') {

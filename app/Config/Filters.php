@@ -94,7 +94,11 @@ class Filters extends BaseFilters
             // (SameSite=Lax) serta kecocokan password asli.
             'csrf' => ['except' => ['login/unlock']],
             // 'invalidchars',
-            'auth' => ['except' => ['login', 'login/*', '/']],
+            // 'sso/login' dan 'auth/sso-callback' ikut dikecualikan karena
+            // keduanya adalah jalur MENUJU login: user belum punya sesi saat
+            // menyentuhnya. Yang menjaga callback bukan sesi, melainkan tanda
+            // tangan RS256 pada tiket (lihat App\Libraries\SsoTicket).
+            'auth' => ['except' => ['login', 'login/*', '/', 'sso/login', 'auth/sso-callback']],
         ],
         'after' => [
             // 'honeypot',

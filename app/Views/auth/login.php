@@ -285,6 +285,15 @@ $judulAplikasi = config('Site')->fullTitle();
     }
     body.dark-mode .verdant-footnote { color: var(--muted-dark); }
     
+    /* Tombol SSO memakai gaya garis-tepi, jadi ia butuh warna teksnya sendiri.
+       .verdant-btn mewarnai teks untuk latar yang TERISI -- krem di light mode,
+       gelap di dark mode -- dan pada tombol berlatar transparan kedua warna itu
+       justru sewarna dengan kartunya, sehingga tulisannya hilang di kedua tema.
+       border-color sengaja tidak diatur: inline `border: 2px solid` pada
+       elemennya membuat garis tepi mengikuti currentColor. */
+    #btnSsoLogin { color: var(--ink-light); }
+    body.dark-mode #btnSsoLogin { color: var(--ink-dark); }
+
     @media (max-width: 576px) {
       .verdant-nav { padding: max(1rem, env(safe-area-inset-top)) 1rem 1rem 1rem; }
       .verdant-main-wrapper { padding: 6rem 1rem 4rem 1rem; }
@@ -359,7 +368,17 @@ $judulAplikasi = config('Site')->fullTitle();
 
         <form action="<?= base_url('login') ?>" method="POST">
           <?= csrf_field() ?>
-          
+
+          <?php
+          // Saat sso.passwordLoginEnabled = false, form lokal disembunyikan dan
+          // hanya tombol SSO yang tersisa. Ini murni kosmetik -- yang benar-benar
+          // menutup jalurnya adalah penolakan di Login::index() (POST) dan
+          // Login::unlock().
+          $localLogin = ! isset($sso) || $sso->passwordLoginEnabled;
+          $ssoLogin   = ! empty($sso) && $sso->enabled && trim($sso->dashboardUrl) !== '';
+          ?>
+
+          <?php if ($localLogin): ?>
           <div class="verdant-form-group">
             <div class="verdant-label-row">
               <label class="verdant-label" for="pUser">Username</label>
@@ -380,19 +399,41 @@ $judulAplikasi = config('Site')->fullTitle();
               </button>
             </div>
           </div>
-          
+          <?php endif; ?>
+
           <?php if (!empty($error)): ?>
             <div id="error" class="text-danger mt-2 text-center" style="font-size: 0.85rem; color: var(--terracotta-light) !important;">
               <?= $error ?>
             </div>
           <?php endif; ?>
 
+          <?php if ($localLogin): ?>
           <button type="submit" class="verdant-btn">
             Masuk ke aplikasi
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 12h14M13 5l7 7-7 7" />
             </svg>
           </button>
+          <?php endif; ?>
+
+          <?php if ($ssoLogin): ?>
+            <!-- Tautan (bukan tombol submit) supaya form login lokal tidak ikut
+                 terkirim. SsoAuth::start mengantar ke jalur /launch/<appCode>
+                 milik auth-sso (atau ke dashboard-nya), lalu SSO memantulkan
+                 browser kembali ke auth/sso-callback. -->
+            <a id="btnSsoLogin" href="<?= base_url('sso/login') ?>" class="verdant-btn" style="background-color: transparent; border: 2px solid; margin-top: <?= $localLogin ? '0.5rem' : '1rem' ?>; text-decoration: none;">
+              <i class="fas fa-id-badge" style="margin-right: 0.25rem; font-size: 1.2rem;"></i> Masuk dengan SSO
+            </a>
+          <?php endif; ?>
+
+          <?php if (! $localLogin && ! $ssoLogin): ?>
+            <!-- Login lokal dimatikan sekaligus SSO belum dikonfigurasi: tidak
+                 ada satu pun jalan masuk. Salah konfigurasi, dan lebih baik
+                 dikatakan terang-terangan daripada menyisakan kartu login kosong. -->
+            <div class="text-danger mt-3 text-center" style="font-size: 0.85rem; color: var(--terracotta-light) !important;">
+              Tidak ada metode login yang aktif. Hubungi administrator sistem.
+            </div>
+          <?php endif; ?>
 
           <div class="verdant-footer">
             <p style="margin-bottom: 0.25rem;">Halaman dimuat dalam <span class="verdant-footer-bold"><?= number_format(timer()->getElapsedTime('total_execution'), 2) ?></span> detik</p>

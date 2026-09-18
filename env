@@ -67,3 +67,50 @@
 #--------------------------------------------------------------------
 
 # logger.threshold = 4
+
+#--------------------------------------------------------------------
+# SSO (auth-sso / auth-sso-api)
+#--------------------------------------------------------------------
+# Dibaca app/Config/Sso.php. Aplikasi ini aplikasi anggota SSO: auth-sso-api
+# yang menerbitkan tiket (RS256), aplikasi ini hanya memverifikasinya.
+# Lihat docs/MODUL_SSO.md untuk alur lengkap dan cara mendaftarkan cabang.
+
+# sso.enabled = false
+
+# Kode aplikasi ini di sisi SSO -- PER CABANG (pola trucking-<cabang>): harus
+# sama dengan key di TICKET_RELAY_APPS (auth-sso-api) dan `code` kartu di
+# constants/apps.ts (auth-sso). Contoh: emkl-approval-surabaya.
+# sso.appCode =
+# sso.issuer = auth-sso
+
+# PUBLIC key RS256 milik SSO -- pasangan dari SSO_TICKET_PRIVATE_KEY di
+# auth-sso-api. Boleh PEM utuh, boleh badan base64 satu baris dengan newline
+# ditulis \n. Tulis TANPA tanda kutip. JANGAN pernah menaruh private key di sini.
+# sso.ticketPublicKey =
+
+# Toleransi selisih jam (detik) dan umur simpan nonce jti. nonceTtl harus lebih
+# panjang dari TICKET_TTL_SECONDS di auth-sso-api + leeway.
+# sso.leeway = 60
+# sso.nonceTtl = 300
+
+# Dashboard auth-sso, jalur SP-initiated /launch/<appCode>, dan base URL API.
+# sso.dashboardUrl =
+# sso.launchUrl =
+# sso.apiBaseUrl =
+
+# Secret bersama endpoint Single Logout (header x-slo-secret). WAJIB sama persis
+# dengan SLO_INTROSPECT_SECRET di auth-sso-api.
+# sso.sloSecret =
+# sso.sloPollSeconds = 60
+
+# Identitas pada tiket yang dicocokkan ke FUserList (FEmail kosong, jadi
+# karyawanId <-> FIDKaryawan satu-satunya pilihan).
+# sso.matchClaim = karyawanId
+# sso.matchColumn = FIDKaryawan
+
+# Saklar login lokal. Set false hanya setelah SSO terbukti jalan.
+# sso.passwordLoginEnabled = true
+
+# Tujuan setelah sesi berakhir: false = hanya sesi SSO yang dipulangkan ke
+# dashboard SSO; true = semua sesi.
+# sso.logoutToSso = false

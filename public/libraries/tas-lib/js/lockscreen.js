@@ -114,6 +114,17 @@ $(document).ready(function () {
                     forceSessionExpired();
                     return;
                 }
+                // 403 + ssoOnly = login lokal sedang dimatikan (sso.passwordLoginEnabled
+                // = false), bukan password salah. TIDAK boleh lewat handleFailedUnlock:
+                // menghitungnya sebagai percobaan gagal akan memaksa logout atas sesuatu
+                // yang bukan kesalahan user. Antar langsung ke SSO.
+                if (jqXHR.status === 403 && jqXHR.responseJSON && jqXHR.responseJSON.ssoOnly) {
+                    $('#lockscreen-error')
+                        .text(jqXHR.responseJSON.message || 'Membuka kunci lewat SSO...')
+                        .show();
+                    window.location.href = jqXHR.responseJSON.redirect || (appUrl + 'sso/login');
+                    return;
+                }
                 handleFailedUnlock('Terjadi kesalahan koneksi.');
             }
         });
