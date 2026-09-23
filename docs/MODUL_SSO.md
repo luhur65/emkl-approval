@@ -3,8 +3,8 @@
 Proyek: **EMKL Approval System (SBY)** — CodeIgniter 4.7 / PHP 8.2 / SQL Server
 Acuan: `D:\php-project\sys-modern` (`dokumentasi_sso.md`, `LAPORAN_SSO.md`) — polanya
 disalin dari sana dan disesuaikan ke tabel `FUserList` serta deployment per cabang.
-Status: **terimplementasi & lulus uji otomatis (67 test); belum diuji ujung-ke-ujung
-secara live** — lihat §8.
+Status: **terimplementasi & lulus uji otomatis (77 test); belum diuji ujung-ke-ujung
+secara live** — lihat §8. Panel Casting (login-as) di §9.
 
 ---
 
@@ -26,6 +26,7 @@ di halaman login sini), dan masuk tanpa mengetik kredensial lagi.
 | Single Logout | Aktif (polling introspeksi, cache 60 detik, fail-open) |
 | Login lokal | Tetap hidup berdampingan; bisa dimatikan lewat `sso.passwordLoginEnabled` |
 | Lock screen | **Dimatikan untuk sesi SSO** (user SSO tidak punya password lokal) |
+| Panel Casting | Didukung, **lihat-saja** secara bawaan — lihat §9 |
 
 Server SSO: `D:\project-next\sso` (dashboard, Next.js) dan `D:\project-next\ssoapi`
 (API, NestJS). Lingkungan uji: `https://testsso.transporindo.com` /
@@ -84,11 +85,11 @@ baris `FUserList` dengan `sso.matchColumn` = klaim `sso.matchClaim`.
 | `app/Libraries/SsoNonceStore.php` | Sekali-pakai `jti` via `fopen(...,'xb')` atomik di `writable/sso_nonce` |
 | `app/Libraries/SsoSlo.php` | Klien Single Logout (introspeksi + cache) |
 | `app/Libraries/SsoExit.php` | Satu tempat memutuskan tujuan setelah sesi berakhir |
-| `app/Controllers/SsoAuth.php` | `start()` -> SSO; `callback()` -> tukar tiket jadi sesi |
+| `app/Controllers/SsoAuth.php` | `start()` -> SSO; `callback()` -> tukar tiket jadi sesi; `callbackCasting()` -> jalur Panel Casting |
 | `app/Commands/CheckSsoMatch.php` | `php spark sso:match [nilai]` |
 | `app/Commands/SetSsoKaryawan.php` | `php spark sso:map <FUserID> <karyawan_id>` |
 | `app/Commands/CheckSsoSlo.php` | `php spark sso:slo [sid]` |
-| `tests/unit/SsoTicketTest.php`, `SsoNonceStoreTest.php`, `SsoWiringTest.php`, `SsoCallbackTest.php`, `SsoSessionEndTest.php` | 62 test |
+| `tests/unit/SsoTicketTest.php`, `SsoNonceStoreTest.php`, `SsoWiringTest.php`, `SsoCallbackTest.php`, `SsoSessionEndTest.php` | 72 test |
 | `tests/_support/sso/` | Pasangan kunci khusus test (lihat README di sana) |
 
 **Diubah**
@@ -103,6 +104,7 @@ baris `FUserList` dengan `sso.matchColumn` = klaim `sso.matchClaim`.
 | `app/Views/auth/login.php` | Tombol "Masuk dengan SSO", form lokal disembunyikan di mode SSO-only |
 | `app/Views/partials/footer.php` | Lock screen tidak dirender untuk sesi `sso_login` |
 | `app/Views/partials/header.php` | Penangan `ajaxError` global untuk `sessionExpired` |
+| `app/Views/partials/navbar.php` | Spanduk peringatan untuk sesi Panel Casting |
 | `public/libraries/tas-lib/js/lockscreen.js` | Jawaban 403 `ssoOnly` diantar ke SSO, tidak dihitung percobaan gagal |
 | `.env`, `env` | Blok `sso.*` |
 
@@ -110,11 +112,11 @@ Di luar proyek ini (belum di-commit, lihat §6):
 
 | Berkas | Perubahan |
 |---|---|
-| `ssoapi/src/common/db-emkl-approval-surabaya.ts` | Koneksi read-only ke `dbTAsSby` |
-| `ssoapi/src/modules/auth/auth.service.ts` | `emkl-approval-surabaya` di `AppDirectory`, `TICKET_RELAY_APPS`, `APP_DIRECTORY_DB` (tabel `FUserList`, id `FID`, karyawanId `FIDKaryawan`), `PANEL_CASTING_DIRECTORIES`; jenis aturan status baru `kind: 'none'` |
-| `ssoapi/.env.example`, `ssoapi/.env` | `EMKL_APPROVAL_SURABAYA_SSMS_*` |
-| `sso/constants/apps.ts` | Kartu `emkl-approval-surabaya` dalam grup `emkl-approval` |
-| `sso/.env` | `NEXT_PUBLIC_EMKL_APPROVAL_SURABAYA_URL` |
+| `ssoapi/src/common/db-emkl-approval-<cabang>.ts` | Koneksi read-only ke SQL Server tiap cabang (surabaya, medan, jakarta, semarang, bitung, makassar) |
+| `ssoapi/src/modules/auth/auth.service.ts` | Keenam `emkl-approval-<cabang>` di `AppDirectory`, `TICKET_RELAY_APPS`, `APP_DIRECTORY_DB` (tabel `FUserList`, kolom bersama `EMKL_APPROVAL_COLUMNS`: id `FID`, karyawanId `FIDKaryawan`), `PANEL_CASTING_DIRECTORIES`; jenis aturan status baru `kind: 'none'` |
+| `ssoapi/.env.example` | `EMKL_APPROVAL_<CABANG>_SSMS_*` per cabang |
+| `sso/constants/apps.ts` | Grup `emkl-approval` (tile "EMKL APPROVAL — pilih cabang", pola trucking) + enam kartu `emkl-approval-<cabang>` |
+| `sso/.env` | `NEXT_PUBLIC_EMKL_APPROVAL_<CABANG>_URL` per cabang |
 
 ---
 
@@ -136,6 +138,8 @@ sso.matchClaim       = karyawanId
 sso.matchColumn      = FIDKaryawan
 sso.passwordLoginEnabled = true
 sso.logoutToSso      = false
+sso.castingEnabled   = true     # terima tiket Panel Casting (login-as)
+sso.castingReadOnly  = true     # sesi casting hanya boleh melihat — lihat §9
 ```
 
 Catatan:
@@ -158,8 +162,12 @@ Catatan:
 
 **Per cabang, bukan satu kode `emkl`.** Tiap cabang punya SQL Server dan `FUserList`
 sendiri, jadi tiap cabang adalah aplikasi tersendiri di mata SSO — persis
-`trucking-surabaya`/`trucking-medan`. `aud` tiket mengikat tiket ke satu cabang;
-tiket Surabaya tidak bisa dipakai di Medan (`SsoTicketTest::testTiketUntukCabangLainDitolak`).
+`trucking-surabaya`/`trucking-medan`. Keenam cabang (Surabaya, Medan, Jakarta,
+Semarang, Bitung, Makassar — daftar di `Config\Site`) sudah didaftarkan di ssoapi
+dan dashboard sekaligus; cabang yang belum dipasang aplikasinya tidak tampil ke
+siapa pun sampai `program_menu`-nya di-grant, dan koneksi database-nya tidak pernah
+dibuka. `aud` tiket mengikat tiket ke satu cabang; tiket Surabaya tidak bisa dipakai
+di Medan (`SsoTicketTest::testTiketUntukCabangLainDitolak`).
 
 **Pencocokan lewat `karyawanId` <-> `FIDKaryawan`, bukan email.** `FEmail` kosong di
 seluruh 207 baris (diverifikasi 2026-09-17), sedangkan `FIDKaryawan` terisi 64 baris
@@ -182,9 +190,9 @@ URL hanya kode (`?sso=replay`), teksnya dari `Login::ssoMessage()`. Kode `noclai
 (tiket tanpa `karyawanId` — masalah admin SSO) dibedakan dari `unknown`/`account`
 (masalah admin aplikasi ini).
 
-**Panel Casting tidak didukung.** Aplikasi ini tidak masuk `PANEL_CASTING_APP_CODES`;
-tiket `impersonated` ditolak (`?sso=casting`). `PANEL_CASTING_DIRECTORIES` tetap
-diisi karena `findActiveAppAccounts()` mewajibkan aturan status.
+**Panel Casting didukung, tapi lihat-saja.** Lihat §9 — keputusan dan alasannya
+ada di sana, termasuk kenapa `sub` tidak dicocokkan ulang ke `FIDKaryawan` pada
+jalur ini.
 
 **`kind: 'none'` di ssoapi.** `FUserList` tidak punya kolom status sama sekali; daripada
 memaksakan aturan `marker` dengan daftar kosong (SQL `NOT IN ()` tidak sah), jenis
@@ -203,10 +211,13 @@ wewenang dashboard SSO. Arah sebaliknya bekerja lewat SLO (polling, fail-open).
 
 1. **Deploy ulang `ssoapi` dan `sso`** dengan perubahan di §3 — tanpa itu kartu tidak
    ada dan tiket tidak terbit ("Aplikasi tidak ditemukan atau nonaktif").
-2. **`.env` ssoapi di server**: `EMKL_APPROVAL_SURABAYA_SSMS_{DB,SERVER,USER,PASSWORD,PORT}`
-   menunjuk SQL Server cabang Surabaya (`dbTAsSby`). Server ssoapi harus bisa
-   menjangkau IP SQL Server cabang itu.
-3. **`.env` sso di server**: `NEXT_PUBLIC_EMKL_APPROVAL_SURABAYA_URL=<base url>/auth/sso-callback`.
+2. **`.env` ssoapi di server**: `EMKL_APPROVAL_<CABANG>_SSMS_{DB,SERVER,USER,PASSWORD,PORT}`
+   per cabang yang dinyalakan, menunjuk SQL Server cabang itu dengan database yang
+   SAMA dengan yang dipakai aplikasinya (Surabaya uji: `dbTAS` @ `tassby.kozow.com:1501`).
+   Server ssoapi harus bisa menjangkau endpoint SQL cabang itu; sebaiknya login
+   read-only (`GRANT SELECT ON dbo.FUserList`).
+3. **`.env` sso di server**: `NEXT_PUBLIC_EMKL_APPROVAL_<CABANG>_URL=<base url aplikasi cabang>/auth/sso-callback`,
+   lalu `next build` ulang (variabel `NEXT_PUBLIC_*` dibakar saat build).
 4. **Master data HR**: baris `program_menu` bernama persis **`EMKL APPROVAL SURABAYA`**
    (status AKTIF), lalu di-grant ke jabatan/user yang berhak (`access_menu`). Belum
    ada — pekerjaan admin HR, bukan kode. Tanpa ini `generateTicket()` menolak
@@ -247,7 +258,7 @@ php vendor/bin/phpunit --no-coverage --filter Sso
 | `SsoTicketTest` (16) | Tiket sah diterima; tanda tangan diubah, kunci lain, `alg:none`, HS256-palsu, `aud` cabang lain, `iss` salah, kedaluwarsa, tanpa `exp`/`jti`/`sub` — ditolak; public key di `.env` terbaca OpenSSL ≥ 2048 bit |
 | `SsoNonceStoreTest` (6) | Penukaran kedua ditolak; `jti` tidak jadi nama berkas mentah; gc tidak membuka replay |
 | `SsoWiringTest` (11) | Route GET terdaftar & dikecualikan filter; `appCode` per cabang; `nonceTtl`; SLO tanpa konfigurasi fail-open; tujuan `SsoExit`; tombol SSO punya warna di kedua tema; lock screen dipagari `sso_login` |
-| `SsoCallbackTest` (19) | Lewat HTTP sungguhan ke `auth/sso-callback` dengan `FUserList` tiruan di SQLite: sesi terbentuk + `regenerate`, replay, `sub` tidak cocok/tidak ada/belum dipetakan, `noclaim`, `casting`, jalur cadangan, halaman login & mode SSO-only |
+| `SsoCallbackTest` (29) | Lewat HTTP sungguhan ke `auth/sso-callback` dengan `FUserList` tiruan di SQLite: sesi terbentuk + `regenerate`, replay, `sub` tidak cocok/tidak ada/belum dipetakan, `noclaim`, `casting`, jalur cadangan, halaman login & mode SSO-only |
 | `SsoSessionEndTest` (10) | AuthFilter: sesi kosong (halaman & AJAX), sesi hidup diloloskan, Single Logout mengakhiri sesi dengan kode `expired`, fail-open saat SLO belum dikonfigurasi |
 
 Uji manual ujung-ke-ujung (setelah §6 terpenuhi):
@@ -261,3 +272,82 @@ Uji manual ujung-ke-ujung (setelah §6 terpenuhi):
    (Saat dokumen ini ditulis, `php spark sso:slo` ke testssoapi menjawab HTTP 502 —
    API-nya sedang tidak bisa dihubungi; SLO fail-open sampai pulih.)
 5. Logout dari sidebar -> kembali ke dashboard SSO (sesi lokal ke `/login`).
+
+---
+
+## 9. Panel Casting (login-as)
+
+Admin IT membuka aplikasi ini **sebagai user lain** dari dashboard SSO, untuk
+melihat persis layar yang dilihat user itu. Rantai izinnya seluruhnya di sisi
+SSO: penekannya harus super admin, seorang admin IT lain menyetujui lewat OTP,
+dan barisnya dipilih dari daftar `FUserList` cabang yang bersangkutan.
+
+```
+Panel Casting (dashboard SSO)
+  -> GET  auth-sso-api /auth/app-users?appCode=emkl-approval-<cabang>   (daftar FUserList)
+  -> OTP ke admin IT, lalu approval token
+  -> POST /auth/panel-casting/impersonate-ticket { appCode, targetUserId=FID, approvalToken }
+     tiket RS256: impersonated:true, sub=FID, actorId/actorUsername,
+                  approverId/approverUsername, sid = sesi SSO ADMIN
+  -> <base url aplikasi>/auth/sso-callback?ticket=...
+     SsoAuth::callbackCasting() -> sesi atas nama target + penanda casting
+```
+
+**`sub` adalah satu-satunya identitas di jalur ini.** `FIDKaryawan` sengaja
+TIDAK dicocokkan ulang seperti di login biasa: admin memilih satu baris tertentu
+di panel, sedangkan `karyawanId` adalah data person-level yang bisa dimiliki
+beberapa akun sekaligus — mencocokkannya bisa mendaratkan admin di akun orang
+lain tanpa error apa pun. Konsekuensi yang memang diinginkan: target casting
+boleh belum dipetakan sama sekali, dan justru user seperti itulah yang paling
+sering perlu dibantu.
+
+### Lihat-saja (`sso.castingReadOnly`, bawaan `true`)
+
+Selama sesi casting, setiap request POST/PUT/PATCH/DELETE ditolak 403 oleh
+`AuthFilter::enforceCastingReadOnly()`. Alasannya bukan kehati-hatian umum:
+approve/un-approve menulis `FUserApp` **dari sesi yang sedang berjalan**, jadi
+tindakan admin akan tercatat sebagai tindakan user yang dilihat — dan un-approve
+ikut mengirim notifikasi WhatsApp atas namanya. Tabel-tabel itu tidak punya
+kolom "dikerjakan oleh" untuk menyimpan pelaku sebenarnya, jadi satu-satunya
+jejak yang jujur adalah tidak menulis apa pun.
+
+Penolakannya ditegakkan di filter (bukan per controller) supaya endpoint baru
+ikut terlindungi tanpa perlu diingat, dan jawabannya memakai kunci `error` yang
+sudah dibaca `pesanGagalAjax()` di setiap view approval — pesannya langsung
+muncul di dialog, tanpa menyentuh satu pun view.
+
+Setel `sso.castingReadOnly = false` hanya kalau admin memang diniatkan
+mengerjakan approval atas nama user, dan sadar audit trail-nya menunjuk user itu.
+`sso.castingEnabled = false` menolak login-as sama sekali di cabang ini —
+satu-satunya cara sebuah cabang menolak tanpa menunggu admin SSO.
+
+### Yang terlihat & tercatat
+
+- **Spanduk di navbar**: "PANEL CASTING — Anda melihat aplikasi sebagai X ·
+  dibuka oleh Y · disetujui Z · mode lihat-saja". Tanpa penanda di layar, admin
+  gampang lupa sedang melihat sebagai orang lain.
+- **`writable/logs`** (level `error`, jadi lolos ambang production): satu baris
+  saat sesi casting dibuka (target, actor, approver, mode, IP), dan satu baris
+  tiap kali perubahan data ditolak.
+- Sesi casting ikut berakhir lewat Single Logout ketika **admin** logout di
+  dashboard SSO — `sid` pada tiketnya adalah sesi SSO admin, bukan target.
+
+### Sisi SSO
+
+| Berkas | Perubahan |
+|---|---|
+| `sso/constants/apps.ts` | Keenam `emkl-approval-<cabang>` masuk `PANEL_CASTING_APP_CODES` |
+| `ssoapi` | Tidak ada perubahan khusus casting: `PANEL_CASTING_DIRECTORIES` (aturan status `kind: 'none'`) dan `APP_DIRECTORY_DB` yang sudah didaftarkan untuk login biasa sekaligus membuka jalur ini |
+
+Daftar user di panel menampilkan `FUserID`, `FNamaUser`, dan `FEmail` (kosong di
+semua baris, jadi tampil `-`). Statusnya selalu "aktif": `FUserList` tidak punya
+kolom status sama sekali.
+
+### Uji
+
+`tests/unit/SsoCallbackTest.php` (10 test casting): sesi terbentuk beserta
+actor/approver, target tanpa `FIDKaryawan` tetap bisa dibuka, klaim `karyawanId`
+yang tidak cocok diabaikan, target tidak ada / `sub` bukan angka /
+`castingEnabled=false` ditolak, POST ditolak 403 (AJAX & non-AJAX), GET tetap
+jalan, saklar `castingReadOnly=false` membuka kembali penulisan, dan sesi login
+biasa tidak ikut terkena.

@@ -95,16 +95,20 @@ class SsoAuth extends BaseController
             return $this->fail('replay', 'callback: tiket dengan jti ' . substr($jti, 0, 6) . '… sudah pernah dipakai.');
         }
 
-        // Tiket Panel Casting (login-as oleh admin IT) sengaja TIDAK diterima:
-        // aplikasi ini tidak didaftarkan ke PANEL_CASTING_APP_CODES di auth-sso,
-        // jadi tiket seperti ini tidak seharusnya pernah sampai ke sini.
-        // Perbandingannya `=== true`: nilainya datang dari tiket bertanda tangan,
-        // dan "1"/"false" tidak boleh diam-diam mengubah jalur.
+        // Tiket Panel Casting (login-as) diselesaikan lewat jalur yang BERBEDA,
+        // dan itu bukan kerapian: di panel, admin memilih SATU BARIS tertentu
+        // dan `sub` adalah FID baris itu — sedangkan `karyawanId` adalah data
+        // person-level yang bisa dimiliki beberapa akun sekaligus. Mencocokkan
+        // lewat klaim itu bisa mendaratkan admin di akun ORANG LAIN tanpa error
+        // apa pun. auth-sso-api menuliskan aturan yang sama di
+        // mintImpersonationTicket(): `sub` satu-satunya yang otoritatif di sini.
+        //
+        // Perbandingannya `=== true`, bukan sekadar truthy: nilainya datang dari
+        // tiket bertanda tangan, jadi bentuknya sudah pasti — tapi menerima "1"
+        // atau "false" sebagai true akan mengubah jalur resolusi identitas, dan
+        // itu bukan tempat untuk longgar.
         if (($claims['impersonated'] ?? null) === true) {
-            return $this->fail('casting', sprintf(
-                'callback: tiket Panel Casting (sub=%s) ditolak, aplikasi ini tidak mendukung login-as.',
-                (string) $claims['sub']
-            ));
+            return $this->callbackCasting($claims);
         }
 
         // Klaim karyawanId wajib: ia yang mengikat tiket ke baris FUserList,
@@ -152,6 +156,113 @@ class SsoAuth extends BaseController
             ));
         }
 
+        $this->mulaiSesi($user, $claims);
+
+        log_message('info', sprintf(
+            'SSO callback: login berhasil FUserID=%s (FID=%s, karyawanId=%d) ip=%s',
+            (string) $user['FUserID'],
+            (string) $user['FID'],
+            $karyawanId,
+            $this->request->getIPAddress()
+        ));
+
+        return redirect()->to(base_url('home'));
+    }
+
+    /**
+     * Cabang Panel Casting: tiket ber-`impersonated: true`.
+     *
+     * Bedanya dari login biasa ada dua, dan keduanya disengaja:
+     *
+     *  1. Identitas diresolusi MURNI dari `sub` (= FID baris yang dipilih admin
+     *     di panel). `FIDKaryawan` tidak ikut diperiksa — target casting boleh
+     *     saja belum dipetakan, dan justru user seperti itulah yang paling
+     *     sering perlu dibantu. Yang menjamin barisnya benar bukan pencocokan
+     *     data melainkan rantai persetujuan di sisi SSO (super admin + OTP
+     *     admin IT) yang sudah ditandatangani ke dalam tiket ini.
+     *  2. Sesinya ditandai `sso_impersonated` beserta actor & approver, yang
+     *     dipakai AuthFilter (mode lihat-saja) dan navbar (spanduk peringatan).
+     *
+     * @param array<string, mixed> $claims
+     */
+    private function callbackCasting(array $claims)
+    {
+        if (! $this->sso->castingEnabled) {
+            return $this->fail('casting', sprintf(
+                'callback: tiket Panel Casting (sub=%s) ditolak, sso.castingEnabled = false di cabang ini.',
+                (string) $claims['sub']
+            ));
+        }
+
+        $sub = trim((string) $claims['sub']);
+
+        // `FID` bertipe int. Nilai non-numerik berarti tiket ini diterbitkan
+        // untuk direktori dengan bentuk id lain (DISC memakai GUID) dan tidak
+        // pernah dimaksudkan untuk aplikasi ini — ditolak, bukan dipaksakan.
+        if ($sub === '' || ! ctype_digit($sub)) {
+            return $this->fail('casting', 'callback: klaim sub "' . $sub . '" bukan FID yang sah untuk tiket casting.');
+        }
+
+        try {
+            $user = (new AuthModel())->findByFid((int) $sub);
+        } catch (Throwable $e) {
+            log_message('error', 'SSO callback: gagal mencari target casting — ' . $e->getMessage());
+
+            return $this->fail('server', null);
+        }
+
+        if ($user === null) {
+            // Pesannya menyebut "daftar user mungkin sudah berubah", bukan
+            // "akun belum terdaftar": yang membaca layar ini admin yang memilih
+            // barisnya dari daftar, jadi baris yang hilang berarti daftarnya
+            // yang basi — bukan masalah pemetaan akun.
+            return $this->fail('casting', 'callback: target Panel Casting FID=' . $sub . ' tidak ada di FUserList.');
+        }
+
+        $aktor     = $this->klaimTeks($claims, 'actorUsername');
+        $penyetuju = $this->klaimTeks($claims, 'approverUsername');
+
+        $this->mulaiSesi($user, $claims, [
+            'sso_impersonated' => 1,
+            'sso_actor'        => $aktor,
+            'sso_approver'     => $penyetuju,
+        ]);
+
+        // Sesi atas nama orang lain adalah peristiwa yang harus bisa ditelusuri
+        // belakangan. Level `error` dipilih bukan karena ini kesalahan,
+        // melainkan karena ambang log production adalah 4: level di bawahnya
+        // tidak akan pernah sampai ke berkas — dan aplikasi ini tidak punya
+        // tabel log aktivitas, jadi berkas log satu-satunya jejak yang ada.
+        log_message('error', sprintf(
+            'SSO Panel Casting: sesi dibuka atas nama FUserID=%s (FID=%s) oleh %s, disetujui %s. Mode: %s. ip=%s',
+            (string) $user['FUserID'],
+            (string) $user['FID'],
+            $aktor !== '' ? $aktor : '-',
+            $penyetuju !== '' ? $penyetuju : '-',
+            $this->sso->castingReadOnly ? 'lihat-saja' : 'BOLEH MENGUBAH DATA',
+            $this->request->getIPAddress()
+        ));
+
+        return redirect()->to(base_url('home'));
+    }
+
+    /**
+     * Menulis sesi aplikasi dari satu baris FUserList — satu tempat untuk jalur
+     * login biasa dan jalur casting, supaya keduanya tidak pelan-pelan berbeda.
+     *
+     * Kunci sesinya sama persis dengan Login::setLoggedInSession() supaya
+     * seluruh aplikasi (AuthFilter, sidebar, checkMenu) tidak perlu membedakan
+     * asal sesi. `sso_login`/`sso_sid` penanda tambahannya: AuthFilter memakai
+     * `sso_sid` untuk Single Logout, footer memakai `sso_login` untuk mematikan
+     * lock screen, dan Login::logout memakainya untuk memulangkan pengguna ke
+     * dashboard SSO.
+     *
+     * @param array<string, mixed> $user      Baris FUserList
+     * @param array<string, mixed> $claims    Klaim tiket (dibaca `sid`-nya)
+     * @param array<string, mixed> $tambahan  Penanda khusus jalur pemanggil
+     */
+    private function mulaiSesi(array $user, array $claims, array $tambahan = []): void
+    {
         // Tiket tanpa `sid` menghasilkan sesi yang TIDAK bisa dijangkau Single
         // Logout: AuthFilter melewatinya, dan logout di dashboard SSO tidak akan
         // mengakhiri sesi ini. Kegagalan yang diam-diam — dicatat sejak awal.
@@ -170,29 +281,13 @@ class SsoAuth extends BaseController
         // login password.
         session()->regenerate(true);
 
-        // Kunci sesi sama persis dengan Login::setLoggedInSession() supaya
-        // seluruh aplikasi (AuthFilter, sidebar, checkMenu) tidak membedakan
-        // asal sesi. `sso_login`/`sso_sid` adalah penanda tambahannya: AuthFilter
-        // memakai `sso_sid` untuk Single Logout, footer memakai `sso_login`
-        // untuk mematikan lock screen, dan Login::logout memakainya untuk
-        // memulangkan pengguna ke dashboard SSO.
-        session()->set([
+        session()->set($tambahan + [
             'FUserID'     => $user['FUserID'],
             'FNamaUser'   => $user['FNamaUser'],
             'logged_emkl' => true,
             'sso_login'   => 1,
             'sso_sid'     => $sid !== '' ? $sid : null,
         ]);
-
-        log_message('info', sprintf(
-            'SSO callback: login berhasil FUserID=%s (FID=%s, karyawanId=%d) ip=%s',
-            (string) $user['FUserID'],
-            (string) $user['FID'],
-            $karyawanId,
-            $this->request->getIPAddress()
-        ));
-
-        return redirect()->to(base_url('home'));
     }
 
     /**
@@ -212,6 +307,20 @@ class SsoAuth extends BaseController
         }
 
         return is_int($nilai) && $nilai > 0 ? $nilai : null;
+    }
+
+    /**
+     * Membaca satu klaim sebagai teks, atau string kosong kalau bentuknya bukan
+     * teks/angka. Dipakai untuk klaim audit (actor/approver) yang hanya ikut
+     * dicatat, tidak pernah menentukan identitas.
+     *
+     * @param array<string, mixed> $claims
+     */
+    private function klaimTeks(array $claims, string $nama): string
+    {
+        $nilai = $claims[$nama] ?? null;
+
+        return is_string($nilai) || is_int($nilai) ? trim((string) $nilai) : '';
     }
 
     /**

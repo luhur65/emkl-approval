@@ -117,6 +117,48 @@ class Sso extends BaseConfig
     public string $matchColumn = 'FIDKaryawan';
 
     /**
+     * Menerima tiket Panel Casting (login-as) dari dashboard SSO.
+     *
+     * Panel Casting adalah jalur TERPISAH dari login biasa: admin IT memilih
+     * satu baris user di panel, seorang admin IT lain menyetujuinya lewat OTP,
+     * lalu auth-sso-api menerbitkan tiket ber-`impersonated: true` yang `sub`-nya
+     * adalah FID baris ITU. Karena barisnya dipilih langsung, `FIDKaryawan`
+     * TIDAK ikut dicocokkan — target casting boleh saja belum dipetakan sama
+     * sekali (dan justru itu kasus yang paling sering dibantu admin).
+     *
+     * true  = tiket casting diterima (default). Yang berhak membuka tetap
+     *         ditentukan sisi SSO: appCode cabang ini harus ada di
+     *         PANEL_CASTING_APP_CODES (repo sso) dan penekannya harus super
+     *         admin + disetujui admin IT.
+     * false = setiap tiket casting ditolak dengan kode `casting`, berapa pun
+     *         sahnya tanda tangannya. Saklar milik cabang: satu-satunya cara
+     *         sebuah cabang menolak login-as tanpa menunggu admin SSO.
+     */
+    public bool $castingEnabled = true;
+
+    /**
+     * Sesi Panel Casting hanya boleh MELIHAT, tidak boleh mengubah data.
+     *
+     * true (default) = setiap request pengubah data (POST/PUT/PATCH/DELETE)
+     *      ditolak 403 selama sesi berasal dari casting. Alasannya bukan
+     *      kehati-hatian umum: approve/un-approve di aplikasi ini menulis
+     *      `FUserApp` dari sesi yang sedang berjalan, jadi tindakan admin akan
+     *      tercatat sebagai tindakan ORANG YANG DI-CASTING — dan un-approve
+     *      ikut mengirim notifikasi WhatsApp atas namanya. Tidak ada kolom
+     *      "dikerjakan oleh" di tabel-tabel itu untuk menyimpan pelakunya yang
+     *      sebenarnya, jadi satu-satunya jejak yang jujur adalah tidak menulis
+     *      apa pun. Admin tetap bisa melihat persis layar yang dilihat user,
+     *      yang memang tujuan Panel Casting.
+     *
+     * false = casting boleh mengubah data, dan perubahannya tercatat atas nama
+     *      user yang di-casting. Pilih ini HANYA kalau memang diniatkan admin
+     *      mengerjakan approval atas nama user, dan sadar bahwa audit trail-nya
+     *      menunjuk user itu. Pelaku sebenarnya tetap tercatat di
+     *      `writable/logs` saat sesinya dibuka (actor & approver).
+     */
+    public bool $castingReadOnly = true;
+
+    /**
      * Saklar login lokal (username/password FUserList + buka kunci lock screen).
      *
      * true  = jalan berdampingan dengan SSO. Default, dan yang benar selama masa

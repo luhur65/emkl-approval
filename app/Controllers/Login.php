@@ -237,7 +237,10 @@ class Login extends BaseController
             'account'  => 'Akun yang dipilih tidak ditemukan di EMKL Approval cabang ini. Coba pilih akun lain, atau hubungi admin EMKL Approval.',
             // Pemilik masalahnya admin SSO: tiketnya yang kurang, bukan akunnya.
             'noclaim'  => 'Tiket SSO tidak membawa identitas karyawan yang dibutuhkan aplikasi ini. Harap hubungi admin SSO.',
-            'casting'  => 'Login-as (Panel Casting) tidak didukung aplikasi ini.',
+            // Yang membaca pesan ini admin yang memilih barisnya dari daftar
+            // Panel Casting, bukan pemilik akun — "belum terdaftar" akan
+            // menyesatkan: kalau barisnya hilang, daftarnya yang basi.
+            'casting'  => 'Sesi Panel Casting tidak bisa dibuka. Target mungkin sudah berubah — muat ulang panel lalu coba lagi, atau login-as memang dimatikan di cabang ini.',
             'expired'  => 'Sesi SSO Anda telah berakhir. Silakan login kembali.',
             'server'   => 'Terjadi kesalahan saat memproses login SSO. Coba lagi nanti.',
             'onlysso'  => 'Login username/password sudah dinonaktifkan. Silakan masuk lewat SSO.',

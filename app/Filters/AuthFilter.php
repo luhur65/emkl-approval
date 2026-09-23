@@ -26,7 +26,76 @@ class AuthFilter implements FilterInterface
             return $this->sessionEnded($request, SsoExit::target());
         }
 
+        $tolakCasting = $this->enforceCastingReadOnly($request);
+
+        if ($tolakCasting !== null) {
+            return $tolakCasting;
+        }
+
         return $this->enforceSingleLogout($request);
+    }
+
+    /**
+     * Sesi Panel Casting (login-as) hanya boleh MELIHAT.
+     *
+     * Approve/un-approve menulis `FUserApp` dari sesi yang sedang berjalan,
+     * jadi tanpa penjaga ini tindakan admin tercatat sebagai tindakan orang
+     * yang di-casting -- dan un-approve ikut mengirim notifikasi WhatsApp atas
+     * namanya. Tidak ada kolom "dikerjakan oleh" untuk menyimpan pelaku
+     * sebenarnya, jadi satu-satunya jejak yang jujur adalah tidak menulis.
+     *
+     * Ditegakkan DI SINI, bukan di tiap controller: filter ini sudah berjalan
+     * untuk seluruh route terjaga, dan endpoint baru yang dibuat nanti ikut
+     * terlindungi tanpa perlu diingat. Yang disaring METODE-nya (POST/PUT/
+     * PATCH/DELETE), bukan daftar URL: seluruh aksi pengubah data di aplikasi
+     * ini POST, dan grid/laporan yang GET tetap jalan seperti biasa.
+     *
+     * Dimatikan lewat `sso.castingReadOnly = false` bila memang diniatkan admin
+     * mengerjakan approval atas nama user.
+     */
+    private function enforceCastingReadOnly(RequestInterface $request)
+    {
+        if (! session()->get('sso_impersonated')) {
+            return null;
+        }
+
+        if (! config(\Config\Sso::class)->castingReadOnly) {
+            return null;
+        }
+
+        $metode = strtoupper($request->getMethod());
+
+        if (in_array($metode, ['GET', 'HEAD', 'OPTIONS'], true)) {
+            return null;
+        }
+
+        log_message('error', sprintf(
+            'SSO Panel Casting: %s %s ditolak (mode lihat-saja). Sesi atas nama FUserID=%s, dibuka oleh %s.',
+            $metode,
+            $request instanceof IncomingRequest ? $request->getUri()->getPath() : '-',
+            session()->get('FUserID') ?: '-',
+            session()->get('sso_actor') ?: '-'
+        ));
+
+        $pesan = 'Sesi Panel Casting bersifat lihat-saja: perubahan data tidak diizinkan '
+               . 'karena akan tercatat atas nama user yang sedang dilihat.';
+
+        // Bentuknya mengikuti jawaban gagal yang lain: kunci `error` dibaca
+        // pesanGagalAjax() di setiap view approval, jadi pesannya langsung
+        // muncul di dialog tanpa menyentuh satu pun view.
+        if ($request instanceof IncomingRequest && $request->isAJAX()) {
+            return service('response')
+                ->setStatusCode(403)
+                ->setJSON([
+                    'error'   => $pesan,
+                    'msg'     => '',
+                    'casting' => true,
+                ]);
+        }
+
+        return service('response')
+            ->setStatusCode(403)
+            ->setBody($pesan);
     }
 
     /**

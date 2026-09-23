@@ -182,12 +182,130 @@ final class SsoCallbackTest extends CIUnitTestCase
             ->assertRedirectTo(base_url('login?sso=noclaim'));
     }
 
-    public function testTiketPanelCastingDitolak(): void
+    // ── Panel Casting (login-as) ────────────────────────────────────────────
+
+    public function testTiketCastingMembukaSesiAtasNamaTargetBesertaJejakAudit(): void
+    {
+        $result = $this->withSession([])->get(self::CALLBACK, ['ticket' => $this->sign($this->castingClaims())]);
+
+        $result->assertRedirectTo(base_url('home'));
+
+        $this->assertSame('citra', $_SESSION['FUserID'] ?? null);
+        $this->assertTrue($_SESSION['logged_emkl'] ?? false);
+        $this->assertSame(1, $_SESSION['sso_impersonated'] ?? null, 'Penanda sso_impersonated hilang — mode lihat-saja & spanduk navbar ikut mati.');
+        $this->assertSame('dharma', $_SESSION['sso_actor'] ?? null, 'Pelaku casting harus ikut tersimpan untuk audit.');
+        $this->assertSame('itadmin', $_SESSION['sso_approver'] ?? null);
+        $this->assertSame(1, $_SESSION['sso_login'] ?? null);
+        $this->assertTrue($this->mockSession->didRegenerate);
+    }
+
+    public function testCastingTidakMemerlukanPemetaanFidKaryawan(): void
+    {
+        // Justru user yang BELUM dipetakan yang paling sering perlu dibantu
+        // admin: barisnya dipilih langsung di panel, jadi FIDKaryawan tidak
+        // ikut menentukan apa pun. FID=122 (ryan) FIDKaryawan-nya NULL.
+        $result = $this->withSession([])->get(self::CALLBACK, [
+            'ticket' => $this->sign($this->castingClaims(['sub' => '122'])),
+        ]);
+
+        $result->assertRedirectTo(base_url('home'));
+        $this->assertSame('ryan', $_SESSION['FUserID'] ?? null);
+    }
+
+    public function testCastingMengabaikanKlaimKaryawanIdYangTidakCocok(): void
+    {
+        // Pada tiket biasa ini ditolak (`?sso=account`) karena `sub` bisa saja
+        // berasal dari format lama. Pada casting, `sub` justru satu-satunya
+        // yang otoritatif — klaim person-level tidak boleh ikut memutuskan.
+        $result = $this->withSession([])->get(self::CALLBACK, [
+            'ticket' => $this->sign($this->castingClaims(['karyawanId' => 5091])),
+        ]);
+
+        $result->assertRedirectTo(base_url('home'));
+        $this->assertSame('citra', $_SESSION['FUserID'] ?? null);
+    }
+
+    public function testCastingKeTargetYangTidakAdaDitolak(): void
     {
         $this->withSession([])
-            ->get(self::CALLBACK, ['ticket' => $this->sign($this->claims(['impersonated' => true]))])
+            ->get(self::CALLBACK, ['ticket' => $this->sign($this->castingClaims(['sub' => '9999']))])
             ->assertRedirectTo(base_url('login?sso=casting'));
         $this->assertArrayNotHasKey('logged_emkl', $_SESSION);
+    }
+
+    public function testCastingDenganSubBukanAngkaDitolak(): void
+    {
+        // Tiket untuk direktori ber-id GUID (DISC) tidak pernah dimaksudkan
+        // untuk aplikasi ini.
+        $this->withSession([])
+            ->get(self::CALLBACK, ['ticket' => $this->sign($this->castingClaims(['sub' => 'a3f1-guid']))])
+            ->assertRedirectTo(base_url('login?sso=casting'));
+    }
+
+    public function testCastingDitolakSaatDimatikanDiCabangIni(): void
+    {
+        $this->bootSso(['castingEnabled' => false]);
+
+        $this->withSession([])
+            ->get(self::CALLBACK, ['ticket' => $this->sign($this->castingClaims())])
+            ->assertRedirectTo(base_url('login?sso=casting'));
+        $this->assertArrayNotHasKey('logged_emkl', $_SESSION);
+    }
+
+    public function testSesiCastingTidakBolehMengubahData(): void
+    {
+        // Approve menulis FUserApp dari sesi yang sedang berjalan, jadi tanpa
+        // penjaga ini tindakan admin tercatat sebagai tindakan user yang
+        // dilihat — dan un-approve ikut mengirim WhatsApp atas namanya.
+        // Bentuk AJAX, karena itulah yang dipakai SELURUH aksi approval.
+        $result = $this->sesiCasting()
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->post('approvaltop/approved', ['id' => ['1']]);
+
+        $this->assertSame(403, $result->response()->getStatusCode());
+
+        $body = $this->json($result);
+
+        $this->assertTrue($body['casting'] ?? false);
+        $this->assertStringContainsString('lihat-saja', $body['error'] ?? '', 'Pesannya dibaca pesanGagalAjax() di setiap view approval.');
+    }
+
+    public function testPostNonAjaxDariSesiCastingIkutDitolak(): void
+    {
+        // Form biasa (bukan AJAX) tidak boleh lolos hanya karena bentuknya
+        // berbeda — yang disaring metodenya, bukan jenis requestnya.
+        $this->withRoutes([['POST', 'uji-tulis', static fn () => 'ok']]);
+
+        $result = $this->sesiCasting()->post('uji-tulis');
+
+        $this->assertSame(403, $result->response()->getStatusCode());
+        $result->assertSee('lihat-saja');
+    }
+
+    public function testSesiCastingTetapBolehMembacaHalaman(): void
+    {
+        // Pembanding yang menjaga test di atas tetap berarti: yang disaring
+        // metodenya, bukan seluruh sesi casting.
+        $this->withRoutes([['GET', 'uji-baca', static fn () => 'ok']]);
+
+        $this->sesiCasting()->get('uji-baca')->assertOK();
+    }
+
+    public function testSesiCastingBolehMengubahDataSaatSaklarLihatSajaDimatikan(): void
+    {
+        $this->bootSso(['castingReadOnly' => false]);
+        $this->withRoutes([['POST', 'uji-tulis', static fn () => 'ok']]);
+
+        $this->sesiCasting()->post('uji-tulis')->assertOK();
+    }
+
+    public function testSesiLoginBiasaTidakIkutTerkenaModeLihatSaja(): void
+    {
+        $this->withRoutes([['POST', 'uji-tulis', static fn () => 'ok']]);
+
+        $this->withSession(['FUserID' => 'citra', 'logged_emkl' => true])
+            ->post('uji-tulis')
+            ->assertOK();
     }
 
     public function testJalurCadanganMenolakKaryawanYangTidakDipetakan(): void
@@ -328,6 +446,39 @@ final class SsoCallbackTest extends CIUnitTestCase
             'iss'        => 'auth-sso',
             'jti'        => bin2hex(random_bytes(16)),
         ];
+    }
+
+    /**
+     * Klaim tiket Panel Casting: `impersonated` + actor/approver, `sub` = FID
+     * baris yang dipilih admin di panel.
+     *
+     * @param array<string, mixed> $overrides
+     *
+     * @return array<string, mixed>
+     */
+    private function castingClaims(array $overrides = []): array
+    {
+        return $this->claims($overrides + [
+            'impersonated'     => true,
+            'actorId'          => 1638,
+            'actorUsername'    => 'dharma',
+            'approverId'       => 99,
+            'approverUsername' => 'itadmin',
+        ]);
+    }
+
+    /** Sesi yang lahir dari Panel Casting. */
+    private function sesiCasting(): self
+    {
+        return $this->withSession([
+            'FUserID'          => 'citra',
+            'FNamaUser'        => 'Citra Indrawati',
+            'logged_emkl'      => true,
+            'sso_login'        => 1,
+            'sso_impersonated' => 1,
+            'sso_actor'        => 'dharma',
+            'sso_approver'     => 'itadmin',
+        ]);
     }
 
     /**

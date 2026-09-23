@@ -111,6 +111,13 @@
 # Saklar login lokal. Set false hanya setelah SSO terbukti jalan.
 # sso.passwordLoginEnabled = true
 
+# Panel Casting (login-as). castingEnabled = saklar cabang untuk menolak
+# login-as; castingReadOnly = sesi casting hanya boleh melihat (bawaan true --
+# approve/un-approve tercatat atas nama user yang dilihat, tanpa kolom pelaku
+# sebenarnya).
+# sso.castingEnabled = true
+# sso.castingReadOnly = true
+
 # Tujuan setelah sesi berakhir: false = hanya sesi SSO yang dipulangkan ke
 # dashboard SSO; true = semua sesi.
 # sso.logoutToSso = false
