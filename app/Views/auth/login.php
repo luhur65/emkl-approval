@@ -21,11 +21,11 @@ $judulAplikasi = config('Site')->fullTitle();
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="<?= asset('libraries/adminlte/plugins/fontawesome-free/css/all.min.css') ?>">
+  <link rel="stylesheet" href="<?= asset('libraries/adminlte/plugins/fontawesome-free/6.7.2/css/all.min.css') ?>">
   <!-- Theme style -->
   <link rel="stylesheet" href="<?= asset('libraries/adminlte/dist/css/adminlte.min.css') ?>">
   <!-- Jquery UI -->
-  <link rel="stylesheet" href="<?= asset('libraries/jquery-ui/cupertino/jquery-ui.min.css') ?>">
+  <link rel="stylesheet" href="<?= asset('libraries/jquery-ui/cupertino/1.14.2/jquery-ui.min.css') ?>">
   <!-- Custom Style -->
   <link rel="stylesheet" href="<?= asset('libraries/tas-lib/css/styles.css') ?>">
 
@@ -449,9 +449,9 @@ $judulAplikasi = config('Site')->fullTitle();
   </div>
 
   <!-- jQuery -->
-  <script src="<?= asset('libraries/adminlte/plugins/jquery/jquery.min.js') ?>"></script>
+  <script src="<?= asset('libraries/adminlte/plugins/jquery/3.7.1/jquery.min.js') ?>"></script>
   <!-- jQuery UI -->
-  <script src="<?= asset('libraries/jquery-ui/1.13.1/jquery-ui.min.js') ?>"></script>
+  <script src="<?= asset('libraries/jquery-ui/1.14.2/jquery-ui.min.js') ?>"></script>
   <!-- Bootstrap 4 -->
   <script src="<?= asset('libraries/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
   

@@ -122,7 +122,7 @@
     <script src="<?= asset('libraries/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
 
     <!-- daterangepicker -->
-    <script src="<?= asset('libraries/adminlte/plugins/moment/moment.min.js') ?>"></script>
+    <script src="<?= asset('libraries/adminlte/plugins/moment/2.30.1/moment.min.js') ?>"></script>
     <script src="<?= asset('libraries/adminlte/plugins/daterangepicker/daterangepicker.js') ?>"></script>
 
     <!-- overlayScrollbars -->
@@ -132,19 +132,39 @@
     <script src="<?= asset('libraries/adminlte/dist/js/adminlte.js') ?>"></script>
 
     <!-- Select2 -->
-    <script src="<?= asset('libraries/adminlte/plugins/select2/js/select2.full.min.js') ?>"></script>
+    <script src="<?= asset('libraries/adminlte/plugins/select2/4.1.0/js/select2.full.min.js') ?>"></script>
 
     <!-- AutoNumeric -->
-    <script src="<?= asset('libraries/autonumeric/4.5.4/autonumeric.min.js') ?>"></script>
+    <script src="<?= asset('libraries/autonumeric/4.10.10/autoNumeric.min.js') ?>"></script>
 
     <!-- Inputmask -->
-    <script src="<?= asset('libraries/inputmask/5.0.6/jquery.inputmask.min.js') ?>"></script>
+    <script src="<?= asset('libraries/inputmask/5.0.10/jquery.inputmask.min.js') ?>"></script>
 
     <!-- Nestable2 -->
     <script src="<?= asset('libraries/nestable2/1.6.0/js/jquery.nestable.min.js') ?>"></script>
 
     <!-- Highlight -->
     <script src="<?= asset('libraries/highlight/highlight.js') ?>"></script>
+
+    <!-- Polyfill Object.hasOwn untuk browser lawas (Chrome/Edge < 93, Firefox < 92, Safari < 15.4).
+         jqGrid 590 memanggil Object.hasOwn langsung di grid.base.js (pengecekan STRIP_KEYS saat
+         cleanData aktif, jalan tiap kali grid memuat data) -- tanpa ini browser lama gagal dengan
+         "Object.hasOwn is not a function" lalu error susulan di tempat yang memakai hasil fungsi itu. -->
+    <script>
+        if (!Object.hasOwn) {
+            console.error(new Error("ERROR KARENA USER MENGGUNAKAN CHROME/EDGE < 93, Firefox < 92, Safari < 15.4"));
+            Object.defineProperty(Object, 'hasOwn', {
+                value: function (object, property) {
+                    if (object == null) {
+                        throw new TypeError('Cannot convert undefined or null to object');
+                    }
+                    return Object.prototype.hasOwnProperty.call(Object(object), property);
+                },
+                configurable: true,
+                writable: true
+            });
+        }
+    </script>
 
     <!-- JQGrid 570 (From Trucking) -->
     <script src="<?= asset('libraries/jqgrid/590/js/i18n/grid.locale-en.js') ?>" type="text/javascript"></script>
@@ -209,7 +229,7 @@
             const $nav = $('nav.main-header');
 
             function applyDarkMode() {
-                $theme.attr('href', '<?= asset('libraries/jquery-ui/darkhive/jquery-ui.min.css') ?>');
+                $theme.attr('href', '<?= asset('libraries/jquery-ui/darkhive/1.14.2/jquery-ui.min.css') ?>');
                 localStorage.setItem('theme', 'dark');
                 $('html').addClass('dark-mode');
                 $body.addClass('dark-mode');
@@ -218,7 +238,7 @@
             }
 
             function applyLightMode() {
-                $theme.attr('href', '<?= asset('libraries/jquery-ui/cupertino/jquery-ui.min.css') ?>');
+                $theme.attr('href', '<?= asset('libraries/jquery-ui/cupertino/1.14.2/jquery-ui.min.css') ?>');
                 localStorage.setItem('theme', 'light');
                 $('html').removeClass('dark-mode');
                 $body.removeClass('dark-mode');

@@ -10,7 +10,7 @@
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="<?= asset('libraries/adminlte/plugins/fontawesome-free/css/all.min.css') ?>">
+    <link rel="stylesheet" href="<?= asset('libraries/adminlte/plugins/fontawesome-free/6.7.2/css/all.min.css') ?>">
     <!-- Theme style -->
     <link rel="stylesheet" href="<?= asset('libraries/adminlte/dist/css/adminlte-customized.min.css') ?>">
     <!-- overlayScrollbars -->
@@ -20,15 +20,15 @@
     <link rel="stylesheet" href="<?= asset('libraries/jqgrid/590/css/ui.jqgrid-bootstrap4.css') ?>" />
 
     <!-- Select2 -->
-    <link rel="stylesheet" href="<?= asset('libraries/adminlte/plugins/select2/css/select2.min.css') ?>">
+    <link rel="stylesheet" href="<?= asset('libraries/adminlte/plugins/select2/4.1.0/css/select2.min.css') ?>">
     <link rel="stylesheet" href="<?= asset('libraries/adminlte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') ?>">
 
     <!-- Nestable2 -->
     <link rel="stylesheet" href="<?= asset('libraries/nestable2/1.6.0/css/jquery.nestable.min.css') ?>" />
 
     <!-- Jquery UI -->
-    <link id="jquery-theme" rel="stylesheet" href="<?= asset('libraries/jquery-ui/cupertino/jquery-ui.min.css') ?>">
-    <link rel="stylesheet" href="<?= asset('libraries/jquery-ui/1.13.1/jquery-ui.min.css') ?>">
+    <link id="jquery-theme" rel="stylesheet" href="<?= asset('libraries/jquery-ui/cupertino/1.14.2/jquery-ui.min.css') ?>">
+    <link rel="stylesheet" href="<?= asset('libraries/jquery-ui/1.14.2/jquery-ui.min.css') ?>">
 
     <!-- Custom Style (From Trucking) -->
     <link rel="stylesheet" href="<?= asset('libraries/tas-lib/css/pager.css') ?>">
@@ -51,8 +51,8 @@
     </style>
 
     <!-- Scripts - Moved to header to support legacy inline scripts in views (Matching Trucking placement) -->
-    <script src="<?= asset('libraries/adminlte/plugins/jquery/jquery.min.js') ?>"></script>
-    <script src="<?= asset('libraries/jquery-ui/1.13.1/jquery-ui.min.js') ?>"></script>
+    <script src="<?= asset('libraries/adminlte/plugins/jquery/3.7.1/jquery.min.js') ?>"></script>
+    <script src="<?= asset('libraries/jquery-ui/1.14.2/jquery-ui.min.js') ?>"></script>
 
     <script>
         const appUrl = '<?= base_url() ?>';
