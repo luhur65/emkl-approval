@@ -88,6 +88,53 @@ body {
 .ui-jqgrid-labels th{
 	padding:0.6rem!important;
 }
+/* HEADER WRAP: label kolom turun baris per kata seperti Wrap Text di Excel.
+   Lebar minimum tiap kolom dihitung GridHeaderFit.js supaya muat dua baris. */
+.ui-jqgrid .ui-jqgrid-htable tr.ui-jqgrid-labels th.ui-th-column {
+	white-space: normal;
+	height: auto;
+	vertical-align: middle;
+}
+.ui-jqgrid .ui-jqgrid-htable tr.ui-jqgrid-labels th.ui-th-column > div.ui-th-div {
+	white-space: normal;
+	height: auto;
+	line-height: 1.25;
+	text-align: center;
+	justify-content: center; /* div header ber-display flex */
+	align-items: center;
+}
+/* Area geser lebar kolom ditempel tepat di garis kanan header, setinggi sel.
+   Bawaannya float di dalam padding th (0.6rem) sehingga meleset beberapa px
+   ke kiri dari garis. Kolom beku tetap sticky (aturannya memakai !important). */
+.ui-jqgrid .ui-jqgrid-htable tr.ui-jqgrid-labels th.ui-th-column {
+	position: relative;
+}
+.ui-jqgrid .ui-jqgrid-htable tr.ui-jqgrid-labels th.ui-th-column > span.ui-jqgrid-resize-ltr {
+	position: absolute;
+	float: none;
+	display: block;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	width: 9px;
+	height: auto !important;
+	margin: 0;
+	cursor: col-resize;
+	z-index: 1;
+}
+/* Header yang bisa dipindah (grid dengan sortable: true): kursor tangan.
+   ui-sortable-handle dipasang jQuery UI, ui-sortable-helper adalah salinan
+   header yang ikut kursor selama digeser. */
+.ui-jqgrid .ui-jqgrid-htable th.ui-sortable-handle,
+.ui-jqgrid .ui-jqgrid-htable th.ui-sortable-handle > div.ui-th-div {
+	cursor: grab;
+}
+.ui-jqgrid .ui-jqgrid-htable th.ui-sortable-handle:active,
+.ui-jqgrid .ui-jqgrid-htable th.ui-sortable-handle:active > div.ui-th-div,
+.ui-jqgrid .ui-jqgrid-htable th.ui-sortable-handle.ui-sortable-helper,
+.ui-jqgrid .ui-jqgrid-htable th.ui-sortable-handle.ui-sortable-helper > div.ui-th-div {
+	cursor: grabbing;
+}
 /* END PADDING GRID */
 
 input[type=text]:focus,input[type=password]:focus, .select2-selection:focus {
@@ -101,6 +148,17 @@ input[type=text]:focus,input[type=password]:focus, .select2-selection:focus {
 	margin-top: 10px;
 	font-family: dejavu;
 	/* font-size: 0.875rem; */
+}
+
+/* Warna panah sort di header kolom: asc = biru, desc = merah.
+   Dipisah lewat class ui-icon-asc / ui-icon-desc (bawaan jqGrid) agar tetap
+   berlaku apa pun bentuk ikonnya (fa-caret-* maupun fa-arrow-*, lihat mains.js). */
+.ui-jqgrid th.ui-th-column .ui-grid-ico-sort.ui-icon-asc {
+	color: #007bff;
+}
+
+.ui-jqgrid th.ui-th-column .ui-grid-ico-sort.ui-icon-desc {
+	color: #dc3545;
 }
 
 .ui-jqgrid .ui-icon-asc {

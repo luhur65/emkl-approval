@@ -561,10 +561,10 @@ $.fn.customPager = function (option = {}) {
 		`);
         } else {
             $(`#gbox_${$(this).getGridParam().id}`).after(`
-				<div class="row d-flex align-items-center grid-overflow text-lg-left">
+				<div class="row d-flex align-items-center grid-overflow grid-pager bg-white mx-0 text-lg-left">
 
 					<div class="col-12 col-lg-6" id="left-nav" style="overflow: hidden; ">
-						<div style="display: flex; overflow-x: auto; padding: 5px; white-space: nowrap; background-color:white;">
+						<div style="display: flex; overflow-x: auto; padding: 5px; white-space: nowrap;">
 
 							${
                                 typeof option.buttons !== "undefined"
@@ -613,10 +613,9 @@ $.fn.customPager = function (option = {}) {
 							${extndBtn}
 						</div>
 					</div>
-				</div>
 
 					<div class="col-12 col-lg-6">
-						<div class="row d-flex align-items-center justify-content-center justify-content-lg-end pr-3" style="background-color:white;">
+						<div class="row d-flex align-items-center justify-content-center justify-content-lg-end pr-3">
 							<div id="${pagerHandlerId}" class="pager-handler d-flex align-items-center justify-content-center mx-2">
 							</div>
 							<div id="${pagerInfoId}" class="pager-info">
@@ -624,7 +623,6 @@ $.fn.customPager = function (option = {}) {
 						</div>
 					</div>
 				</div>
-			</div>
 
 
 		`);

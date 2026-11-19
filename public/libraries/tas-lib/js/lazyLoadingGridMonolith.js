@@ -281,6 +281,13 @@ function loadGridData(gridId, api, postData, pageNumber, rowsCount, direction = 
         proses = 'reload';
     }
 
+    // Tiap muatan baru (reload/jump) menaikkan nomor generasi. Respons dari generasi
+    // lama (request lambat yang baru tiba) diabaikan supaya tidak menimpa data terbaru.
+    if (proses === 'reload' || proses === 'jump') {
+        state.loadSeq = (state.loadSeq || 0) + 1;
+        if (state.lsPrefetchingPages) state.lsPrefetchingPages.clear();
+    }
+
     if (proses === 'reload') {
         resetGridState(grid);
         state.minPageLoaded = pageNumber;
@@ -340,6 +347,7 @@ function loadGridData(gridId, api, postData, pageNumber, rowsCount, direction = 
             $('.loaderGrid').removeClass('d-none');
         }
 
+        var requestSeq = state.loadSeq || 0;
         var currentFilters = grid.jqGrid('getGridParam', 'postData').filters;
         var _isSearch = grid.jqGrid('getGridParam', 'postData')._search;
         if (currentFilters) {
@@ -363,6 +371,7 @@ function loadGridData(gridId, api, postData, pageNumber, rowsCount, direction = 
             type: 'POST',
             data: fullPostData,
             success: function (res) {
+                if (requestSeq !== (state.loadSeq || 0)) return; // respons basi
                 if (!onlyCache) $('.loaderGrid').addClass('d-none');
                 state.totalRecord = res.records;
                 state.totalPages = res.total;
@@ -429,6 +438,7 @@ function loadGridData(gridId, api, postData, pageNumber, rowsCount, direction = 
                 if (callback) callback(res);
             },
             error: function (xhr, textStatus, errorThrown) {
+                if (requestSeq !== (state.loadSeq || 0)) return; // respons basi
                 if (!onlyCache) $('.loaderGrid').addClass('d-none');
                 console.error('Grid Load Error:', textStatus, errorThrown);
                 if (state.lsPrefetchingPages) state.lsPrefetchingPages.delete(pageNumber);
@@ -459,6 +469,7 @@ function loadGridData(gridId, api, postData, pageNumber, rowsCount, direction = 
                 }
             },
             complete: function () {
+                if (requestSeq !== (state.loadSeq || 0)) return; // respons basi
                 if (!onlyCache) {
                     state.loading = false;
                     var freshPostData = grid.jqGrid('getGridParam', 'postData');
